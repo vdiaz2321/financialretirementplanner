@@ -213,20 +213,8 @@
   <div class="note">💡 <b>Liquid Cash</b> = Savings + Taxable Brokerage + Gold/Silver + <b>Accumulated Cash Flow (AccCF)</b>. AccCF is the running total of all annual surpluses/deficits since 2027 — positive means extra undeployed cash; negative means you've spent more than earned (money covered from outside tracked accounts). It does <em>not</em> double-count savings contributions (those are already deducted from surplus). Net Worth excludes Retirement accounts (early-withdrawal penalties apply) in the "Excl. Home" figure.</div>
 </div>
 
-<!-- ===== SECTION 1: INPUTS (COLLAPSIBLE) ===== -->
-<div class="panel">
-  <details open id="det_core">
-    <summary>
-      <h2>1. Core Inputs</h2> <span style="font-size:13px; color:#666; font-weight:normal;">(Click to Collapse/Expand)</span>
-    </summary>
-    
-    <div style="display:none;">
-      <button class="tab-btn active" id="tab1" onclick="showTab(1)">🏠 Main Data</button>
-      <button class="tab-btn" id="tabH" onclick="showTab('H')">🏡 Housing & Real Estate</button>
-      <button class="tab-btn" id="tab2" onclick="showTab(2)">📈 Investments</button>
-      <button class="tab-btn" id="tab3" onclick="showTab(3)">🎓 Education</button>
-      <button class="tab-btn" id="tab5" onclick="showTab(5)">💳 Debts</button>
-    </div>
+<!-- ===== SECTION 1: INPUTS ===== -->
+<div class="panel" id="det_core">
 
     <!-- ===== TAB 1: MAIN DATA ===== -->
     <div class="tabpane active" id="pane1">
@@ -799,11 +787,6 @@
       </details>
     </div>
 
-    <div style="text-align:center; margin-top:18px;">
-      <button onclick="runModel()">🔄 Run Projections</button>
-    </div>
-
-  </details>
 </div>
 
 <!-- ===== SECTION NAV BUTTONS (hidden – sidebar replaces) ===== -->
@@ -1756,8 +1739,6 @@ function sideNav(type, id) {
   if (type === 'input') {
     const el = document.getElementById('sl-' + id);
     if (el) el.classList.add('active');
-    const det = document.getElementById('det_core');
-    if (det) det.open = true;
     showTab(isNaN(id) ? id : parseInt(id));
     setTimeout(() => {
       const inp = document.getElementById('det_core');
