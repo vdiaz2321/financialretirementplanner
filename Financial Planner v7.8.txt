@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Financial and Retirement Planner v8.0</title>
 <style>
-  body { font-family:'Segoe UI',Arial,sans-serif; max-width:1600px; margin:0 auto 60px; padding:10px; background:#f4f6f8; color:#222; }
-  h1 { color:#1a3d6e; border-bottom:3px solid #c8a951; padding-bottom:8px; font-size:22px; }
-  h2 { color:#1a3d6e; margin-top:0; font-size:19px; }
-  h3 { color:#2c5282; font-size:15px; margin-top: 0; }
+  body { font-family:'Segoe UI',Arial,sans-serif; margin:0; padding:0; background:#f0f2f5; color:#222; }
+  h1 { color:#4a72a8; border-bottom:3px solid #d4a843; padding-bottom:8px; font-size:22px; }
+  h2 { color:#4a72a8; margin-top:0; font-size:19px; }
+  h3 { color:#5b8ac4; font-size:15px; margin-top: 0; }
   .panel { background:#fff; border-radius:8px; padding:16px; margin-bottom:18px; box-shadow:0 2px 6px rgba(0,0,0,0.08); }
   .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
   .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
@@ -19,29 +19,29 @@
   /* Table Fixes for Sticky Header Overlap */
   .table-wrapper { overflow-x: auto; max-height: 550px; overflow-y: auto; border: 1px solid #ccc; border-radius: 6px; margin-top: 10px; background: #fff; }
   table { width:100%; border-collapse:separate; border-spacing:0; font-size:11px; }
-  th { position: sticky; top: 0; z-index: 2; background:#1a3d6e; color:#fff; padding:6px; text-align:left; border-bottom: 2px solid #c8a951; }
+  th { position: sticky; top: 0; z-index: 2; background:#4a72a8; color:#fff; padding:6px; text-align:left; border-bottom: 2px solid #d4a843; }
   td { padding:5px 6px; border-bottom:1px solid #e0e0e0; }
   tr:nth-child(even) td { background:#f9f9f9; }
   
-  .warn { color:#b00; font-weight:bold; }
-  .good { color:#1a7f37; font-weight:bold; }
-  .current-year-row td { border-left: 4px solid #c8a951; background: #e6f2ff !important; font-weight: bold; }
-  .metric { display:inline-block; background:#eef3f9; border-left:4px solid #1a3d6e; padding:8px 14px; margin:5px 8px 5px 0; border-radius:4px; }
-  .metric strong { color:#1a3d6e; font-size:17px; display:block; }
-  button { background:#1a3d6e; color:#fff; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; font-size:15px; font-weight:600; }
-  button:hover { background:#c8a951; }
-  button.danger { background:#b00; }
-  button.danger:hover { background:#8a0000; }
-  .tab-btn { background:#cfd8e3; color:#1a3d6e; margin:4px 5px 4px 0; padding:9px 18px; }
-  .tab-btn.active { background:#1a3d6e; color:#fff; }
-  .nav-btn { background:#2c5282; margin:4px 6px 4px 0; padding:9px 20px; }
-  .nav-btn.active { background:#c8a951; color:#1a3d6e; }
+  .warn { color:#c0392b; font-weight:bold; }
+  .good { color:#2d9e54; font-weight:bold; }
+  .current-year-row td { border-left: 4px solid #d4a843; background: #e6f2ff !important; font-weight: bold; }
+  .metric { display:inline-block; background:#eef3fb; border-left:4px solid #4a72a8; padding:8px 14px; margin:5px 8px 5px 0; border-radius:4px; }
+  .metric strong { color:#4a72a8; font-size:17px; display:block; }
+  button { background:#4a72a8; color:#fff; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; font-size:15px; font-weight:600; }
+  button:hover { background:#d4a843; }
+  button.danger { background:#c0392b; }
+  button.danger:hover { background:#922b21; }
+  .tab-btn { background:#cfd8e3; color:#4a72a8; margin:4px 5px 4px 0; padding:9px 18px; }
+  .tab-btn.active { background:#4a72a8; color:#fff; }
+  .nav-btn { background:#5b8ac4; margin:4px 6px 4px 0; padding:9px 20px; }
+  .nav-btn.active { background:#d4a843; color:#4a72a8; }
   
   /* Toggle Button Fixes */
-  .toggle-btn { background:#cfd8e3; color:#1a3d6e; margin:8px 6px 8px 0; border: 1px solid #a3b8cc; }
+  .toggle-btn { background:#cfd8e3; color:#4a72a8; margin:8px 6px 8px 0; border: 1px solid #a3b8cc; }
   .toggle-btn.active { background:#000; color:#fff; border: 1px solid #000; }
   
-  .townbox { background:#eef3f9; border-radius:6px; padding:12px; margin-top:10px; font-size:13px; }
+  .townbox { background:#eef3fb; border-radius:6px; padding:12px; margin-top:10px; font-size:13px; }
   .best { background:#d4edda !important; font-weight:bold; }
   .retire-row td { background:#fff8e1 !important; }
   .locked td { background:#e8e8e8 !important; color:#999 !important; font-style:italic; }
@@ -49,19 +49,19 @@
   .tabpane { display:none; } .tabpane.active { display:block; }
   .secgroup { display:none; } .secgroup.active { display:block; }
   .dash { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
-  .dashcard { background:linear-gradient(135deg,#1a3d6e,#2c5282); color:#fff; border-radius:10px; padding:16px; }
-  .dashcard h4 { margin:0 0 8px 0; color:#c8a951; font-size:15px; }
+  .dashcard { background:linear-gradient(135deg,#4a72a8,#5b8ac4); color:#fff; border-radius:10px; padding:16px; }
+  .dashcard h4 { margin:0 0 8px 0; color:#d4a843; font-size:15px; }
   .dashrow { display:flex; justify-content:space-between; font-size:13px; padding:3px 0; border-bottom:1px solid rgba(255,255,255,0.15); }
-  .dashtotal { font-size:19px; font-weight:bold; margin-top:10px; color:#c8a951; }
-  .note { background:#fff3cd; border-left:4px solid #c8a951; padding:8px 12px; font-size:12.5px; border-radius:4px; margin-top:8px; }
+  .dashtotal { font-size:19px; font-weight:bold; margin-top:10px; color:#d4a843; }
+  .note { background:#fff3cd; border-left:4px solid #d4a843; padding:8px 12px; font-size:12.5px; border-radius:4px; margin-top:8px; }
   .actuals-wrap { max-height:360px; overflow-y:auto; border:1px solid #ccc; border-radius:6px; margin-top:8px; }
   .actuals-wrap table { font-size:10px; }
   .actuals-wrap input { padding:3px; font-size:10px; }
   .actuals-wrap input:disabled { background: #eee; cursor: not-allowed; }
   
   /* Details & Summary formatting */
-  details > summary { cursor:pointer; font-weight:600; color:#1a3d6e; padding:6px 0; outline:none; position: relative; }
-  details > summary > h2 { display:inline-block; border-left:5px solid #c8a951; padding-left:10px; margin:0; }
+  details > summary { cursor:pointer; font-weight:600; color:#4a72a8; padding:6px 0; outline:none; position: relative; }
+  details > summary > h2 { display:inline-block; border-left:5px solid #d4a843; padding-left:10px; margin:0; }
   details.inline-summary > summary { display: flex; align-items: center; }
   details.inline-summary > summary h3 { margin: 0 0 0 5px; }
   
@@ -69,39 +69,133 @@
   details.schoolblock > summary { display: list-item; }
   details.schoolblock > summary h3 { display: inline-block; margin: 0 0 0 5px; vertical-align: middle; }
   
-  .stickybar { position:sticky; top:0; z-index:50; background:#1a3d6e; color:#fff; padding:10px 16px; border-radius:0 0 8px 8px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; box-shadow:0 2px 8px rgba(0,0,0,0.2); }
+  .stickybar { position:sticky; top:0; z-index:50; background:#4a72a8; color:#fff; padding:10px 16px; border-radius:0 0 8px 8px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; box-shadow:0 2px 8px rgba(0,0,0,0.2); }
   .stickybar label { color:#fff; margin:0; font-size:13px; }
   .stickybar select { width:auto; min-width:100px; }
-  .savedTag { font-size:12px; color:#9be29b; }
+  .savedTag { font-size:12px; color:#6fcf97; }
   #backTop { position:fixed; bottom:20px; right:20px; z-index:100; padding:12px 16px; border-radius:50px; box-shadow:0 3px 10px rgba(0,0,0,0.3); }
+
+  /* ===== SIDEBAR LAYOUT ===== */
+  .sidebar {
+    position: fixed; top: 0; left: 0; height: 100vh; width: 220px;
+    background: #fff; border-right: 1px solid #e2e8f0;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.07);
+    display: flex; flex-direction: column;
+    overflow-y: auto; z-index: 200;
+  }
+  .sidebar-logo {
+    padding: 18px 16px 16px;
+    font-size: 15px; font-weight: 700; color: #4a72a8;
+    border-bottom: 1px solid #e2e8f0;
+    letter-spacing: -0.3px;
+    flex-shrink: 0;
+  }
+  .sidebar-logo span { font-size:11px; font-weight:400; color:#94a3b8; display:block; margin-top:2px; }
+  .sidebar-label {
+    font-size: 10px; font-weight: 700; color: #94a3b8;
+    letter-spacing: .08em; text-transform: uppercase;
+    padding: 14px 16px 5px;
+  }
+  .sidebar-link {
+    display: block; padding: 8px 14px 8px 16px; color: #374151;
+    font-size: 13px; cursor: pointer; border-radius: 6px;
+    margin: 1px 8px; text-decoration: none; transition: background .15s;
+    border-left: 3px solid transparent;
+  }
+  .sidebar-link:hover { background: #f0f5ff; color: #4a72a8; }
+  .sidebar-link.active {
+    background: #eef3fb; color: #4a72a8; font-weight: 600;
+    border-left: 3px solid #4a72a8;
+  }
+  .sidebar-divider { border-top: 1px solid #e2e8f0; margin: 10px 0; }
+
+  .main-content {
+    margin-left: 220px;
+    max-width: 1400px;
+    padding: 0 16px 60px 16px;
+  }
+
+  /* Make stickybar aware of sidebar */
+  .stickybar { border-radius: 0 0 8px 8px; margin-bottom: 12px; }
+
+  /* Collapse/Expand all row */
+  .collapse-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .collapse-row button {
+    font-size: 12px; padding: 5px 12px; font-weight: 500;
+    background: #eef3fb; color: #4a72a8; border: 1px solid #c5d8f0;
+    border-radius: 4px;
+  }
+  .collapse-row button:hover { background: #d4e4f7; }
+
+  /* Mobile: sidebar becomes top drawer */
+  @media(max-width: 768px) {
+    .sidebar { position: relative; width: 100%; height: auto; flex-direction: row; flex-wrap: wrap; border-right: none; border-bottom: 1px solid #e2e8f0; }
+    .main-content { margin-left: 0; }
+    .sidebar-label { padding: 8px 10px 3px; }
+    .sidebar-link { margin: 2px 4px; padding: 6px 10px; font-size: 12px; }
+  }
   @media(max-width:900px){ .grid2,.grid3,.grid4,.dash{grid-template-columns:1fr;} table{font-size:9.5px;} }
+
   .curr-wrap { position: relative; display: block; }
   .curr-wrap::before { content: '$'; position: absolute; left: 8px; top: 7px; color: #888; font-size: 13px; font-weight: normal; pointer-events: none;}
   .curr-wrap input { padding-left: 20px; }
 
   /* Mobile collapsible improvements */
   details.schoolblock > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 4px 0; }
-  details.schoolblock > summary::before { content: '▶'; font-size: 10px; color: #1a3d6e; transition: transform 0.2s; flex-shrink: 0; }
+  details.schoolblock > summary::before { content: '▶'; font-size: 10px; color: #4a72a8; transition: transform 0.2s; flex-shrink: 0; }
   details.schoolblock[open] > summary::before { transform: rotate(90deg); }
   details.schoolblock > summary h3 { margin: 0; }
   details.schoolblock:not([open]) { padding-bottom: 6px; }
   @media(max-width:700px){
-    details.schoolblock > summary { background:#eef3f9; border-radius:4px; padding:8px 10px; margin:-4px -6px 8px; }
+    details.schoolblock > summary { background:#eef3fb; border-radius:4px; padding:8px 10px; margin:-4px -6px 8px; }
     details.schoolblock:not([open]) { cursor:pointer; }
     .grid3, .grid4 { gap: 8px; }
   }
   .subsection-divider { border-top: 1px solid #ccc; margin: 10px 0; }
-  .gs-badge { background:#1a7f37; color:#fff; font-size:10px; padding:2px 6px; border-radius:10px; margin-left:6px; vertical-align:middle; }
+  .gs-badge { background:#2d9e54; color:#fff; font-size:10px; padding:2px 6px; border-radius:10px; margin-left:6px; vertical-align:middle; }
 </style>
 </head>
 <body>
+
+<!-- ===== LEFT SIDEBAR ===== -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    🏦 Financial Planner
+    <span>Military &amp; Civilian v8.0</span>
+  </div>
+
+  <div class="sidebar-label">Overview</div>
+  <a class="sidebar-link active" id="sl-dash" onclick="sideNav('dash','')">📊 Dashboard</a>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-label">Core Inputs</div>
+  <a class="sidebar-link" id="sl-1" onclick="sideNav('input','1')">📋 Main Data</a>
+  <a class="sidebar-link" id="sl-H" onclick="sideNav('input','H')">🏡 Housing &amp; Real Estate</a>
+  <a class="sidebar-link" id="sl-2" onclick="sideNav('input','2')">📈 Investments</a>
+  <a class="sidebar-link" id="sl-3" onclick="sideNav('input','3')">🎓 Education</a>
+  <a class="sidebar-link" id="sl-5" onclick="sideNav('input','5')">💳 Debt</a>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-label">Results</div>
+  <a class="sidebar-link" id="sl-cash" onclick="sideNav('result','cash')">💵 Cash Flow</a>
+  <a class="sidebar-link" id="sl-inv" onclick="sideNav('result','inv')">📊 Investments</a>
+  <a class="sidebar-link" id="sl-edu" onclick="sideNav('result','edu')">🎓 Education</a>
+
+  <div class="sidebar-divider"></div>
+  <div style="padding:12px 16px 16px;">
+    <button onclick="runModel()" style="width:100%;font-size:13px;padding:8px;background:#4a72a8;">🔄 Run Projections</button>
+  </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main-content">
 
 <!-- ===== STICKY TOP BAR ===== -->
 <div class="stickybar">
   <label>Current Year:</label>
   <select id="currentYear" onchange="runModel()"></select>
   <button onclick="runModel()" style="padding:6px 14px;">🔄 Run Projections</button>
-  <button onclick="downloadBackup()" style="padding:6px 14px;background:#1a7f37;">⬇️ Save Report</button>
+  <button onclick="downloadBackup()" style="padding:6px 14px;background:#2d9e54;">⬇️ Save Report</button>
   <label style="cursor:pointer;background:#7a5cc8;padding:6px 12px;border-radius:4px;">⬆️ Upload<input type="file" id="uploadFile" accept=".json" style="display:none" onchange="uploadBackup(event)"></label>
   <button class="danger" onclick="clearData()" style="padding:6px 14px;">⚠️ Reset</button>
   <span class="savedTag" id="savedTag"></span>
@@ -114,7 +208,7 @@
 
 <!-- ===== DASHBOARD (3 cards) ===== -->
 <div class="panel">
-  <h2 style="margin-top:0; border-left:5px solid #c8a951; padding-left:10px;">📊 Net Worth Dashboard</h2>
+  <h2 style="margin-top:0; border-left:5px solid #d4a843; padding-left:10px;">📊 Net Worth Dashboard</h2>
   <div class="dash" id="dashboard"><em>Click "Run New Projections".</em></div>
   <div class="note">💡 <b>Liquid Cash</b> = Savings + Taxable Brokerage + Gold/Silver + <b>Accumulated Cash Flow (AccCF)</b>. AccCF is the running total of all annual surpluses/deficits since 2027 — positive means extra undeployed cash; negative means you've spent more than earned (money covered from outside tracked accounts). It does <em>not</em> double-count savings contributions (those are already deducted from surplus). Net Worth excludes Retirement accounts (early-withdrawal penalties apply) in the "Excl. Home" figure.</div>
 </div>
@@ -126,7 +220,7 @@
       <h2>1. Core Inputs</h2> <span style="font-size:13px; color:#666; font-weight:normal;">(Click to Collapse/Expand)</span>
     </summary>
     
-    <div style="margin-bottom:12px; margin-top:10px;">
+    <div style="display:none;">
       <button class="tab-btn active" id="tab1" onclick="showTab(1)">🏠 Main Data</button>
       <button class="tab-btn" id="tabH" onclick="showTab('H')">🏡 Housing & Real Estate</button>
       <button class="tab-btn" id="tab2" onclick="showTab(2)">📈 Investments</button>
@@ -136,6 +230,10 @@
 
     <!-- ===== TAB 1: MAIN DATA ===== -->
     <div class="tabpane active" id="pane1">
+      <div class="collapse-row">
+        <button onclick="toggleAllDetails('pane1',true)">▼ Expand All</button>
+        <button onclick="toggleAllDetails('pane1',false)">▲ Collapse All</button>
+      </div>
       <div class="grid3">
         <!-- Top Row 1 -->
         <details class="schoolblock inline-summary" open id="det_main_people">
@@ -224,7 +322,7 @@
           <label>SPOUSE SS Monthly Benefit</label><input type="number" id="ssWife" value="">
           <label>SPOUSE SS Start Year</label><input type="number" id="ssWifeYear" value="2057">
         </details>
-        <details class="schoolblock inline-summary" open id="det_main_health" style="border-left: 4px solid #c8a951;">
+        <details class="schoolblock inline-summary" open id="det_main_health" style="border-left: 4px solid #d4a843;">
           <summary><h3>🏥 Healthcare &amp; Inflation</h3></summary>
           <label>Expected Inflation to Expenses %</label><input type="number" id="expInflation" value="2.5" step="0.1">
           <div class="subsection-divider"></div>
@@ -246,6 +344,11 @@
     
     <!-- ===== TAB H: HOUSING & REAL ESTATE ===== -->
     <div class="tabpane" id="paneH">
+      <div class="collapse-row">
+        <button onclick="toggleAllDetails('paneH',true)">▼ Expand All</button>
+        <button onclick="toggleAllDetails('paneH',false)">▲ Collapse All</button>
+      </div>
+
       <div style="margin-bottom: 15px; font-style: italic; color: #555;">Use these dropdowns to manage each location's specific housing, utility, and BAH inputs.</div>
       
       <details class="schoolblock inline-summary" open id="det_pcs1">
@@ -264,7 +367,7 @@
             <label>Insurance (annual)</label><input type="number" id="jbIns" value="">
             <label>VA Funding Fee % (if VA)</label><input type="number" id="vaFee" value="1.65" step="0.05">
           </div>
-          <div style="border-left: 4px solid #1a3d6e; padding-left: 10px;">
+          <div style="border-left: 4px solid #4a72a8; padding-left: 10px;">
             <b>⚡ PCS #1 Utilities & Upkeep</b>
             <label>Location (free text)</label><input type="text" id="util1Loc" value="Fort Bragg">
             <label>Water / Sewer /mo</label><input type="number" id="util1WS" value="">
@@ -275,7 +378,7 @@
             <label>START Year</label><input type="number" id="util1Start" value="2027">
             <label>END Year</label><input type="number" id="util1End" value="2033">
           </div>
-          <div style="border-left: 4px solid #1a7f37; padding-left: 10px;">
+          <div style="border-left: 4px solid #2d9e54; padding-left: 10px;">
             <b>🪖 PCS #1 Allowances (BAH)</b>
             <label>BAH #1 Monthly</label><input type="number" id="bah1" value="">
             <label>BAH #1 Annual Increase %</label><input type="number" id="bah1Raise" value="1.2" step="0.1">
@@ -302,7 +405,7 @@
             <label>Insurance (annual)</label><input type="number" id="pcs2Ins" value="">
             <label>VA Funding Fee % (if VA)</label><input type="number" id="pcs2VaFee" value="1.65" step="0.05">
           </div>
-          <div style="border-left: 4px solid #1a3d6e; padding-left: 10px;">
+          <div style="border-left: 4px solid #4a72a8; padding-left: 10px;">
             <b>⚡ PCS #2 Utilities & Upkeep</b>
             <label>Location (free text)</label><input type="text" id="util3Loc" value="Location 2">
             <label>Water / Sewer /mo</label><input type="number" id="util3WS" value="">
@@ -313,7 +416,7 @@
             <label>START Year</label><input type="number" id="util3Start" value="0">
             <label>END Year</label><input type="number" id="util3End" value="0">
           </div>
-          <div style="border-left: 4px solid #1a7f37; padding-left: 10px;">
+          <div style="border-left: 4px solid #2d9e54; padding-left: 10px;">
             <b>🪖 PCS #2 Allowances (BAH)</b>
             <label>BAH #2 Monthly</label><input type="number" id="bah2" value="">
             <label>BAH #2 Annual Increase %</label><input type="number" id="bah2Raise" value="1.2" step="0.1">
@@ -347,7 +450,7 @@
             <label>PCS #2 Equity Rollover (Down Pmt)</label><input type="number" id="pcs2EquityRoll" value="">
             <div class="townbox" id="townInfo"></div>
           </div>
-          <div style="border-left: 4px solid #1a3d6e; padding-left: 10px;">
+          <div style="border-left: 4px solid #4a72a8; padding-left: 10px;">
             <b>⚡ Retirement Utilities & Upkeep</b>
             <label>Location (free text)</label><input type="text" id="util2Loc" value="Wake County">
             <label>Water / Sewer /mo</label><input type="number" id="util2WS" value="">
@@ -483,12 +586,17 @@
 
     <!-- ===== TAB 3: EDUCATION ===== -->
     <div class="tabpane" id="pane3">
+      <div class="collapse-row">
+        <button onclick="toggleAllDetails('pane3',true)">▼ Expand All</button>
+        <button onclick="toggleAllDetails('pane3',false)">▲ Collapse All</button>
+      </div>
+
       <h3 style="margin-top:14px;">🎓 Per-Child School Inputs</h3>
       <div class="grid3">
         <!-- CHILD 1 -->
         <details class="schoolblock inline-summary" open id="det_c1">
           <summary><h3>Child 1</h3></summary>
-          <details style="background:#eef3f9; padding:8px; border-radius:4px; margin-bottom:8px; margin-top:8px;">
+          <details style="background:#eef3fb; padding:8px; border-radius:4px; margin-bottom:8px; margin-top:8px;">
             <summary><b>Private K-12 Schooling</b></summary>
             <label>Start Year (0=none)</label><input type="number" id="c1privStart" value="0">
             <label>End Year</label><input type="number" id="c1privEnd" value="0">
@@ -527,7 +635,7 @@
         <!-- CHILD 2 -->
         <details class="schoolblock inline-summary" open id="det_c2">
           <summary><h3>Child 2</h3></summary>
-          <details style="background:#eef3f9; padding:8px; border-radius:4px; margin-bottom:8px; margin-top:8px;">
+          <details style="background:#eef3fb; padding:8px; border-radius:4px; margin-bottom:8px; margin-top:8px;">
             <summary><b>Private K-12 Schooling</b></summary>
             <label>Start Year (0=none)</label><input type="number" id="c2privStart" value="0">
             <label>End Year</label><input type="number" id="c2privEnd" value="0">
@@ -566,7 +674,7 @@
         <!-- CHILD 3 -->
         <details class="schoolblock inline-summary" open id="det_c3">
           <summary><h3>Child 3</h3></summary>
-          <details style="background:#eef3f9; padding:8px; border-radius:4px; margin-bottom:8px; margin-top:8px;">
+          <details style="background:#eef3fb; padding:8px; border-radius:4px; margin-bottom:8px; margin-top:8px;">
             <summary><b>Private K-12 Schooling</b></summary>
             <label>Start Year (0=none)</label><input type="number" id="c3privStart" value="0">
             <label>End Year</label><input type="number" id="c3privEnd" value="0">
@@ -605,7 +713,7 @@
       
       <!-- Moved to the bottom -->
       <div style="margin-top:14px;">
-        <details class="schoolblock inline-summary" open id="det_edu_gibill" style="border-left: 4px solid #c8a951; max-width:420px;">
+        <details class="schoolblock inline-summary" open id="det_edu_gibill" style="border-left: 4px solid #d4a843; max-width:420px;">
           <summary><h3>🎖️ 529 / GI Bill Global Settings</h3></summary>
           <label>529 Avg Annual Return %</label><input type="number" id="ret529" value="7.0" step="0.1">
           <div class="subsection-divider"></div>
@@ -619,6 +727,11 @@
 
     <!-- ===== TAB 5: DEBTS (3 columns) ===== -->
     <div class="tabpane" id="pane5">
+      <div class="collapse-row">
+        <button onclick="toggleAllDetails('pane5',true)">▼ Expand All</button>
+        <button onclick="toggleAllDetails('pane5',false)">▲ Collapse All</button>
+      </div>
+
       <details class="schoolblock inline-summary" open id="det_cc_cards" style="background:#fff; border:none; padding:0; margin:0;">
         <summary><h3>💳 Credit Cards (for future debt-snowball)</h3></summary>
         <div class="grid3">
@@ -693,8 +806,8 @@
   </details>
 </div>
 
-<!-- ===== SECTION NAV BUTTONS ===== -->
-<div class="panel" style="padding:12px">
+<!-- ===== SECTION NAV BUTTONS (hidden – sidebar replaces) ===== -->
+<div style="display:none;">
   <button class="nav-btn active" id="navCash" onclick="showGroup('cash')">💵 Cash Flow</button>
   <button class="nav-btn" id="navInv" onclick="showGroup('inv')">📈 Investments</button>
   <button class="nav-btn" id="navEdu" onclick="showGroup('edu')">🎓 Education</button>
@@ -733,8 +846,16 @@ const ALL_IDS=['currentYear','age','wifeAge','retireYear','retireMonth','netPay'
 function fmt(n){return (n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString();}
 function pmt(rate,nper,pv){if(pv<=0||nper<=0)return 0;const r=rate/12/100;if(r===0)return pv/nper;return (pv*r)/(1-Math.pow(1+r,-nper));}
 function loadTown(){const t=document.getElementById('town').value;if(t==='custom'){document.getElementById('townInfo').innerHTML='<b>Custom:</b> enter your own figures.';return;}const d=TOWNS[t];document.getElementById('townPrice').value=d.price;document.getElementById('townTax').value=d.taxAnnual;document.getElementById('townIns').value=d.ins;document.getElementById('townInfo').innerHTML=`<b>${d.name}</b><br>🏫 ${d.note}`;autoSave();}
-function showTab(n){[1,'H',2,3,5].forEach(i=>{const p=document.getElementById('pane'+i),b=document.getElementById('tab'+i);if(p)p.classList.toggle('active',i===n);if(b)b.classList.toggle('active',i===n);});}
-function showGroup(g){['cash','inv','edu'].forEach(x=>{const el=document.getElementById('grp_'+x);if(el)el.classList.toggle('active',x===g);});document.getElementById('navCash').classList.toggle('active',g==='cash');document.getElementById('navInv').classList.toggle('active',g==='inv');document.getElementById('navEdu').classList.toggle('active',g==='edu');}
+function showTab(n){[1,'H',2,3,5].forEach(i=>{const p=document.getElementById('pane'+i),b=document.getElementById('tab'+i);if(p)p.classList.toggle('active',i===n);if(b)b.classList.toggle('active',i===n);});
+  // Sidebar highlight
+  [1,'H',2,3,5].forEach(i=>{const s=document.getElementById('sl-'+i);if(s)s.classList.toggle('active',i===n);});
+}
+function showGroup(g){['cash','inv','edu'].forEach(x=>{const el=document.getElementById('grp_'+x);if(el)el.classList.toggle('active',x===g);});
+  const nc=document.getElementById('navCash'),ni=document.getElementById('navInv'),ne=document.getElementById('navEdu');
+  if(nc)nc.classList.toggle('active',g==='cash');if(ni)ni.classList.toggle('active',g==='inv');if(ne)ne.classList.toggle('active',g==='edu');
+  // Sidebar highlight
+  ['cash','inv','edu'].forEach(x=>{const s=document.getElementById('sl-'+x);if(s)s.classList.toggle('active',x===g);});
+}
 function toggleWife(state){showWife=state;renderCashFlow();document.getElementById('btnWith').classList.toggle('active',state);document.getElementById('btnNo').classList.toggle('active',!state);}
 function fillYears(){const s=document.getElementById('currentYear');if(s.options.length)return;for(let y=Y0;y<=YEND;y++){const o=document.createElement('option');o.value=y;o.textContent=y;if(y===Y0)o.selected=true;s.appendChild(o);}}
 
@@ -1202,7 +1323,7 @@ function runModel(){
     return {sav,tax,crypto,gold,retire,eq,consDebt,mortDebt,totalDebt,accCF,liquid,netNoMort,netWithMort};
   }
   function card(title,n,label){return `<div class="dashcard"><h4>${title}</h4>
-    <div class="dashrow"><span>Liquid Cash (Sav+Tax+Gold+CF)</span><span style="color:#9be29b;">${fmt(n.liquid)}</span></div>
+    <div class="dashrow"><span>Liquid Cash (Sav+Tax+Gold+CF)</span><span style="color:#6fcf97;">${fmt(n.liquid)}</span></div>
     <div class="dashrow"><span>Crypto (volatile)</span><span>${fmt(n.crypto)}</span></div>
     <div class="dashrow"><span>Retirement (TSP+Roth)</span><span>${fmt(n.retire)}</span></div>
     <div class="dashrow"><span>Home Equity</span><span>${fmt(n.eq)}</span></div>
@@ -1246,7 +1367,7 @@ function buildCashGroup(){
   // ---- §2a Debt Payoff Overview ----
   html+=`<div class="panel"><details id="det_debtpayoff" ${getOpen('det_debtpayoff')}><summary><h2>2a. Debt Payoff Overview</h2></summary>`;
   html+='<div class="table-wrapper"><table><tr><th>Debt</th><th>Balance Now</th><th>Monthly Pmt</th><th>Rate</th><th>Years</th><th>Type</th></tr>';
-  html+='<tr style="background:#eef3f9"><td colspan="6"><b>— Consumer Debt —</b></td></tr>';
+  html+='<tr style="background:#eef3fb"><td colspan="6"><b>— Consumer Debt —</b></td></tr>';
   function debtRow(prefix,defType){
     const name=document.getElementById(prefix+'Name')?document.getElementById(prefix+'Name').value:'';
     const bal=v(prefix+'Bal'),pmtv=v(prefix+'Pmt'),rate=v(prefix+'Rate'),s=v(prefix+'Start'),e=v(prefix+'End');
@@ -1259,7 +1380,7 @@ function buildCashGroup(){
   html+=debtRow('car1','Car Loan');
   html+=debtRow('car2','Car Loan');
   html+=debtRow('loan','General Loan');
-  html+='<tr style="background:#eef3f9"><td colspan="6"><b>— Housing (auto-pulled) —</b></td></tr>';
+  html+='<tr style="background:#eef3fb"><td colspan="6"><b>— Housing (auto-pulled) —</b></td></tr>';
   
   const jbBuy=c.jbBuy,jbSell=c.jbSell,wakeBuy=c.wakeBuy;
   const pcs2Buy=v('pcs2BuyYear'),pcs2Sell=v('pcs2SellYear');
@@ -1628,6 +1749,40 @@ function applyCurrencyStyles() {
     });
 }
 
+
+// ===== SIDEBAR NAVIGATION =====
+function sideNav(type, id) {
+  document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+  if (type === 'input') {
+    const el = document.getElementById('sl-' + id);
+    if (el) el.classList.add('active');
+    const det = document.getElementById('det_core');
+    if (det) det.open = true;
+    showTab(isNaN(id) ? id : parseInt(id));
+    setTimeout(() => {
+      const inp = document.getElementById('det_core');
+      if (inp) inp.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 50);
+  } else if (type === 'result') {
+    const el = document.getElementById('sl-' + id);
+    if (el) el.classList.add('active');
+    showGroup(id);
+    setTimeout(() => {
+      const res = document.getElementById('results');
+      if (res) res.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 50);
+  } else if (type === 'dash') {
+    const el = document.getElementById('sl-dash');
+    if (el) el.classList.add('active');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+}
+
+// ===== COLLAPSE / EXPAND ALL =====
+function toggleAllDetails(paneId, open) {
+  document.querySelectorAll('#' + paneId + ' details').forEach(d => { d.open = open; });
+}
+
 // ===== INIT =====
 window.onload=function(){
   fillYears();
@@ -1636,5 +1791,6 @@ window.onload=function(){
   runModel();
 };
 </script>
+</div><!-- /main-content -->
 </body>
 </html>
