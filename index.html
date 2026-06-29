@@ -1568,11 +1568,13 @@ function renderCharts(){
 }
 
 function _destroyChart(id){
+  if(typeof Chart==='undefined')return;
   const c=document.getElementById(id); if(!c)return;
   const ex=Chart.getChart(c); if(ex)ex.destroy();
 }
 
 function renderInvChart(){
+  if(typeof Chart==='undefined')return;
   const canvas=document.getElementById('chart-inv'); if(!canvas)return;
   _destroyChart('chart-inv');
   const cd=window._chartData; if(!cd)return;
@@ -1599,6 +1601,7 @@ function renderInvChart(){
 }
 
 function renderCashChart(){
+  if(typeof Chart==='undefined')return;
   const canvas=document.getElementById('chart-cash'); if(!canvas)return;
   _destroyChart('chart-cash');
   const cd=window._chartData; if(!cd)return;
@@ -1617,6 +1620,7 @@ function renderCashChart(){
 }
 
 function renderNWChart(){
+  if(typeof Chart==='undefined')return;
   const canvas=document.getElementById('chart-nw'); if(!canvas)return;
   _destroyChart('chart-nw');
   const cd=window._chartData; if(!cd)return;
@@ -1649,7 +1653,7 @@ function showCashView(v){
   const wrap=document.getElementById('cash-chart-wrap');
   if(wrap)wrap.style.display=v==='chart'?'block':'none';
   const area=document.getElementById('cashflowArea');
-  if(area)area.parentElement.style.display=v==='chart'?'none':'';
+  if(area)area.style.display=v==='chart'?'none':'';
   document.querySelectorAll('#grp_cash .view-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&v==='table')||(i===1&&v==='chart')));
   if(v==='chart')renderCashChart();
 }
