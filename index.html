@@ -151,7 +151,14 @@
   }
   .subsection-divider { border-top: 1px solid #ccc; margin: 10px 0; }
   .gs-badge { background:#2d9e54; color:#fff; font-size:10px; padding:2px 6px; border-radius:10px; margin-left:6px; vertical-align:middle; }
+
+  /* ===== CHART VIEWS ===== */
+  .chart-wrap { position:relative; height:380px; margin:10px 0 4px; }
+  .view-toggle { display:flex; gap:6px; margin-bottom:10px; }
+  .view-btn { font-size:12px; padding:5px 14px; background:#f0f2f5; color:#555; border:1px solid #d0d8e0; border-radius:4px; cursor:pointer; font-weight:500; }
+  .view-btn.active { background:#4a72a8; color:#fff; border-color:#4a72a8; }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -205,7 +212,12 @@
 <!-- ===== DASHBOARD (3 cards) ===== -->
 <div class="panel">
   <h2 style="margin-top:0; border-left:5px solid #d4a843; padding-left:10px;">📊 Net Worth Dashboard</h2>
+  <div class="view-toggle" style="margin-top:12px;">
+    <button class="view-btn active" onclick="showDashView('cards')">🃏 Cards</button>
+    <button class="view-btn" onclick="showDashView('chart')">📊 Chart</button>
+  </div>
   <div class="dash" id="dashboard"><em>Click "Run New Projections".</em></div>
+  <div class="chart-wrap" id="nw-chart-wrap" style="display:none"><canvas id="chart-nw"></canvas></div>
   <details style="margin-top:8px;">
     <summary style="font-size:12px; color:#4a72a8; cursor:pointer; font-weight:600;">💡 How are these numbers calculated?</summary>
     <div class="note" style="margin-top:6px;">💡 <b>Liquid Cash</b> = Savings + Taxable Brokerage + Gold/Silver + <b>Accumulated Cash Flow (AccCF)</b>. AccCF is the running total of all annual surpluses/deficits since 2027 — positive means extra undeployed cash; negative means you've spent more than earned (money covered from outside tracked accounts). It does <em>not</em> double-count savings contributions (those are already deducted from surplus). Net Worth excludes Retirement accounts (early-withdrawal penalties apply) in the "Excl. Home" figure.</div>
@@ -1318,6 +1330,26 @@ function runModel(){
   window._cf={incomeParts,expensesMonthly,investMonthly,homeForYear,homeExpenseForYear,homePIForYear,utilForYear,bahForYear,debtPaymentMonthly,myAge,wAge,locked,jbHomeMonthly,pcs2HomeMonthly,townHomeMonthly,selTownKey,TOWNS,jbBuy,jbSell,wakeBuy,retireYr,util1Loc:txt('util1Loc'),util2Loc:txt('util2Loc'),util3Loc:txt('util3Loc'),totalDown,townPI,townRate,wifeStart,wifeEnd,wifeIncome,retGross,payRaise,pensionCOLA,fedTax,vaDis,myWork,gsGross,gsFedTax,gsStateTax,gsIncomeStart,gsIncomeEnd,townExpenses,netTspForDown,optSBP,sbpAnnual};
   window._ctx={v,curYear,myAge,wAge,jbSell,proj,actual,actPct,capPaid,projWd,locked,projRet,useActuals,retireYr,accCashFlow};
 
+  // Pre-compute chart data (nw() closure still in scope here)
+  (function(){
+    const cd={years:[],tsp:[],rothMe:[],rothWife:[],tax:[],sav:[],crypto:[],gold:[],netWorth:[],liquid:[],retire:[],annualSurplus:[]};
+    for(let y=2026;y<=2060;y++){
+      const p=proj[y]; if(!p)continue;
+      cd.years.push(y);
+      cd.tsp.push(p.Tsp||0); cd.rothMe.push(p.RothMe||0); cd.rothWife.push(p.RothWife||0);
+      cd.tax.push(p.Tax||0); cd.sav.push(p.Sav||0); cd.crypto.push(p.Crypto||0); cd.gold.push(p.Gold||0);
+      const n=nw(y);
+      cd.netWorth.push(n.netWithMort); cd.liquid.push(n.liquid); cd.retire.push(n.retire);
+    }
+    // Cash flow surplus (2027-2060)
+    for(let y=2027;y<=2060;y++){
+      const ip=incomeParts(y);
+      const disc=ip.mine+(showWife?ip.spouse:0)+bahForYear(y)-homeForYear(y)-utilForYear(y)-debtPaymentMonthly(y)-expensesMonthly(y,true)-investMonthly(y);
+      cd.annualSurplus.push({y,v:disc*12});
+    }
+    window._chartData=cd;
+  })();
+
   attachAutoSave();
   autoSave();
   buildSectionGroups();
@@ -1333,6 +1365,7 @@ function buildSectionGroups(){
   buildCashGroup();
   buildInvGroup();
   buildEduGroup();
+  renderCharts();
 }
 
 // ===== CASH FLOW GROUP (§2, §2a, §3) =====
@@ -1342,8 +1375,12 @@ function buildCashGroup(){
 
   // ---- §2 Cash Flow (toggle) ----
   html+=`<div class="panel"><details id="det_cashflow" ${getOpen('det_cashflow')}><summary><h2>2. Year-by-Year Cash Flow</h2></summary>`;
-  html+='<div><button id="btnWith" class="toggle-btn active" onclick="toggleWife(true)">WITH Spouse Income</button>';
-  html+='<button id="btnNo" class="toggle-btn" onclick="toggleWife(false)">WITHOUT Spouse Income</button></div>';
+  html+='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">';
+  html+='<button id="btnWith" class="toggle-btn active" onclick="toggleWife(true)">WITH Spouse Income</button>';
+  html+='<button id="btnNo" class="toggle-btn" onclick="toggleWife(false)">WITHOUT Spouse Income</button>';
+  html+='<span style="margin-left:auto;display:flex;gap:6px;"><button class="view-btn active" onclick="showCashView(\'table\')">📋 Table</button><button class="view-btn" onclick="showCashView(\'chart\')">📊 Chart</button></span>';
+  html+='</div>';
+  html+='<div class="chart-wrap" id="cash-chart-wrap" style="display:none"><canvas id="chart-cash"></canvas></div>';
   html+='<div class="table-wrapper" id="cashflowArea"></div></details></div>';
 
   // ---- §2a Debt Payoff Overview ----
@@ -1454,6 +1491,8 @@ function buildInvGroup(){
 
   const getSource = (y) => (useActuals && y <= ctx.curYear) ? actual : proj;
 
+  html+='<div class="view-toggle"><button class="view-btn active" onclick="showInvView(\'table\')">📋 Table</button><button class="view-btn" onclick="showInvView(\'chart\')">📊 Chart</button></div>';
+  html+='<div class="chart-wrap" id="inv-chart-wrap" style="display:none"><canvas id="chart-inv"></canvas></div>';
   html+=`<div class="panel"><details id="det_tsp_roth" ${getOpen('det_tsp_roth')}><summary><h2>4. TSP & Roth IRA Year-by-Year Projection</h2></summary>`;
   html+='<div class="table-wrapper"><table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Proj TSP</th><th>Actual TSP</th><th>Proj My Roth</th><th>Actual My Roth</th><th>Proj Spouse Roth</th><th>Actual Spouse Roth</th><th>TSP W/D</th><th>My Roth W/D</th><th>Spouse Roth W/D</th><th>Total W/D</th><th>Proj Combined</th><th>Actual Combined</th><th>Notes</th></tr>';
   for(let y=2026;y<=2060;y++){
@@ -1518,6 +1557,110 @@ function buildInvGroup(){
   html+='</table></div></details></div>';
 
   document.getElementById('grp_inv').innerHTML=html;
+}
+
+// ===== CHART RENDERING =====
+function renderCharts(){
+  if(typeof Chart==='undefined')return;
+  renderInvChart();
+  renderCashChart();
+  renderNWChart();
+}
+
+function _destroyChart(id){
+  const c=document.getElementById(id); if(!c)return;
+  const ex=Chart.getChart(c); if(ex)ex.destroy();
+}
+
+function renderInvChart(){
+  const canvas=document.getElementById('chart-inv'); if(!canvas)return;
+  _destroyChart('chart-inv');
+  const cd=window._chartData; if(!cd)return;
+  new Chart(canvas,{
+    type:'bar',
+    data:{
+      labels:cd.years,
+      datasets:[
+        {label:'TSP',data:cd.tsp,backgroundColor:'#4a72a8',stack:'s'},
+        {label:'My Roth',data:cd.rothMe,backgroundColor:'#2d9e54',stack:'s'},
+        {label:'Spouse Roth',data:cd.rothWife,backgroundColor:'#5b8ac4',stack:'s'},
+        {label:'Taxable',data:cd.tax,backgroundColor:'#7b5ea7',stack:'s'},
+        {label:'Savings',data:cd.sav,backgroundColor:'#17a2b8',stack:'s'},
+        {label:'Crypto',data:cd.crypto,backgroundColor:'#e67e22',stack:'s'},
+        {label:'Gold',data:cd.gold,backgroundColor:'#d4a843',stack:'s'}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),footer:items=>'Total: '+fmt(items.reduce((s,i)=>s+i.raw,0))}}},
+      scales:{x:{stacked:true,ticks:{maxRotation:45}},y:{stacked:true,ticks:{callback:v=>'$'+(v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v)}}}
+    }
+  });
+}
+
+function renderCashChart(){
+  const canvas=document.getElementById('chart-cash'); if(!canvas)return;
+  _destroyChart('chart-cash');
+  const cd=window._chartData; if(!cd)return;
+  const labels=cd.annualSurplus.map(d=>d.y);
+  const data=cd.annualSurplus.map(d=>d.v);
+  const colors=data.map(v=>v>=0?'rgba(45,158,84,0.75)':'rgba(192,57,43,0.75)');
+  new Chart(canvas,{
+    type:'bar',
+    data:{labels,datasets:[{label:'Annual Surplus',data,backgroundColor:colors,borderWidth:0}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>(ctx.raw>=0?'Surplus: ':'Deficit: ')+fmt(Math.abs(ctx.raw))}}},
+      scales:{x:{ticks:{maxRotation:45}},y:{ticks:{callback:v=>'$'+(v>=1e3?(v/1e3).toFixed(0)+'K':v>=0?v.toFixed(0):'('+Math.abs(v/1e3).toFixed(0)+'K)')}}}
+    }
+  });
+}
+
+function renderNWChart(){
+  const canvas=document.getElementById('chart-nw'); if(!canvas)return;
+  _destroyChart('chart-nw');
+  const cd=window._chartData; if(!cd)return;
+  new Chart(canvas,{
+    type:'line',
+    data:{
+      labels:cd.years,
+      datasets:[
+        {label:'Total Net Worth',data:cd.netWorth,borderColor:'#4a72a8',backgroundColor:'rgba(74,114,168,0.1)',fill:true,tension:0.3,pointRadius:2},
+        {label:'Liquid Cash',data:cd.liquid,borderColor:'#2d9e54',backgroundColor:'transparent',tension:0.3,pointRadius:2,borderDash:[4,4]},
+        {label:'Retirement Accts',data:cd.retire,borderColor:'#d4a843',backgroundColor:'transparent',tension:0.3,pointRadius:2}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom'}},
+      scales:{y:{ticks:{callback:v=>'$'+(v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v)}}}
+    }
+  });
+}
+
+function showInvView(v){
+  const wrap=document.getElementById('inv-chart-wrap');
+  if(wrap)wrap.style.display=v==='chart'?'block':'none';
+  document.querySelectorAll('#grp_inv .view-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&v==='table')||(i===1&&v==='chart')));
+  if(v==='chart')renderInvChart();
+}
+
+function showCashView(v){
+  const wrap=document.getElementById('cash-chart-wrap');
+  if(wrap)wrap.style.display=v==='chart'?'block':'none';
+  const area=document.getElementById('cashflowArea');
+  if(area)area.parentElement.style.display=v==='chart'?'none':'';
+  document.querySelectorAll('#grp_cash .view-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&v==='table')||(i===1&&v==='chart')));
+  if(v==='chart')renderCashChart();
+}
+
+function showDashView(v){
+  const dash=document.getElementById('dashboard');
+  const wrap=document.getElementById('nw-chart-wrap');
+  if(dash)dash.style.display=v==='chart'?'none':'';
+  if(wrap)wrap.style.display=v==='chart'?'block':'none';
+  document.querySelectorAll('.view-toggle .view-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&v==='cards')||(i===1&&v==='chart')));
+  if(v==='chart')renderNWChart();
 }
 
 // ===== EDUCATION GROUP =====
