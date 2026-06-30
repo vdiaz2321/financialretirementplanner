@@ -44,7 +44,7 @@
 
   --label:       #374151;
 
-  --th-bg:       #4a72a8;
+  --th-bg:       #7aaed6;
   --th-text:     #ffffff;
   --td-stripe:   #f8fafc;
   --td-border:   #eaecef;
@@ -58,8 +58,8 @@
   --sb-block-bd: #d8e2ed;
   --townbox:     #eef3fb;
 
-  --dc-from:     #4a72a8;
-  --dc-to:       #5b8ac4;
+  --dc-from:     #2c5590;
+  --dc-to:       #3e6aac;
 
   --cy-bg:       #e6f2ff;
   --cy-bd:       #d4a843;
@@ -219,9 +219,12 @@ th {
   background: var(--th-bg); color: var(--th-text);
   padding: 8px 7px; text-align: left;
   border-bottom: 2px solid var(--gold);
+  border-right: 1px solid rgba(255,255,255,.45);
   font-size: 10.5px; letter-spacing: .04em; white-space: nowrap;
 }
-td { padding: 5px 7px; border-bottom: 1px solid var(--td-border); color: var(--text); }
+th:last-child { border-right: none; }
+td { padding: 5px 7px; border-bottom: 1px solid var(--td-border); border-right: 1px solid var(--td-border); color: var(--text); }
+td:last-child { border-right: none; }
 tr:nth-child(even) td { background: var(--td-stripe); }
 
 /* Status */
@@ -290,6 +293,9 @@ button.danger:hover { background: #922b21; color: #fff; }
   background: var(--tog-on-bg); color: var(--tog-on-t);
   border-color: var(--tog-on-bg);
 }
+.tab-btn:hover:not(.active) { background: var(--blue); color: #fff; box-shadow: var(--sh-sm); }
+.nav-btn:hover:not(.active) { background: var(--blue); color: #fff; box-shadow: var(--sh-sm); }
+.toggle-btn:hover:not(.active) { background: var(--sb-hover); color: var(--blue); border-color: var(--blue); }
 
 /* =====================================================
    NOTES / CALLOUTS
@@ -348,9 +354,9 @@ button.danger:hover { background: #922b21; color: #fff; }
   border-bottom: 1px solid rgba(255,255,255,.08);
   gap: 8px;
 }
-.dashrow span:first-child { color: rgba(255,255,255,.65); }
+.dashrow span:first-child { color: rgba(255,255,255,.9); }
 .dashtotal { font-size: 19px; font-weight: 700; margin-top: 14px; color: var(--gold); }
-.dashtotal-sub { font-size: 12.5px; color: rgba(255,255,255,.5); margin-top: 10px; margin-bottom: 2px; }
+.dashtotal-sub { font-size: 12.5px; color: rgba(255,255,255,.8); margin-top: 10px; margin-bottom: 2px; }
 
 /* =====================================================
    STICKY TOP BAR
@@ -402,16 +408,21 @@ button.danger:hover { background: #922b21; color: #fff; }
   border-right: 1px solid var(--sb-border);
   box-shadow: 2px 0 14px rgba(0,0,0,.08);
   display: flex; flex-direction: column;
-  overflow-y: auto; z-index: 200;
-  transition: background .25s, border-color .25s;
+  overflow-y: auto; overflow-x: hidden; z-index: 200;
+  transition: width .3s, background .25s, border-color .25s;
 }
 .sidebar-logo {
-  padding: 20px 18px 16px;
+  padding: 16px 14px 14px;
   font-size: 15px; font-weight: 700; color: var(--blue);
   border-bottom: 1px solid var(--sb-border);
   letter-spacing: -.3px; flex-shrink: 0;
+  display: flex; align-items: center; gap: 6px;
 }
-.sidebar-logo span {
+.sb-logo-text {
+  flex: 1; min-width: 0; font-size: 13px; font-weight: 700;
+  color: var(--blue); line-height: 1.25;
+}
+.sidebar-logo .sidebar-logo-subtitle {
   font-size: 11px; font-weight: 400;
   color: var(--text-3); display: block; margin-top: 2px;
 }
@@ -465,7 +476,36 @@ button.danger:hover { background: #922b21; color: #fff; }
   margin-left: 230px;
   max-width: 1400px;
   padding: 0 20px 60px 20px;
+  transition: margin-left .3s;
 }
+body.sb-collapsed .main-content { margin-left: 54px; }
+
+/* =====================================================
+   SIDEBAR COLLAPSE
+   ===================================================== */
+.sb-toggle {
+  margin-left: auto; flex-shrink: 0;
+  width: 22px; height: 22px;
+  background: var(--surface-3); border: 1px solid var(--border);
+  border-radius: 5px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 15px; font-weight: 700; color: var(--blue);
+  padding: 0; line-height: 1;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.sb-toggle:hover { background: var(--sb-hover); border-color: var(--blue); }
+.sidebar.collapsed { width: 54px; }
+.sidebar.collapsed .sb-logo-text { display: none; }
+.sidebar.collapsed .sidebar-label { height: 0; padding: 0; overflow: hidden; opacity: 0; pointer-events: none; }
+.sidebar.collapsed .sidebar-link { padding: 8px 0; margin: 2px 4px; text-align: center; font-size: 18px; border: none; background: transparent; }
+.sidebar.collapsed .sidebar-link.active { border-left: 3px solid var(--blue); border-radius: 7px; }
+.sidebar.collapsed .sb-link-text { display: none; }
+.sidebar.collapsed .sidebar-divider { margin: 5px 8px; }
+.sidebar.collapsed .sb-run-wrap { padding: 8px 4px; }
+.sidebar.collapsed .sb-run-wrap button { padding: 8px 0; font-size: 18px; width: 100%; }
+.sidebar.collapsed .sb-run-text { display: none; }
+.sidebar.collapsed .btn-theme { margin: 6px 4px 8px; width: calc(100% - 8px); padding: 9px 0; justify-content: center; }
+.sidebar.collapsed .btn-theme-text { display: none; }
+.sidebar.collapsed #darkPill { display: none !important; }
 
 /* =====================================================
    COLLAPSE ROW
@@ -476,7 +516,7 @@ button.danger:hover { background: #922b21; color: #fff; }
   background: var(--surface-3); color: var(--blue);
   border: 1px solid var(--border-md); border-radius: 5px;
 }
-.collapse-row button:hover { background: var(--sb-hover); color: var(--blue); }
+.collapse-row button:hover { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: var(--sh-sm); }
 
 /* =====================================================
    DETAILS / SUMMARY
@@ -574,34 +614,35 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
 <!-- ===== LEFT SIDEBAR ===== -->
 <div class="sidebar">
   <div class="sidebar-logo">
-    🏦 Financial and Retirement Planner
+    🏦<span class="sb-logo-text"> Financial and Retirement Planner</span>
+    <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()" title="Collapse sidebar">‹</button>
   </div>
 
   <div class="sidebar-label">Overview</div>
-  <a class="sidebar-link active" id="sl-dash" onclick="sideNav('dash','')">📊 Dashboard</a>
+  <a class="sidebar-link active" id="sl-dash" onclick="sideNav('dash','')" title="Dashboard">📊<span class="sb-link-text"> Dashboard</span></a>
 
   <div class="sidebar-divider"></div>
   <div class="sidebar-label">Core Inputs</div>
-  <a class="sidebar-link" id="sl-1" onclick="sideNav('input','1')">📋 Main Data</a>
-  <a class="sidebar-link" id="sl-H" onclick="sideNav('input','H')">🏡 Housing &amp; Real Estate</a>
-  <a class="sidebar-link" id="sl-2" onclick="sideNav('input','2')">📈 Investments</a>
-  <a class="sidebar-link" id="sl-3" onclick="sideNav('input','3')">🎓 Education</a>
-  <a class="sidebar-link" id="sl-5" onclick="sideNav('input','5')">💳 Debt</a>
+  <a class="sidebar-link" id="sl-1" onclick="sideNav('input','1')" title="Main Data">📋<span class="sb-link-text"> Main Data</span></a>
+  <a class="sidebar-link" id="sl-H" onclick="sideNav('input','H')" title="Housing &amp; Real Estate">🏡<span class="sb-link-text"> Housing &amp; Real Estate</span></a>
+  <a class="sidebar-link" id="sl-2" onclick="sideNav('input','2')" title="Investments">📈<span class="sb-link-text"> Investments</span></a>
+  <a class="sidebar-link" id="sl-3" onclick="sideNav('input','3')" title="Education">🎓<span class="sb-link-text"> Education</span></a>
+  <a class="sidebar-link" id="sl-5" onclick="sideNav('input','5')" title="Debt">💳<span class="sb-link-text"> Debt</span></a>
 
   <div class="sidebar-divider"></div>
   <div class="sidebar-label">Results</div>
-  <a class="sidebar-link" id="sl-cash" onclick="sideNav('result','cash')">💵 Cash Flow</a>
-  <a class="sidebar-link" id="sl-inv"  onclick="sideNav('result','inv')">📊 Investments</a>
-  <a class="sidebar-link" id="sl-edu"  onclick="sideNav('result','edu')">🎓 Education</a>
+  <a class="sidebar-link" id="sl-cash" onclick="sideNav('result','cash')" title="Cash Flow">💵<span class="sb-link-text"> Cash Flow</span></a>
+  <a class="sidebar-link" id="sl-inv"  onclick="sideNav('result','inv')" title="Investments">📊<span class="sb-link-text"> Investments</span></a>
+  <a class="sidebar-link" id="sl-edu"  onclick="sideNav('result','edu')" title="Education">🎓<span class="sb-link-text"> Education</span></a>
 
   <div class="sidebar-divider"></div>
-  <div style="padding:10px 16px 6px;">
-    <button onclick="runModel()" style="width:100%;font-size:13px;padding:9px;">🔄 Run Projections</button>
+  <div class="sb-run-wrap" style="padding:10px 16px 6px;">
+    <button onclick="runModel()" style="width:100%;font-size:13px;padding:9px;" title="Run Projections">🔄<span class="sb-run-text"> Run Projections</span></button>
   </div>
 
   <!-- DARK MODE TOGGLE -->
-  <button class="btn-theme" id="darkModeBtn" onclick="toggleDark()">
-    <span id="darkLabel">🌙 Dark Mode</span>
+  <button class="btn-theme" id="darkModeBtn" onclick="toggleDark()" title="Toggle dark mode">
+    <span id="darkLabel"><span id="darkIcon">🌙</span><span class="btn-theme-text"> Dark Mode</span></span>
     <span id="darkPill" style="background:var(--border);border-radius:20px;width:36px;height:20px;display:flex;align-items:center;padding:2px;transition:background .2s;"><span id="darkPillDot" style="background:#fff;border-radius:50%;width:16px;height:16px;transition:transform .2s;display:block;box-shadow:0 1px 3px rgba(0,0,0,.3);"></span></span>
   </button>
 </div>
@@ -1227,13 +1268,26 @@ function toggleDark() {
   applyTheme(next);
   localStorage.setItem('frp_darkmode', next);
 }
+function toggleSidebar() {
+  const sb  = document.querySelector('.sidebar');
+  const btn = document.getElementById('sbToggle');
+  const collapsed = sb.classList.toggle('collapsed');
+  document.body.classList.toggle('sb-collapsed', collapsed);
+  if (btn) btn.textContent = collapsed ? '›' : '‹';
+  try { localStorage.setItem('frp_sidebar', collapsed ? '1' : '0'); } catch(e) {}
+}
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   const dark = theme === 'dark';
   const lbl  = document.getElementById('darkLabel');
   const pill = document.getElementById('darkPill');
   const dot  = document.getElementById('darkPillDot');
-  if (lbl)  lbl.textContent  = dark ? '☀️ Light Mode' : '🌙 Dark Mode';
+  if (lbl) {
+    const icon = document.getElementById('darkIcon');
+    const txt  = lbl.querySelector('.btn-theme-text');
+    if (icon) icon.textContent = dark ? '☀️' : '🌙';
+    if (txt)  txt.textContent  = dark ? ' Light Mode' : ' Dark Mode';
+  }
   if (pill) pill.style.background = dark ? '#4a72a8' : 'var(--border)';
   if (dot)  dot.style.transform   = dark ? 'translateX(16px)' : 'translateX(0)';
   // Refresh charts for grid/tick color
@@ -2020,6 +2074,13 @@ window.onload=function(){
   fillYears();
   applyCurrencyStyles();
   if(!autoLoad()){loadTown();}
+  // Restore sidebar collapsed state
+  if (localStorage.getItem('frp_sidebar') === '1') {
+    const sb  = document.querySelector('.sidebar');
+    const btn = document.getElementById('sbToggle');
+    if (sb)  { sb.classList.add('collapsed'); document.body.classList.add('sb-collapsed'); }
+    if (btn) btn.textContent = '›';
+  }
   runModel();
 };
 </script>
