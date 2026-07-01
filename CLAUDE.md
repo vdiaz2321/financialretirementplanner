@@ -63,4 +63,6 @@ The Retirement System selector (`retSystem`: `high3`/`brs`/`redux`) drives a liv
 
 ## Cross-session continuity
 
-The user works across two machines (PC and MacBook) using this git repo as the sync mechanism — `git pull` before starting work, `git push` when done, rather than copying the file via cloud storage (which isn't git-aware and can silently overwrite changes). A separate Google Drive doc ("Financial Planner - Dev Notes & Roadmap.md") tracks cross-session status/roadmap and should be checked/updated when picking up work after a gap or finishing a notable chunk of work.
+The user works across two machines (PC and MacBook) — both have this repo cloned from GitHub. Sync is handled entirely via git: `git pull` before starting work, `git push` when done. No Google Drive sync needed.
+
+Cross-session context (what was done, what's next) is captured in `CLAUDE.md` (this file) and the Claude Code memory files at `~/.claude/projects/<encoded-path>/memory/project_context.md`. Check those at the start of a new session rather than re-deriving from code.
