@@ -697,12 +697,12 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <button onclick="toggleAllDetails('pane1',true)">▼ Expand All</button>
       <button onclick="toggleAllDetails('pane1',false)">▲ Collapse All</button>
     </div>
-    <div class="grid3">
+    <div class="grid4">
       <details class="schoolblock inline-summary" open id="det_main_people" style="border-left:4px solid var(--blue);">
         <summary><h3>👥 People &amp; Timeline</h3></summary>
         <label>Your Current Age</label><input type="number" id="age" value="45">
         <label>Spouse's Current Age</label><input type="number" id="wifeAge" value="36">
-        <label>Retirement Start Month (1-12)</label><input type="number" id="retireMonth" value="11">
+        <label>Retirement Start Month</label><input type="number" id="retireMonth" value="11">
         <label>Retirement Start Year</label><input type="number" id="retireYear" value="2033">
       </details>
       <details class="schoolblock inline-summary" open id="det_main_mil" style="border-left:4px solid var(--red);">
@@ -713,8 +713,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <option value="brs">BRS (2.0% × YOS + TSP match)</option>
           <option value="redux">REDUX (2.0%/yr, $30K bonus at 15 YOS)</option>
         </select>
-        <label>Years of Service at Retirement</label><input type="number" id="yos" value="" onchange="runModel()">
-        <label>+ Months <span style="font-size:10px;color:var(--text-3);">(0-11, e.g. 29 yrs 5 mo)</span></label><input type="number" id="yosMonths" value="" min="0" max="11" onchange="runModel()">
+        <label>YOS at Retirement</label><input type="number" id="yosMonths" value="" onchange="runModel()">
         <label>Avg Monthly Base Pay (High-3 estimate) <span style="font-size:10px;color:var(--text-3);">(avg of highest 36 months basic pay — see militarypay.defense.gov pay tables)</span></label><input type="number" id="high3Pay" value="" onchange="runModel()">
         <label>Retirement GROSS Annual <span style="font-size:10px;color:var(--text-3);">(auto-calculated if YOS &amp; Base Pay are filled in)</span></label><input type="number" id="retGross" value="">
         <label>Pension COLA % /yr <span style="font-size:10px;color:var(--text-3);">(separate from pay raise)</span></label><input type="number" id="pensionCOLA" value="2.3" step="0.1">
@@ -724,37 +723,24 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <option value="yes">Yes</option>
           <option value="no">No</option>
         </select>
-        <div class="note" style="margin-top:8px;font-size:11px;">💡 High-3: 2.5% × YOS × avg 3-yr base pay. BRS: 2.0% × YOS (plus DoD TSP 5% match while serving).</div>
       </details>
-      <details class="schoolblock inline-summary" open id="det_main_exp1" style="border-left:4px solid var(--purple);">
-        <summary><h3>Monthly Expenses #1 (w/ Kids)</h3></summary>
-        <label>Bills Total /mo</label><input type="number" id="exp1Bills" value="">
-        <label>Discretionary Total /mo</label><input type="number" id="exp1Disc" value="">
-        <label>Start Year</label><input type="number" id="exp1Start" value="2026">
-        <label>End Year</label><input type="number" id="exp1End" value="2040">
-        <div class="subsection-divider"></div>
-        <label>Expected Inflation to Expenses % <span style="font-size:10px;color:var(--text-3);">(applies to all expenses in this period)</span></label><input type="number" id="exp1Inflation" value="2.5" step="0.1">
-      </details>
-    </div>
-
-    <div class="grid3" style="margin-top:14px;">
       <details class="schoolblock inline-summary" open id="det_main_income" style="border-left:4px solid var(--green);">
-        <summary><h3>💰 Income &amp; Pay (Active Duty)</h3></summary>
-        <label>Active Duty Net Monthly Pay</label><input type="number" id="netPay" value="">
-        <label>Annual Military Pay Raise %</label><input type="number" id="payRaise" value="2.3" step="0.1">
+        <summary><h3>💰 Income &amp; Pay</h3></summary>
+        <label>Net Monthly Pay</label><input type="number" id="netPay" value="">
+        <label>Annual Pay Raise %</label><input type="number" id="payRaise" value="2.3" step="0.1">
         <div class="subsection-divider"></div>
         <label>Future Promotion #1 Net Increase /mo</label><input type="number" id="promo1Bump" value="">
-        <label>Promo #1 Start Month (1-12)</label><input type="number" id="promo1Month" value="10">
+        <label>Promo #1 Start Month</label><input type="number" id="promo1Month" value="10">
         <label>Promo #1 Start Year</label><input type="number" id="promo1Start" value="2030">
         <label>Promo #1 End Year</label><input type="number" id="promo1End" value="2033">
         <div class="subsection-divider"></div>
         <label>Future Promotion #2 Net Increase /mo</label><input type="number" id="promo2Bump" value="">
-        <label>Promo #2 Start Month (1-12)</label><input type="number" id="promo2Month" value="1">
+        <label>Promo #2 Start Month</label><input type="number" id="promo2Month" value="1">
         <label>Promo #2 Start Year</label><input type="number" id="promo2Start" value="0">
         <label>Promo #2 End Year</label><input type="number" id="promo2End" value="0">
       </details>
       <details class="schoolblock inline-summary" open id="det_main_post" style="border-left:4px solid #b87333;">
-        <summary><h3>💼 Post-Retirement Income</h3></summary>
+        <summary><h3>💼 Retirement Income</h3></summary>
         <label>VA Disability Monthly (tax-free)</label><input type="number" id="vaDisability" value="">
         <label>Other Post-Ret Net Monthly</label><input type="number" id="myWorkManual" value="">
         <div class="subsection-divider"></div>
@@ -770,24 +756,26 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>Spouse Income START Year</label><input type="number" id="wifeStartYear" value="2034">
         <label>Spouse Income END Year</label><input type="number" id="wifeEndYear" value="2055">
       </details>
+    </div>
+
+    <div class="grid4" style="margin-top:14px;">
+      <details class="schoolblock inline-summary" open id="det_main_exp1" style="border-left:4px solid var(--purple);">
+        <summary><h3>Monthly Expenses #1</h3></summary>
+        <label>Bills Total /mo</label><input type="number" id="exp1Bills" value="">
+        <label>Discretionary Total /mo</label><input type="number" id="exp1Disc" value="">
+        <label>Start Year</label><input type="number" id="exp1Start" value="2026">
+        <label>End Year</label><input type="number" id="exp1End" value="2040">
+        <div class="subsection-divider"></div>
+        <label>Expected Inflation to Expenses % <span style="font-size:10px;color:var(--text-3);">(applies to all expenses in this period)</span></label><input type="number" id="exp1Inflation" value="2.5" step="0.1">
+      </details>
       <details class="schoolblock inline-summary" open id="det_main_exp2" style="border-left:4px solid var(--gold);">
-        <summary><h3>Monthly Expenses #2 (w/out Kids)</h3></summary>
+        <summary><h3>Monthly Expenses #2</h3></summary>
         <label>Bills Total /mo</label><input type="number" id="exp2Bills" value="">
         <label>Discretionary Total /mo</label><input type="number" id="exp2Disc" value="">
         <label>Start Year</label><input type="number" id="exp2Start" value="2041">
         <label>End Year</label><input type="number" id="exp2End" value="2060">
         <div class="subsection-divider"></div>
         <label>Expected Inflation to Expenses % <span style="font-size:10px;color:var(--text-3);">(applies to all expenses in this period)</span></label><input type="number" id="exp2Inflation" value="2.5" step="0.1">
-      </details>
-    </div>
-
-    <div class="grid3" style="margin-top:14px;">
-      <details class="schoolblock inline-summary" open id="det_main_ss" style="border-left:4px solid var(--blue-light);">
-        <summary><h3>🏛️ Social Security</h3></summary>
-        <label>YOUR SS Monthly Benefit</label><input type="number" id="ssMe" value="">
-        <label>YOUR SS Start Year</label><input type="number" id="ssMeYear" value="2048">
-        <label>SPOUSE SS Monthly Benefit</label><input type="number" id="ssWife" value="">
-        <label>SPOUSE SS Start Year</label><input type="number" id="ssWifeYear" value="2057">
       </details>
       <details class="schoolblock inline-summary" open id="det_main_health" style="border-left:4px solid var(--gold);">
         <summary><h3>🏥 Healthcare</h3></summary>
@@ -803,7 +791,13 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>Dental Ins Start Year</label><input type="number" id="denInsStart" value="0">
         <label>Dental Ins End Year</label><input type="number" id="denInsEnd" value="0">
       </details>
-      <div></div>
+      <details class="schoolblock inline-summary" open id="det_main_ss" style="border-left:4px solid var(--blue-light);">
+        <summary><h3>🏛️ Social Security</h3></summary>
+        <label>YOUR SS Monthly Benefit</label><input type="number" id="ssMe" value="">
+        <label>YOUR SS Start Year</label><input type="number" id="ssMeYear" value="2048">
+        <label>SPOUSE SS Monthly Benefit</label><input type="number" id="ssWife" value="">
+        <label>SPOUSE SS Start Year</label><input type="number" id="ssWifeYear" value="2057">
+      </details>
     </div>
   </div>
 
@@ -909,21 +903,22 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Gas /mo</label><input type="number" id="util2Gas" value="">
           <label>Electric /mo</label><input type="number" id="util2Elec" value="">
           <label>HOA /mo</label><input type="number" id="util2HOA" value="">
+        </div>
+        <div style="padding-left:12px;">
           <label>Repairs &amp; Maint /mo</label><input type="number" id="util2Maint" value="">
           <label>START Year</label><input type="number" id="util2Start" value="2034">
           <label>END Year</label><input type="number" id="util2End" value="2060">
         </div>
-        <div></div>
       </div>
 
       <div style="margin-top:16px;padding:12px;border:1px solid var(--border);border-radius:6px;">
-        <b style="color:var(--text);font-size:15px;">🏘️ Compare Up to 4 Towns/Cities</b>
-        <p style="font-size:12px;color:var(--text-3);margin:4px 0 10px;">Enter towns you're considering. Select <b>"Use for mortgage"</b> for the one that drives Section 3's projections. Blank rows are hidden from Table 3. Look up home prices on Zillow and school ratings on GreatSchools.org.</p>
+        <b style="color:var(--text);font-size:15px;">🏘️ Compare Up to 4 Locations</b>
+        <p style="font-size:12px;color:var(--text-3);margin:4px 0 6px;">Enter towns you're considering. Select <b>"Use for mortgage"</b> for the one that drives Section 3's projections. Blank rows are hidden from Table 3. Look up home prices on <a href="https://www.zillow.com/home-values/102001/united-states/" target="_blank" style="color:var(--blue);">Zillow</a> / <a href="https://www.redfin.com/us-housing-market" target="_blank" style="color:var(--blue);">Redfin</a> and school ratings on <a href="https://www.greatschools.org" target="_blank" style="color:var(--blue);">GreatSchools.org</a>.</p>
+        <p style="font-size:12px;color:var(--text-3);margin:0 0 10px;">Fill in the fields below for each town. Click the bubble on your top choice — it will automatically adjust Home/mo expenses in Section 1 Cash Flow and Section 3 Town Comparison.</p>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
           <div style="padding:10px;border:1px solid var(--border);border-radius:6px;">
             <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel1" value="1" checked onchange="runModel()" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel1" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 1 — Use for mortgage</label></div>
-            <p style="font-size:11px;color:var(--text-3);margin:0 0 8px;padding-left:22px;">Fill in the fields below for this town. Click the bubble on your top choice — it will automatically adjust Home/mo expenses in Section 1 and Section 3's Cash Flow.</p>
             <label>Town/City Name</label><input type="text" id="town1Name" value="" placeholder="e.g. Holly Springs, NC" onchange="runModel()">
             <label>Home Price</label><input type="number" id="town1Price" value="" onchange="runModel()">
             <label>Property Tax /yr</label><input type="number" id="town1Tax" value="" onchange="runModel()">
@@ -934,7 +929,6 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
 
           <div style="padding:10px;border:1px solid var(--border);border-radius:6px;">
             <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel2" value="2" onchange="runModel()" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel2" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 2 — Use for mortgage</label></div>
-            <p style="font-size:11px;color:var(--text-3);margin:0 0 8px;padding-left:22px;">Fill in the fields below for this town. Click the bubble on your top choice — it will automatically adjust Home/mo expenses in Section 1 and Section 3's Cash Flow.</p>
             <label>Town/City Name</label><input type="text" id="town2Name" value="" placeholder="e.g. Apex, NC" onchange="runModel()">
             <label>Home Price</label><input type="number" id="town2Price" value="" onchange="runModel()">
             <label>Property Tax /yr</label><input type="number" id="town2Tax" value="" onchange="runModel()">
@@ -945,7 +939,6 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
 
           <div style="padding:10px;border:1px solid var(--border);border-radius:6px;">
             <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel3" value="3" onchange="runModel()" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel3" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 3 — Use for mortgage</label></div>
-            <p style="font-size:11px;color:var(--text-3);margin:0 0 8px;padding-left:22px;">Fill in the fields below for this town. Click the bubble on your top choice — it will automatically adjust Home/mo expenses in Section 1 and Section 3's Cash Flow.</p>
             <label>Town/City Name</label><input type="text" id="town3Name" value="" placeholder="e.g. Cary, NC" onchange="runModel()">
             <label>Home Price</label><input type="number" id="town3Price" value="" onchange="runModel()">
             <label>Property Tax /yr</label><input type="number" id="town3Tax" value="" onchange="runModel()">
@@ -956,7 +949,6 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
 
           <div style="padding:10px;border:1px solid var(--border);border-radius:6px;">
             <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel4" value="4" onchange="runModel()" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel4" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 4 — Use for mortgage</label></div>
-            <p style="font-size:11px;color:var(--text-3);margin:0 0 8px;padding-left:22px;">Fill in the fields below for this town. Click the bubble on your top choice — it will automatically adjust Home/mo expenses in Section 1 and Section 3's Cash Flow.</p>
             <label>Town/City Name</label><input type="text" id="town4Name" value="" placeholder="e.g. Fuquay-Varina, NC" onchange="runModel()">
             <label>Home Price</label><input type="number" id="town4Price" value="" onchange="runModel()">
             <label>Property Tax /yr</label><input type="number" id="town4Tax" value="" onchange="runModel()">
@@ -978,13 +970,13 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
     <div class="grid4">
       <details class="schoolblock inline-summary" open id="det_inv_retcon" style="border-left:4px solid var(--blue);">
           <summary><h3>📥 Retirement Contributions</h3></summary>
-          <label>TSP Monthly (Active) <span style="font-size:10px;color:var(--text-3);font-weight:400;">(Max $23,000/yr)</span></label><input type="number" id="tspContribAD" value="">
+          <label>TSP Monthly (Active) <a href="https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-401k-and-profit-sharing-plan-contribution-limits" target="_blank" style="font-size:10px;color:var(--blue);font-weight:400;">Check max /yr</a></label><input type="number" id="tspContribAD" value="">
           <label>TSP STOP Year</label><input type="number" id="tspStopYear" value="2033">
           <div class="subsection-divider"></div>
-          <label>YOUR Roth IRA Monthly <span style="font-size:10px;color:var(--text-3);font-weight:400;">(Max $7,000/yr)</span></label><input type="number" id="rothMe" value="">
+          <label>YOUR Roth IRA Monthly <a href="https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-ira-contribution-limits" target="_blank" style="font-size:10px;color:var(--blue);font-weight:400;">Check max /yr</a></label><input type="number" id="rothMe" value="">
           <label>YOUR Roth STOP Year</label><input type="number" id="rothMeStop" value="2038">
           <div class="subsection-divider"></div>
-          <label>SPOUSE Roth IRA Monthly <span style="font-size:10px;color:var(--text-3);font-weight:400;">(Max $7,000/yr)</span></label><input type="number" id="rothWife" value="">
+          <label>SPOUSE Roth IRA Monthly <a href="https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-ira-contribution-limits" target="_blank" style="font-size:10px;color:var(--blue);font-weight:400;">Check max /yr</a></label><input type="number" id="rothWife" value="">
           <label>SPOUSE Roth STOP Year</label><input type="number" id="rothWifeStop" value="2048">
         </details>
         <details class="schoolblock inline-summary" open id="det_inv_gs" style="border-left:4px solid var(--green);">
@@ -1068,11 +1060,10 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         </details>
     </div>
 
-    <h3 style="margin-top:20px;">📊 Yearly Actuals — Enter ACTUAL End-of-Year Balances</h3>
     <label style="display:inline-block;width:auto;margin-right:8px;text-transform:none;letter-spacing:0;font-size:13px;">
       <input type="checkbox" id="useActuals" style="width:auto;display:inline;" onchange="runModel()"> Use Yearly Actuals (app back-calculates your % and re-projects future from your real balance)
     </label>
-    <details open id="det_actuals">
+    <details id="det_actuals">
       <summary><h2>Open Actuals Grid (years ≤ Current Year editable)</h2></summary>
       <div class="note">Enter ACTUAL end-of-year balance + actual contributions per account. <b>Future years are grayed out until you advance the "Current Year" dropdown.</b></div>
       <div class="actuals-wrap" id="actualsGrid"></div>
@@ -1085,7 +1076,10 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <button onclick="toggleAllDetails('pane3',true)">▼ Expand All</button>
       <button onclick="toggleAllDetails('pane3',false)">▲ Collapse All</button>
     </div>
-    <h3 style="margin-top:14px;">🎓 Per-Child School Inputs</h3>
+    <div style="margin-bottom:12px;padding:8px 14px;background:var(--surface-2);border-radius:6px;display:flex;align-items:center;gap:16px;">
+      <label style="margin:0;font-size:12px;white-space:nowrap;">529 Avg Annual Return %</label>
+      <input type="number" id="ret529" value="7.0" step="0.1" style="width:100px;margin:0;">
+    </div>
     <div class="grid3">
       <!-- CHILD 1 -->
       <details class="schoolblock inline-summary" open id="det_c1" style="border-left:4px solid var(--blue);">
@@ -1098,10 +1092,13 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Books &amp; Fees /yr</label><input type="number" id="c1privFees" value="">
         </details>
         <details style="margin-top:10px;" open id="det_c1_ug">
-          <summary><b style="color:var(--text);">529 &amp; Undergrad Settings</b></summary>
+          <summary><b style="color:var(--text);">529 &amp; Undergrad Data</b></summary>
           <label>Current 529 Balance</label><input type="number" id="c1bal" value="">
           <label>529 Monthly</label><input type="number" id="c1mo" value="">
           <label>529 STOP Year</label><input type="number" id="c1stop" value="">
+          <div class="subsection-divider"></div>
+          <label>GI Bill Months</label><input type="number" id="c1GibMonths" value="">
+          <label>GI Bill: Tuition Covered /yr</label><input type="number" id="c1GiTuition" value="">
           <div class="subsection-divider"></div>
           <label>Undergrad START Year</label><input type="number" id="c1ugStart" value="2031">
           <label>Undergrad END Year</label><input type="number" id="c1ugEnd" value="2035">
@@ -1133,10 +1130,13 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Books &amp; Fees /yr</label><input type="number" id="c2privFees" value="">
         </details>
         <details style="margin-top:10px;" open id="det_c2_ug">
-          <summary><b style="color:var(--text);">529 &amp; Undergrad Settings</b></summary>
+          <summary><b style="color:var(--text);">529 &amp; Undergrad Data</b></summary>
           <label>Current 529 Balance</label><input type="number" id="c2bal" value="">
           <label>529 Monthly</label><input type="number" id="c2mo" value="">
           <label>529 STOP Year</label><input type="number" id="c2stop" value="2033">
+          <div class="subsection-divider"></div>
+          <label>GI Bill Months</label><input type="number" id="c2GibMonths" value="">
+          <label>GI Bill: Tuition Covered /yr</label><input type="number" id="c2GiTuition" value="">
           <div class="subsection-divider"></div>
           <label>Undergrad START Year</label><input type="number" id="c2ugStart" value="2033">
           <label>Undergrad END Year</label><input type="number" id="c2ugEnd" value="2037">
@@ -1168,10 +1168,13 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Books &amp; Fees /yr</label><input type="number" id="c3privFees" value="">
         </details>
         <details style="margin-top:10px;" open id="det_c3_ug">
-          <summary><b style="color:var(--text);">529 &amp; Undergrad Settings</b></summary>
+          <summary><b style="color:var(--text);">529 &amp; Undergrad Data</b></summary>
           <label>Current 529 Balance</label><input type="number" id="c3bal" value="">
           <label>529 Monthly</label><input type="number" id="c3mo" value="">
           <label>529 STOP Year</label><input type="number" id="c3stop" value="2036">
+          <div class="subsection-divider"></div>
+          <label>GI Bill Months</label><input type="number" id="c3GibMonths" value="">
+          <label>GI Bill: Tuition Covered /yr</label><input type="number" id="c3GiTuition" value="">
           <div class="subsection-divider"></div>
           <label>Undergrad START Year</label><input type="number" id="c3ugStart" value="2036">
           <label>Undergrad END Year</label><input type="number" id="c3ugEnd" value="2040">
@@ -1191,17 +1194,6 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Grad R&amp;B END Year</label><input type="number" id="c3grbEnd" value="0">
           <label>Scholarships/Grants (Grad total)</label><input type="number" id="c3scholGrad" value="">
         </details>
-      </details>
-    </div>
-    <div style="margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
-      <details class="schoolblock inline-summary" open id="det_edu_gibill" style="border-left:4px solid var(--gold);margin-top:0;">
-        <summary><h3>🎖️ 529 / GI Bill Global Settings</h3></summary>
-        <label>529 Avg Annual Return %</label><input type="number" id="ret529" value="7.0" step="0.1">
-        <div class="subsection-divider"></div>
-        <label>GI Bill Months PER CHILD <span style="font-size:10px;color:var(--text-3);">(Post-9/11: up to 36mo)</span></label><input type="number" id="gibMonths" value="7">
-        <label>GI Bill: In-State Tuition Covered /yr</label><input type="number" id="giTuition" value="">
-        <label>GI Bill: Monthly Housing Allowance (MHA)</label><input type="number" id="giMHA" value="">
-        <div class="note" style="margin-top:8px;font-size:11px;">💡 Post-9/11 GI Bill can be transferred to dependents after 6 YOS (must commit to 4 more years). Up to 36 total months per child.</div>
       </details>
     </div>
   </div>
@@ -1359,7 +1351,7 @@ const RMD_DIVISORS = {
   97:7.8,98:7.3,99:6.8,100:6.4
 };
 
-const ALL_IDS=['currentYear','age','wifeAge','retireYear','retireMonth','netPay','payRaise','promoBump','promo1Bump','promo1Month','promo1Start','promo1End','promo2Bump','promo2Month','promo2Start','promo2End','bah1','bah1Month','bah1Start','bah1End','bah2','bah2Month','bah2Start','bah2End','bahRaise','bah1Raise','bah2Raise','retSystem','yos','yosMonths','high3Pay','retGross','pensionCOLA','fedTaxPct','optSBP','myWorkManual','gsGross','gsFedTax','gsStateTax','gsIncomeStart','gsIncomeEnd','wifeManual','wifeStartYear','wifeEndYear','vaDisability','ssMe','ssMeYear','ssWife','ssWifeYear','exp1Bills','exp1Disc','exp1Start','exp1End','exp2Bills','exp2Disc','exp2Start','exp2End','exp1Inflation','exp2Inflation','tricareMo','tricareStart','tricareEnd','medInsMo','medInsStart','medInsEnd','denInsMo','denInsStart','denInsEnd','jbBuyYear','jbBuyMonth','jbSellYear','homeCost','downPct','rate','term','propTax','jbIns','jbHOA','vaFee','pcs2BuyYear','pcs2BuyMonth','pcs2SellYear','pcs2Cost','pcs2DownPct','pcs2Rate','pcs2Term','pcs2PropTax','pcs2Ins','pcs2VaFee','wakeBuyYear','wakeBuyMonth','townSel','town1Name','town1Price','town1Tax','town1Ins','town1HOA','town1School','town2Name','town2Price','town2Tax','town2Ins','town2HOA','town2School','town3Name','town3Price','town3Tax','town3Ins','town3HOA','town3School','town4Name','town4Price','town4Tax','town4Ins','town4HOA','town4School','townRate','equity2033','pcs2EquityRoll','util1Loc','util1WS','util1Gas','util1Elec','util1HOA','util1Maint','util1Start','util1End','util3Loc','util3WS','util3Gas','util3Elec','util3HOA','util3Maint','util3Start','util3End','util2Loc','util2WS','util2Gas','util2Elec','util2HOA','util2Maint','util2Start','util2End','tspContribAD','tspStopYear','rothMe','rothMeStop','rothWife','rothWifeStop','gsTsp','gsTspStart','gsTspEnd','savBal','savMonthly','savAPY','savWithdraw','savWdYear','savWdEnd','savWithdraw2','savWdYear2','savWdEnd2','tspBal','tspRet','tspRoll','rothBalMe','rothBalWife','rothRet','tspWithdraw','tspWdYear','rothWithdraw','rothWdYear','rothWifeWithdraw','rothWifeWdYear','taxBal','taxMonthly','taxStart','taxStop','taxRet','taxWithdraw','taxWdYear','taxCapGains','cryptoBal','cryptoMonthly','cryptoStart','cryptoStop','cryptoRet','cryptoWithdraw','cryptoWdYear','cryptoCapGains','goldBal','goldMonthly','goldStart','goldStop','goldRet','goldWithdraw','goldWdYear','goldCapGains','useActuals','ret529','gibMonths','giTuition','giMHA','cc1Name','cc1Bal','cc1Pmt','cc1Rate','cc1Month','cc1Start','cc1End','cc2Name','cc2Bal','cc2Pmt','cc2Rate','cc2Month','cc2Start','cc2End','cc3Name','cc3Bal','cc3Pmt','cc3Rate','cc3Month','cc3Start','cc3End','car1Name','car1Bal','car1Pmt','car1Rate','car1Month','car1Start','car1End','car2Name','car2Bal','car2Pmt','car2Rate','car2Month','car2Start','car2End','loanName','loanBal','loanPmt','loanRate','loanMonth','loanStart','loanEnd'];
+const ALL_IDS=['currentYear','age','wifeAge','retireYear','retireMonth','netPay','payRaise','promoBump','promo1Bump','promo1Month','promo1Start','promo1End','promo2Bump','promo2Month','promo2Start','promo2End','bah1','bah1Month','bah1Start','bah1End','bah2','bah2Month','bah2Start','bah2End','bahRaise','bah1Raise','bah2Raise','retSystem','yos','yosMonths','high3Pay','retGross','pensionCOLA','fedTaxPct','optSBP','myWorkManual','gsGross','gsFedTax','gsStateTax','gsIncomeStart','gsIncomeEnd','wifeManual','wifeStartYear','wifeEndYear','vaDisability','ssMe','ssMeYear','ssWife','ssWifeYear','exp1Bills','exp1Disc','exp1Start','exp1End','exp2Bills','exp2Disc','exp2Start','exp2End','exp1Inflation','exp2Inflation','tricareMo','tricareStart','tricareEnd','medInsMo','medInsStart','medInsEnd','denInsMo','denInsStart','denInsEnd','jbBuyYear','jbBuyMonth','jbSellYear','homeCost','downPct','rate','term','propTax','jbIns','jbHOA','vaFee','pcs2BuyYear','pcs2BuyMonth','pcs2SellYear','pcs2Cost','pcs2DownPct','pcs2Rate','pcs2Term','pcs2PropTax','pcs2Ins','pcs2VaFee','wakeBuyYear','wakeBuyMonth','townSel','town1Name','town1Price','town1Tax','town1Ins','town1HOA','town1School','town2Name','town2Price','town2Tax','town2Ins','town2HOA','town2School','town3Name','town3Price','town3Tax','town3Ins','town3HOA','town3School','town4Name','town4Price','town4Tax','town4Ins','town4HOA','town4School','townRate','equity2033','pcs2EquityRoll','util1Loc','util1WS','util1Gas','util1Elec','util1HOA','util1Maint','util1Start','util1End','util3Loc','util3WS','util3Gas','util3Elec','util3HOA','util3Maint','util3Start','util3End','util2Loc','util2WS','util2Gas','util2Elec','util2HOA','util2Maint','util2Start','util2End','tspContribAD','tspStopYear','rothMe','rothMeStop','rothWife','rothWifeStop','gsTsp','gsTspStart','gsTspEnd','savBal','savMonthly','savAPY','savWithdraw','savWdYear','savWdEnd','savWithdraw2','savWdYear2','savWdEnd2','tspBal','tspRet','tspRoll','rothBalMe','rothBalWife','rothRet','tspWithdraw','tspWdYear','rothWithdraw','rothWdYear','rothWifeWithdraw','rothWifeWdYear','taxBal','taxMonthly','taxStart','taxStop','taxRet','taxWithdraw','taxWdYear','taxCapGains','cryptoBal','cryptoMonthly','cryptoStart','cryptoStop','cryptoRet','cryptoWithdraw','cryptoWdYear','cryptoCapGains','goldBal','goldMonthly','goldStart','goldStop','goldRet','goldWithdraw','goldWdYear','goldCapGains','useActuals','ret529','c1GibMonths','c1GiTuition','c2GibMonths','c2GiTuition','c3GibMonths','c3GiTuition','cc1Name','cc1Bal','cc1Pmt','cc1Rate','cc1Month','cc1Start','cc1End','cc2Name','cc2Bal','cc2Pmt','cc2Rate','cc2Month','cc2Start','cc2End','cc3Name','cc3Bal','cc3Pmt','cc3Rate','cc3Month','cc3Start','cc3End','car1Name','car1Bal','car1Pmt','car1Rate','car1Month','car1Start','car1End','car2Name','car2Bal','car2Pmt','car2Rate','car2Month','car2Start','car2End','loanName','loanBal','loanPmt','loanRate','loanMonth','loanStart','loanEnd'];
 ['c1','c2','c3'].forEach(c=>['privStart','privEnd','privTuition','privFees','bal','mo','stop','ugStart','ugEnd','ugTuition','ugRB','rbStart','rbEnd','scholUG','gStart','gEnd','gTuition','gRB','grbStart','grbEnd','scholGrad'].forEach(s=>ALL_IDS.push(c+s)));
 
 /* =======================================================
@@ -1411,7 +1403,7 @@ function autoLoad(){
     const data=JSON.parse(raw);
     ALL_IDS.forEach(id=>{const el=document.getElementById(id);if(!el||data[id]===undefined)return;if(el.type==='checkbox')el.checked=data[id];else el.value=data[id];});
     if(data.__actuals)Object.keys(data.__actuals).forEach(k=>{const el=document.getElementById(k);if(el)el.value=data.__actuals[k];});
-    if(data.__details){window._detailStates=data.__details;Object.keys(data.__details).forEach(k=>{const el=document.getElementById(k);if(el)el.open=data.__details[k];});}
+    if(data.__details){window._detailStates=data.__details;Object.keys(data.__details).forEach(k=>{if(k==='det_actuals')return;const el=document.getElementById(k);if(el)el.open=data.__details[k];});}
     return true;
   }catch(e){return false;}
 }
@@ -2076,8 +2068,7 @@ function showDashView(v){
 function buildEduGroup(){
   const ctx=window._ctx,v=ctx.v;let html='';
   const ret=v('ret529')/100,mr=Math.pow(1+ret,1/12)-1;
-  const gm=v('gibMonths'),giTuition=v('giTuition'),giMHA=v('giMHA');
-  const giTotalValue=(gm/9)*giTuition+gm*giMHA+(gm/9)*1000;
+  function giValue(prefix){const gm=v(prefix+'GibMonths'),giT=v(prefix+'GiTuition');return (gm/9)*giT+(gm/9)*1000;}
   function p529(bal,monthly,stopYear){let b=bal;const n=(stopYear-2026)*12+6;for(let i=0;i<n;i++)b=b*(1+mr)+monthly;return b;}
   const kids=[{id:'c1',name:'Child 1'},{id:'c2',name:'Child 2'},{id:'c3',name:'Child 3'}];
   const kidData={};
@@ -2108,8 +2099,9 @@ function buildEduGroup(){
     const f529=p529(bal,mo,stop);
     const ugY=Math.max(0,ugE-ugS+1),rbY=Math.max(0,rbE-rbS+1);
     const totT=ugT*ugY,totRB=ugRB*rbY,ugCost=totT+totRB;
+    const giTotalValue=giValue(k.id);
     const funding=f529+giTotalValue+scholUG,gap=Math.max(0,ugCost-funding);
-    kidData[k.id]={f529,ugS,ugE,ugY,ugT,ugRB,rbS,rbE,rbY,totT,totRB,ugCost,scholUG,scholGrad,funding};
+    kidData[k.id]={f529,ugS,ugE,ugY,ugT,ugRB,rbS,rbE,rbY,totT,totRB,ugCost,scholUG,scholGrad,funding,giTotalValue};
     html+=`<tr><td><b>${k.name}</b></td><td class="good">${fmt(f529)}</td><td>${fmt(giTotalValue)}</td><td>${fmt(scholUG)}</td><td>${fmt(scholGrad)}</td><td>${fmt(totT)}</td><td>${fmt(totRB)}</td><td>${fmt(ugCost)}</td><td class="${gap>0?'warn':'good'}">${gap>0?fmt(gap):'$0 ✅'}</td></tr>`;
   });
   html+='</table></div></details></div>';
@@ -2119,10 +2111,11 @@ function buildEduGroup(){
     const d=kidData[k.id];if(d.ugY<=0)return;
     html+=`<h3 style="margin-top:14px;">${k.name} — Undergrad ${d.ugS}–${d.ugE}</h3>`;
     html+='<div class="table-wrapper"><table><tr><th>Year</th><th>Tuition</th><th>Room/Board</th><th>Total Cost</th><th>GI Bill</th><th>529</th><th>Scholarship</th><th>Out of Pocket</th><th>529 Left</th></tr>';
-    let pool=d.f529,gM=gm,sL=d.scholUG;const sPer=d.ugY>0?d.scholUG/d.ugY:0;
+    const kidGM=v(k.id+'GibMonths'),kidGiT=v(k.id+'GiTuition');
+    let pool=d.f529,gM=kidGM,sL=d.scholUG;const sPer=d.ugY>0?d.scholUG/d.ugY:0;
     for(let y=d.ugS;y<=d.ugE;y++){
       const isRB=(y>=d.rbS&&y<=d.rbE);const costT=d.ugT;const costRB=isRB?d.ugRB:0;const cost=costT+costRB;
-      let giU=0,gmU=Math.min(9,gM);if(gmU>0){giU=Math.min(costT,giTuition)+Math.min(costRB,gmU*giMHA);gM-=gmU;}
+      let giU=0,gmU=Math.min(9,gM);if(gmU>0){giU=Math.min(costT,kidGiT);gM-=gmU;}
       let rem=Math.max(0,cost-giU);let sc=Math.min(sPer,rem,sL);sL-=sc;rem-=sc;let u=Math.min(pool,rem);pool-=u;rem-=u;const oop=rem;
       kidData[k.id].ugOOP=(kidData[k.id].ugOOP||0)+oop;
       let rc=y===ctx.curYear?' class="current-year-row"':'';
@@ -2174,7 +2167,7 @@ function buildEduGroup(){
    ======================================================= */
 function applyCurrencyStyles(){
   document.querySelectorAll('input[type="number"]').forEach(el=>{
-    const skip=['age','year','month','pct','raise','ret','growth','inflation','rate','term','gibmonths','start','end','cola','fedtax','statetax','vafee','tsproll','apy','yos','school','townsel'];
+    const skip=['age','year','month','pct','raise','ret','growth','inflation','rate','term','gibmonths','start','end','cola','fedtax','statetax','vafee','tsproll','apy','yos','school','townsel','capgains'];
     if(skip.some(s=>el.id.toLowerCase().includes(s)))return;
     if(el.parentNode.classList.contains('curr-wrap'))return;
     const w=document.createElement('span');w.className='curr-wrap';el.parentNode.insertBefore(w,el);w.appendChild(el);
