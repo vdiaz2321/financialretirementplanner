@@ -75,29 +75,29 @@
 }
 
 [data-theme="dark"] {
-  --bg:          #0f172a;
-  --surface:     #1e293b;
-  --surface-2:   #152030;
-  --surface-3:   #1a2d42;
-  --border:      #2d3f55;
-  --border-md:   #3d5068;
+  --bg:          #16171a;
+  --surface:     #1e1f23;
+  --surface-2:   #1a1b1e;
+  --surface-3:   #24252a;
+  --border:      #34363c;
+  --border-md:   #45474f;
 
-  --text:        #e2e8f0;
-  --text-2:      #94a3b8;
-  --text-3:      #5a7080;
+  --text:        #e6e6e8;
+  --text-2:      #a0a2a8;
+  --text-3:      #70737a;
 
-  --sb-bg:       #1a2638;
-  --sb-border:   #2d3f55;
-  --sb-link:     #c0d0e0;
+  --sb-bg:       #1a1b1e;
+  --sb-border:   #34363c;
+  --sb-link:     #c8cad0;
   --sb-hover:    rgba(74,114,168,.18);
   --sb-active:   rgba(74,114,168,.25);
   --sb-active-t: #93bce7;
 
   --bar-bg:      #1e4d42;
 
-  --in-bg:       #152030;
-  --in-text:     #dde6f0;
-  --in-border:   #3d5068;
+  --in-bg:       #1a1b1e;
+  --in-text:     #e0e2e6;
+  --in-border:   #45474f;
   --in-focus:    #6090c8;
   --in-shadow:   rgba(96,144,200,.2);
 
@@ -898,21 +898,9 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <b style="color:var(--text);">Retirement Home</b>
           <label>Purchase Year</label><input type="number" id="wakeBuyYear" value="2034">
           <label>Purchase Month (1-12)</label><input type="number" id="wakeBuyMonth" value="1">
-          <label>Select Town</label>
-          <select id="town" onchange="loadTown()">
-            <option value="apex">Apex — Premium</option>
-            <option value="cary">Cary — Premium</option>
-            <option value="hollysprings" selected>Holly Springs — Value</option>
-            <option value="fuquay">Fuquay-Varina — Best value</option>
-            <option value="custom">Custom</option>
-          </select>
-          <label>Retirement Home Cost</label><input type="number" id="townPrice" value="">
-          <label>Property Tax (annual)</label><input type="number" id="townTax" value="">
-          <label>Insurance (annual)</label><input type="number" id="townIns" value="">
           <label>Retirement Loan Rate %</label><input type="number" id="townRate" value="6.0" step="0.01">
           <label>PCS #1 Equity Rollover (Down Pmt)</label><input type="number" id="equity2033" value="">
           <label>PCS #2 Equity Rollover (Down Pmt)</label><input type="number" id="pcs2EquityRoll" value="">
-          <div class="townbox" id="townInfo"></div>
         </div>
         <div style="border-left:3px solid var(--blue);padding-left:12px;">
           <b style="color:var(--text);">⚡ Retirement Utilities &amp; Upkeep</b>
@@ -926,6 +914,57 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>END Year</label><input type="number" id="util2End" value="2060">
         </div>
         <div></div>
+      </div>
+
+      <div style="margin-top:16px;padding:12px;border:1px solid var(--border);border-radius:6px;">
+        <b style="color:var(--text);font-size:15px;">🏘️ Compare Up to 4 Towns/Cities</b>
+        <p style="font-size:12px;color:var(--text-3);margin:4px 0 10px;">Enter towns you're considering. Select <b>"Use for mortgage"</b> for the one that drives Section 3's projections. Blank rows are hidden from Table 3. Look up home prices on Zillow and school ratings on GreatSchools.org.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="padding:10px;border:1px solid var(--border);border-radius:6px;">
+            <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel1" value="1" checked onchange="runModel()" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel1" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 1 — Use for mortgage</label></div>
+            <p style="font-size:11px;color:var(--text-3);margin:0 0 8px;padding-left:22px;">Fill in the fields below for this town. Click the bubble on your top choice — it will automatically adjust Home/mo expenses in Section 1 and Section 3's Cash Flow.</p>
+            <label>Town/City Name</label><input type="text" id="town1Name" value="" placeholder="e.g. Holly Springs, NC" onchange="runModel()">
+            <label>Home Price</label><input type="number" id="town1Price" value="" onchange="runModel()">
+            <label>Property Tax /yr</label><input type="number" id="town1Tax" value="" onchange="runModel()">
+            <label>Insurance /yr</label><input type="number" id="town1Ins" value="" onchange="runModel()">
+            <label>HOA /mo</label><input type="number" id="town1HOA" value="" onchange="runModel()">
+            <label>School Rating (1-10)</label><input type="number" id="town1School" value="" min="1" max="10" step="0.1" onchange="runModel()">
+          </div>
+
+          <div style="padding:10px;border:1px solid var(--border);border-radius:6px;">
+            <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel2" value="2" onchange="runModel()" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel2" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 2 — Use for mortgage</label></div>
+            <p style="font-size:11px;color:var(--text-3);margin:0 0 8px;padding-left:22px;">Fill in the fields below for this town. Click the bubble on your top choice — it will automatically adjust Home/mo expenses in Section 1 and Section 3's Cash Flow.</p>
+            <label>Town/City Name</label><input type="text" id="town2Name" value="" placeholder="e.g. Apex, NC" onchange="runModel()">
+            <label>Home Price</label><input type="number" id="town2Price" value="" onchange="runModel()">
+            <label>Property Tax /yr</label><input type="number" id="town2Tax" value="" onchange="runModel()">
+            <label>Insurance /yr</label><input type="number" id="town2Ins" value="" onchange="runModel()">
+            <label>HOA /mo</label><input type="number" id="town2HOA" value="" onchange="runModel()">
+            <label>School Rating (1-10)</label><input type="number" id="town2School" value="" min="1" max="10" step="0.1" onchange="runModel()">
+          </div>
+
+          <div style="padding:10px;border:1px solid var(--border);border-radius:6px;">
+            <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel3" value="3" onchange="runModel()" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel3" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 3 — Use for mortgage</label></div>
+            <p style="font-size:11px;color:var(--text-3);margin:0 0 8px;padding-left:22px;">Fill in the fields below for this town. Click the bubble on your top choice — it will automatically adjust Home/mo expenses in Section 1 and Section 3's Cash Flow.</p>
+            <label>Town/City Name</label><input type="text" id="town3Name" value="" placeholder="e.g. Cary, NC" onchange="runModel()">
+            <label>Home Price</label><input type="number" id="town3Price" value="" onchange="runModel()">
+            <label>Property Tax /yr</label><input type="number" id="town3Tax" value="" onchange="runModel()">
+            <label>Insurance /yr</label><input type="number" id="town3Ins" value="" onchange="runModel()">
+            <label>HOA /mo</label><input type="number" id="town3HOA" value="" onchange="runModel()">
+            <label>School Rating (1-10)</label><input type="number" id="town3School" value="" min="1" max="10" step="0.1" onchange="runModel()">
+          </div>
+
+          <div style="padding:10px;border:1px solid var(--border);border-radius:6px;">
+            <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel4" value="4" onchange="runModel()" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel4" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 4 — Use for mortgage</label></div>
+            <p style="font-size:11px;color:var(--text-3);margin:0 0 8px;padding-left:22px;">Fill in the fields below for this town. Click the bubble on your top choice — it will automatically adjust Home/mo expenses in Section 1 and Section 3's Cash Flow.</p>
+            <label>Town/City Name</label><input type="text" id="town4Name" value="" placeholder="e.g. Fuquay-Varina, NC" onchange="runModel()">
+            <label>Home Price</label><input type="number" id="town4Price" value="" onchange="runModel()">
+            <label>Property Tax /yr</label><input type="number" id="town4Tax" value="" onchange="runModel()">
+            <label>Insurance /yr</label><input type="number" id="town4Ins" value="" onchange="runModel()">
+            <label>HOA /mo</label><input type="number" id="town4HOA" value="" onchange="runModel()">
+            <label>School Rating (1-10)</label><input type="number" id="town4School" value="" min="1" max="10" step="0.1" onchange="runModel()">
+          </div>
+        </div>
       </div>
     </details>
   </div>
@@ -1309,12 +1348,6 @@ function chartTheme() {
 /* =======================================================
    CONSTANTS & CONFIG
    ======================================================= */
-const TOWNS = {
-  apex:        {name:'Apex',          price:575000, taxAnnual:4945, ins:2500, hoa:700, note:'#1 NC suburb. Apex/Green Hope HS (9-10/10). Priciest.'},
-  cary:        {name:'Cary',          price:600000, taxAnnual:5160, ins:2600, hoa:800, note:'Closest to RTP. Green Hope/Panther Creek HS (9-10/10).'},
-  hollysprings:{name:'Holly Springs', price:495000, taxAnnual:4257, ins:2400, hoa:600, note:'Best balance. Holly Springs HS (8-9/10). ~$80K cheaper.'},
-  fuquay:      {name:'Fuquay-Varina', price:455000, taxAnnual:3913, ins:2300, hoa:500, note:'Best value. Fuquay-Varina HS (7-8/10). ~$120K cheaper.'}
-};
 const Y0=2026, YEND=2060;
 let showWife=true;
 const ACCTS=['Tsp','RothMe','RothWife','Tax','Sav','Crypto','Gold'];
@@ -1326,7 +1359,7 @@ const RMD_DIVISORS = {
   97:7.8,98:7.3,99:6.8,100:6.4
 };
 
-const ALL_IDS=['currentYear','age','wifeAge','retireYear','retireMonth','netPay','payRaise','promoBump','promo1Bump','promo1Month','promo1Start','promo1End','promo2Bump','promo2Month','promo2Start','promo2End','bah1','bah1Month','bah1Start','bah1End','bah2','bah2Month','bah2Start','bah2End','bahRaise','bah1Raise','bah2Raise','retSystem','yos','yosMonths','high3Pay','retGross','pensionCOLA','fedTaxPct','optSBP','myWorkManual','gsGross','gsFedTax','gsStateTax','gsIncomeStart','gsIncomeEnd','wifeManual','wifeStartYear','wifeEndYear','vaDisability','ssMe','ssMeYear','ssWife','ssWifeYear','exp1Bills','exp1Disc','exp1Start','exp1End','exp2Bills','exp2Disc','exp2Start','exp2End','exp1Inflation','exp2Inflation','tricareMo','tricareStart','tricareEnd','medInsMo','medInsStart','medInsEnd','denInsMo','denInsStart','denInsEnd','jbBuyYear','jbBuyMonth','jbSellYear','homeCost','downPct','rate','term','propTax','jbIns','jbHOA','vaFee','pcs2BuyYear','pcs2BuyMonth','pcs2SellYear','pcs2Cost','pcs2DownPct','pcs2Rate','pcs2Term','pcs2PropTax','pcs2Ins','pcs2VaFee','wakeBuyYear','wakeBuyMonth','town','townPrice','townTax','townIns','townHOA','townRate','equity2033','pcs2EquityRoll','util1Loc','util1WS','util1Gas','util1Elec','util1HOA','util1Maint','util1Start','util1End','util3Loc','util3WS','util3Gas','util3Elec','util3HOA','util3Maint','util3Start','util3End','util2Loc','util2WS','util2Gas','util2Elec','util2HOA','util2Maint','util2Start','util2End','tspContribAD','tspStopYear','rothMe','rothMeStop','rothWife','rothWifeStop','gsTsp','gsTspStart','gsTspEnd','savBal','savMonthly','savAPY','savWithdraw','savWdYear','savWdEnd','savWithdraw2','savWdYear2','savWdEnd2','tspBal','tspRet','tspRoll','rothBalMe','rothBalWife','rothRet','tspWithdraw','tspWdYear','rothWithdraw','rothWdYear','rothWifeWithdraw','rothWifeWdYear','taxBal','taxMonthly','taxStart','taxStop','taxRet','taxWithdraw','taxWdYear','taxCapGains','cryptoBal','cryptoMonthly','cryptoStart','cryptoStop','cryptoRet','cryptoWithdraw','cryptoWdYear','cryptoCapGains','goldBal','goldMonthly','goldStart','goldStop','goldRet','goldWithdraw','goldWdYear','goldCapGains','useActuals','ret529','gibMonths','giTuition','giMHA','cc1Name','cc1Bal','cc1Pmt','cc1Rate','cc1Month','cc1Start','cc1End','cc2Name','cc2Bal','cc2Pmt','cc2Rate','cc2Month','cc2Start','cc2End','cc3Name','cc3Bal','cc3Pmt','cc3Rate','cc3Month','cc3Start','cc3End','car1Name','car1Bal','car1Pmt','car1Rate','car1Month','car1Start','car1End','car2Name','car2Bal','car2Pmt','car2Rate','car2Month','car2Start','car2End','loanName','loanBal','loanPmt','loanRate','loanMonth','loanStart','loanEnd'];
+const ALL_IDS=['currentYear','age','wifeAge','retireYear','retireMonth','netPay','payRaise','promoBump','promo1Bump','promo1Month','promo1Start','promo1End','promo2Bump','promo2Month','promo2Start','promo2End','bah1','bah1Month','bah1Start','bah1End','bah2','bah2Month','bah2Start','bah2End','bahRaise','bah1Raise','bah2Raise','retSystem','yos','yosMonths','high3Pay','retGross','pensionCOLA','fedTaxPct','optSBP','myWorkManual','gsGross','gsFedTax','gsStateTax','gsIncomeStart','gsIncomeEnd','wifeManual','wifeStartYear','wifeEndYear','vaDisability','ssMe','ssMeYear','ssWife','ssWifeYear','exp1Bills','exp1Disc','exp1Start','exp1End','exp2Bills','exp2Disc','exp2Start','exp2End','exp1Inflation','exp2Inflation','tricareMo','tricareStart','tricareEnd','medInsMo','medInsStart','medInsEnd','denInsMo','denInsStart','denInsEnd','jbBuyYear','jbBuyMonth','jbSellYear','homeCost','downPct','rate','term','propTax','jbIns','jbHOA','vaFee','pcs2BuyYear','pcs2BuyMonth','pcs2SellYear','pcs2Cost','pcs2DownPct','pcs2Rate','pcs2Term','pcs2PropTax','pcs2Ins','pcs2VaFee','wakeBuyYear','wakeBuyMonth','townSel','town1Name','town1Price','town1Tax','town1Ins','town1HOA','town1School','town2Name','town2Price','town2Tax','town2Ins','town2HOA','town2School','town3Name','town3Price','town3Tax','town3Ins','town3HOA','town3School','town4Name','town4Price','town4Tax','town4Ins','town4HOA','town4School','townRate','equity2033','pcs2EquityRoll','util1Loc','util1WS','util1Gas','util1Elec','util1HOA','util1Maint','util1Start','util1End','util3Loc','util3WS','util3Gas','util3Elec','util3HOA','util3Maint','util3Start','util3End','util2Loc','util2WS','util2Gas','util2Elec','util2HOA','util2Maint','util2Start','util2End','tspContribAD','tspStopYear','rothMe','rothMeStop','rothWife','rothWifeStop','gsTsp','gsTspStart','gsTspEnd','savBal','savMonthly','savAPY','savWithdraw','savWdYear','savWdEnd','savWithdraw2','savWdYear2','savWdEnd2','tspBal','tspRet','tspRoll','rothBalMe','rothBalWife','rothRet','tspWithdraw','tspWdYear','rothWithdraw','rothWdYear','rothWifeWithdraw','rothWifeWdYear','taxBal','taxMonthly','taxStart','taxStop','taxRet','taxWithdraw','taxWdYear','taxCapGains','cryptoBal','cryptoMonthly','cryptoStart','cryptoStop','cryptoRet','cryptoWithdraw','cryptoWdYear','cryptoCapGains','goldBal','goldMonthly','goldStart','goldStop','goldRet','goldWithdraw','goldWdYear','goldCapGains','useActuals','ret529','gibMonths','giTuition','giMHA','cc1Name','cc1Bal','cc1Pmt','cc1Rate','cc1Month','cc1Start','cc1End','cc2Name','cc2Bal','cc2Pmt','cc2Rate','cc2Month','cc2Start','cc2End','cc3Name','cc3Bal','cc3Pmt','cc3Rate','cc3Month','cc3Start','cc3End','car1Name','car1Bal','car1Pmt','car1Rate','car1Month','car1Start','car1End','car2Name','car2Bal','car2Pmt','car2Rate','car2Month','car2Start','car2End','loanName','loanBal','loanPmt','loanRate','loanMonth','loanStart','loanEnd'];
 ['c1','c2','c3'].forEach(c=>['privStart','privEnd','privTuition','privFees','bal','mo','stop','ugStart','ugEnd','ugTuition','ugRB','rbStart','rbEnd','scholUG','gStart','gEnd','gTuition','gRB','grbStart','grbEnd','scholGrad'].forEach(s=>ALL_IDS.push(c+s)));
 
 /* =======================================================
@@ -1334,15 +1367,9 @@ const ALL_IDS=['currentYear','age','wifeAge','retireYear','retireMonth','netPay'
    ======================================================= */
 function fmt(n){return (n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString();}
 function pmt(rate,nper,pv){if(pv<=0||nper<=0)return 0;const r=rate/12/100;if(r===0)return pv/nper;return (pv*r)/(1-Math.pow(1+r,-nper));}
-function loadTown(){
-  const t=document.getElementById('town').value;
-  if(t==='custom'){document.getElementById('townInfo').innerHTML='<b>Custom:</b> enter your own figures.';return;}
-  const d=TOWNS[t];
-  document.getElementById('townPrice').value=d.price;
-  document.getElementById('townTax').value=d.taxAnnual;
-  document.getElementById('townIns').value=d.ins;
-  document.getElementById('townInfo').innerHTML=`<b>${d.name}</b><br>🏫 ${d.note}`;
-  autoSave();
+function getSelectedTownNum(){
+  const r=document.querySelector('input[name="townSel"]:checked');
+  return r?r.value:'1';
 }
 function showTab(n){
   [1,'H',2,3,5].forEach(i=>{
@@ -1399,7 +1426,7 @@ function downloadBackup(){
 function uploadBackup(ev){
   const file=ev.target.files[0];if(!file)return;
   const r=new FileReader();
-  r.onload=function(e){try{localStorage.setItem('frp_v80',e.target.result);autoLoad();loadTown();runModel();alert('📂 Backup restored!');}catch(err){alert('Invalid backup file.');}};
+  r.onload=function(e){try{localStorage.setItem('frp_v80',e.target.result);autoLoad();runModel();alert('📂 Backup restored!');}catch(err){alert('Invalid backup file.');}};
   r.readAsText(file);
 }
 function clearData(){
@@ -1491,14 +1518,14 @@ function runModel(){
   const netTspForDown=tspAtRetire*tspRoll*0.68;
   const totalDown=v('equity2033')+v('pcs2EquityRoll')+netTspForDown;
 
-  const selTownKey=txt('town');
-  const townPrice=v('townPrice'),townTax=v('townTax'),townIns=v('townIns'),townRate=v('townRate');
+  const selTownNum=getSelectedTownNum();
+  const townPrice=v('town'+selTownNum+'Price'),townTax=v('town'+selTownNum+'Tax'),townIns=v('town'+selTownNum+'Ins'),townHOA=v('town'+selTownNum+'HOA'),townRate=v('townRate');
   const townLoan=Math.max(0,townPrice-totalDown);
   const townPI=pmt(townRate,360,townLoan);
 
   const jbExpenses=v('propTax')/12+v('jbIns')/12+v('util1HOA');
   const pcs2Expenses=v('pcs2PropTax')/12+v('pcs2Ins')/12+v('util3HOA');
-  const townExpenses=townTax/12+townIns/12+v('util2HOA');
+  const townExpenses=townTax/12+townIns/12+townHOA;
   const jbHomeMonthly=jbPI+jbExpenses;
   const pcs2HomeMonthly=pcs2PI+pcs2Expenses;
   const townHomeMonthly=townPI+townExpenses;
@@ -1705,7 +1732,7 @@ function runModel(){
     card('Age '+myAge(2040)+' (2040)',nw(2040))+
     card('Age '+myAge(2060)+' (2060)',nw(2060));
 
-  window._cf={incomeParts,expensesMonthly,investMonthly,homeForYear,homeExpenseForYear,homePIForYear,utilForYear,bahForYear,debtPaymentMonthly,myAge,wAge,locked,jbHomeMonthly,pcs2HomeMonthly,townHomeMonthly,selTownKey,TOWNS,jbBuy,jbSell,wakeBuy,retireYr,util1Loc:txt('util1Loc'),util2Loc:txt('util2Loc'),util3Loc:txt('util3Loc'),totalDown,townPI,townRate,wifeStart,wifeEnd,wifeIncome,retGross,payRaise,pensionCOLA,fedTax,vaDis,myWork,gsGross,gsFedTax,gsStateTax,gsIncomeStart,gsIncomeEnd,townExpenses,netTspForDown,optSBP,sbpAnnual,nw};
+  window._cf={incomeParts,expensesMonthly,investMonthly,homeForYear,homeExpenseForYear,homePIForYear,utilForYear,bahForYear,debtPaymentMonthly,myAge,wAge,locked,jbHomeMonthly,pcs2HomeMonthly,townHomeMonthly,selTownNum,jbBuy,jbSell,wakeBuy,retireYr,util1Loc:txt('util1Loc'),util2Loc:txt('util2Loc'),util3Loc:txt('util3Loc'),totalDown,townPI,townRate,wifeStart,wifeEnd,wifeIncome,retGross,payRaise,pensionCOLA,fedTax,vaDis,myWork,gsGross,gsFedTax,gsStateTax,gsIncomeStart,gsIncomeEnd,townExpenses,netTspForDown,optSBP,sbpAnnual,nw};
   window._ctx={v,curYear,myAge,wAge,jbSell,proj,actual,actPct,capPaid,projWd,locked,projRet,useActuals,retireYr,accCashFlow};
 
   (function(){
@@ -1763,7 +1790,7 @@ function buildCashGroup(){
   const pcs2Buy=v('pcs2BuyYear'),pcs2Sell=v('pcs2SellYear');
   const homeCost=v('homeCost'),jbDown=homeCost*v('downPct')/100,jbVaFee=(homeCost-jbDown)*v('vaFee')/100,jbLoan=(homeCost-jbDown)+jbVaFee,jbPI=pmt(v('rate'),v('term')*12,jbLoan);
   const pcs2Cost=v('pcs2Cost'),pcs2Down=pcs2Cost*v('pcs2DownPct')/100,pcs2VaFee=(pcs2Cost-pcs2Down)*v('pcs2VaFee')/100,pcs2Loan=(pcs2Cost-pcs2Down)+pcs2VaFee,pcs2PI=pmt(v('pcs2Rate'),v('pcs2Term')*12,pcs2Loan);
-  const townLoan=Math.max(0,v('townPrice')-c.totalDown),townPI=c.townPI;
+  const townLoan=Math.max(0,v('town'+c.selTownNum+'Price')-c.totalDown),townPI=c.townPI;
   let housingRows='';
   if(jbBuy>0)housingRows+=`<tr><td>PCS #1 Mortgage</td><td>${fmt(jbLoan)}</td><td>${fmt(jbPI)}</td><td>${v('rate')}%</td><td>${jbBuy}–${jbSell>0?jbSell:'—'}</td><td>Mortgage</td></tr>`;
   if(pcs2Buy>0)housingRows+=`<tr><td>PCS #2 Mortgage</td><td>${fmt(pcs2Loan)}</td><td>${fmt(pcs2PI)}</td><td>${v('pcs2Rate')}%</td><td>${pcs2Buy}–${pcs2Sell>0?pcs2Sell:'—'}</td><td>Mortgage</td></tr>`;
@@ -1795,17 +1822,19 @@ function buildCashGroup(){
   const retNet=((retGross-sbpAnnComp)/12)*Math.pow(1+pensionCOLA,1)*(1-fedTax)+vaDis+myWork+gsNetComp;
   const baseOut=c.expensesMonthly(wakeBuy2,true)+c.investMonthly(wakeBuy2)+c.debtPaymentMonthly(wakeBuy2)+c.utilForYear(wakeBuy2);
 
-  html+=`<div class="panel"><details id="det_towns" ${getOpen('det_towns')}><summary><h2>3. Wake County Town Comparison</h2></summary>`;
-  html+=`<p style="font-size:12.5px;color:var(--text-2);"><em>Down payment = FB equity + net TSP roll = <b>${fmt(totalDown)}</b>. "Total Housing/mo" = P+I + Home Expenses. "Monthly Surplus" = income − housing − utilities − all expenses/contributions/debt.</em></p>`;
-  html+='<div class="table-wrapper"><table><tr><th>Town</th><th>Price</th><th>Loan</th><th>P+I /mo</th><th>Home Exp /mo</th><th>Total Housing /mo</th><th>Surplus (w/ Spouse)</th><th>Surplus (Solo)</th><th>Verdict</th></tr>';
-  const tl=c.selTownKey==='custom'?[{key:'custom',name:'Custom',price:v('townPrice'),taxAnnual:v('townTax'),ins:v('townIns'),hoa:v('townHOA')}]:Object.keys(c.TOWNS).map(k=>({key:k,...c.TOWNS[k]}));
+  html+=`<div class="panel"><details id="det_towns" ${getOpen('det_towns')}><summary><h2>3. Town Comparison</h2></summary>`;
+  html+=`<p style="font-size:12.5px;color:var(--text-2);"><em>Down payment = FB equity + net TSP roll = <b>${fmt(totalDown)}</b>. "Total Housing/mo" = P+I + Home Expenses. "Monthly Surplus" = income − housing − utilities − all expenses/contributions/debt. Selected town (for mortgage) is highlighted.</em></p>`;
+  html+='<div class="table-wrapper"><table><tr><th>Town</th><th>School</th><th>Price</th><th>Loan</th><th>P+I /mo</th><th>Home Exp /mo</th><th>Total Housing /mo</th><th>Surplus (w/ Spouse)</th><th>Surplus (Solo)</th><th>Verdict</th></tr>';
+  const tl=[1,2,3,4].map(n=>{const nameEl=document.getElementById('town'+n+'Name');return {key:String(n),name:(nameEl?nameEl.value:'')||'',price:v('town'+n+'Price'),taxAnnual:v('town'+n+'Tax'),ins:v('town'+n+'Ins'),hoa:v('town'+n+'HOA'),school:v('town'+n+'School')};}).filter(t=>t.name||t.price>0);
+  if(tl.length===0){html+='<tr><td colspan="10" style="text-align:center;color:var(--text-3);padding:16px;"><em>Enter at least one town in Housing &amp; Real Estate → Retirement Home to see the comparison.</em></td></tr>';}
   tl.forEach(t=>{
     const L=Math.max(0,t.price-totalDown);const P=pmt(c.townRate,360,L);
-    const homeExp=t.taxAnnual/12+t.ins/12+t.hoa/12;const H=P+homeExp;
+    const homeExp=t.taxAnnual/12+t.ins/12+t.hoa;const H=P+homeExp;
     const wI=(wakeBuy2>=wifeStart&&wakeBuy2<=wifeEnd)?wifeIncome:0;
     const dW=retNet+wI-H-baseOut,dN=retNet-H-baseOut;
     let vd,vc='';if(dN>800){vd='✅ Solo OK';vc='good';}else if(dW>800){vd='⚠️ Needs income';}else{vd='❌ Tight';vc='warn';}
-    html+=`<tr class="${t.key===c.selTownKey?'best':''}"><td><b>${t.name}</b></td><td>${fmt(t.price)}</td><td>${fmt(L)}</td><td>${fmt(P)}</td><td>${fmt(homeExp)}</td><td>${fmt(H)}</td><td class="${dW<0?'warn':'good'}">${fmt(dW)}</td><td class="${dN<0?'warn':''}">${fmt(dN)}</td><td class="${vc}">${vd}</td></tr>`;
+    const schoolDisp=t.school>0?t.school+' / 10':'—';
+    html+=`<tr class="${t.key===c.selTownNum?'best':''}"><td><b>${t.name||'(unnamed)'}</b></td><td>${schoolDisp}</td><td>${fmt(t.price)}</td><td>${fmt(L)}</td><td>${fmt(P)}</td><td>${fmt(homeExp)}</td><td>${fmt(H)}</td><td class="${dW<0?'warn':'good'}">${fmt(dW)}</td><td class="${dN<0?'warn':''}">${fmt(dN)}</td><td class="${vc}">${vd}</td></tr>`;
   });
   html+='</table></div></details></div>';
   document.getElementById('grp_cash').innerHTML=html;
@@ -1816,7 +1845,7 @@ function buildCashGroup(){
 function renderCashFlow(){
   const c=window._cf,ctx=window._ctx,v=ctx.v;if(!c)return;
   const {incomeParts,expensesMonthly,investMonthly,homeForYear,utilForYear,bahForYear,debtPaymentMonthly,myAge,wAge,locked}=c;
-  const townName=c.selTownKey==='custom'?'Custom':(c.TOWNS[c.selTownKey]?c.TOWNS[c.selTownKey].name:'Custom');
+  const townName=(document.getElementById('town'+c.selTownNum+'Name')||{}).value||('Town '+c.selTownNum);
   let h=`<p style="font-size:12px;color:var(--text-2);padding:8px 8px 0;"><em>Home auto-switches: PCS#1 (${c.jbBuy>0?c.jbBuy:'—'}) → ${townName} (${c.wakeBuy}+). ${showWife?'<b>WITH spouse income.</b>':'<b>WITHOUT spouse income.</b>'}</em></p>`;
   h+='<table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Status</th><th>My Net/mo</th><th>Spouse/mo</th><th>Combined/mo</th><th>BAH/mo</th><th>SBP/mo</th><th>Home/mo</th><th>Utils/mo</th><th>Debt/mo</th><th>Exp/mo</th><th>Invest/mo</th><th>Surplus/mo</th><th>Annual</th><th>Projected Net Worth</th></tr>';
   let total=0;
@@ -2145,7 +2174,7 @@ function buildEduGroup(){
    ======================================================= */
 function applyCurrencyStyles(){
   document.querySelectorAll('input[type="number"]').forEach(el=>{
-    const skip=['age','year','month','pct','raise','ret','growth','inflation','rate','term','gibmonths','start','end','cola','fedtax','statetax','vafee','tsproll','apy','yos'];
+    const skip=['age','year','month','pct','raise','ret','growth','inflation','rate','term','gibmonths','start','end','cola','fedtax','statetax','vafee','tsproll','apy','yos','school','townsel'];
     if(skip.some(s=>el.id.toLowerCase().includes(s)))return;
     if(el.parentNode.classList.contains('curr-wrap'))return;
     const w=document.createElement('span');w.className='curr-wrap';el.parentNode.insertBefore(w,el);w.appendChild(el);
@@ -2185,7 +2214,7 @@ window.onload=function(){
 
   fillYears();
   applyCurrencyStyles();
-  if(!autoLoad()){loadTown();}
+  autoLoad();
   // Restore sidebar collapsed state
   if (localStorage.getItem('frp_sidebar') === '1') {
     const sb  = document.querySelector('.sidebar');
