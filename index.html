@@ -641,6 +641,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
   <a class="sidebar-link" id="sl-2" onclick="sideNav('input','2')" title="Investments">📈<span class="sb-link-text"> Investments</span></a>
   <a class="sidebar-link" id="sl-3" onclick="sideNav('input','3')" title="Education">🎓<span class="sb-link-text"> Education</span></a>
   <a class="sidebar-link" id="sl-5" onclick="sideNav('input','5')" title="Debt">💳<span class="sb-link-text"> Debt</span></a>
+  <a class="sidebar-link" id="sl-P" onclick="sideNav('input','P')" title="Probate Log">📒<span class="sb-link-text"> Probate Log</span></a>
 
   <div class="sidebar-divider"></div>
   <div class="sidebar-label">Results</div>
@@ -678,13 +679,17 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
 
 <!-- ===== DASHBOARD ===== -->
 <div class="panel">
-  <h2 style="margin-top:0;border-left:5px solid var(--gold);padding-left:12px;">📊 Net Worth Dashboard</h2>
+  <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+    <h2 style="margin-top:0;border-left:5px solid var(--gold);padding-left:12px;white-space:nowrap;">📊 Net Worth Dashboard</h2>
+    <div id="nw-mini-cards" style="display:none;gap:8px;flex-wrap:wrap;flex:1;justify-content:flex-end;"></div>
+  </div>
   <div class="view-toggle" style="margin-top:12px;">
     <button class="view-btn active" onclick="showDashView('cards')">🃏 Cards</button>
     <button class="view-btn"        onclick="showDashView('chart')">📊 Chart</button>
   </div>
   <div class="dash" id="dashboard"><em style="color:var(--text-3);">Click "Run Projections" to see results.</em></div>
   <div class="chart-wrap" id="nw-chart-wrap" style="display:none"><canvas id="chart-nw"></canvas></div>
+  <div id="nw-account-legend" style="display:none;padding:8px 12px;margin-top:6px;"></div>
   <details style="margin-top:10px;">
     <summary style="font-size:12px;color:var(--blue);cursor:pointer;font-weight:600;">💡 How are these numbers calculated?</summary>
     <div class="note" style="margin-top:6px;">💡 <b>Liquid Cash</b> = Savings + Taxable Brokerage + Gold/Silver + <b>Accumulated Cash Flow (AccCF)</b>. AccCF is the running total of all annual surpluses/deficits since 2027 — positive means extra undeployed cash; negative means you've spent more than earned. Net Worth excludes Retirement accounts (early-withdrawal penalties) in the "Excl. Home" figure.</div>
@@ -708,6 +713,21 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>Retirement Start Month</label><input type="number" id="retireMonth" value="11">
         <label>Retirement Start Year</label><input type="number" id="retireYear" value="2033">
       </details>
+      <details class="schoolblock inline-summary" open id="det_main_income" style="border-left:4px solid var(--green);">
+        <summary><h3>💰 Income &amp; Pay</h3></summary>
+        <label>Net Monthly Pay</label><input type="number" id="netPay" value="">
+        <label>Annual Pay Raise %</label><input type="number" id="payRaise" value="2.3" step="0.1">
+        <div class="subsection-divider"></div>
+        <label>Future Promotion #1 Net Increase /mo</label><input type="number" id="promo1Bump" value="">
+        <label>Promo #1 Start Month</label><input type="number" id="promo1Month" value="10">
+        <label>Promo #1 Start Year</label><input type="number" id="promo1Start" value="2030">
+        <label>Promo #1 End Year</label><input type="number" id="promo1End" value="2033">
+        <div class="subsection-divider"></div>
+        <label>Future Promotion #2 Net Increase /mo</label><input type="number" id="promo2Bump" value="">
+        <label>Promo #2 Start Month</label><input type="number" id="promo2Month" value="1">
+        <label>Promo #2 Start Year</label><input type="number" id="promo2Start" value="0">
+        <label>Promo #2 End Year</label><input type="number" id="promo2End" value="0">
+      </details>
       <details class="schoolblock inline-summary" open id="det_main_mil" style="border-left:4px solid var(--red);">
         <summary><h3>🪖 Military Retirement</h3></summary>
         <label>Retirement System</label>
@@ -729,21 +749,6 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <option value="yes">Yes</option>
           <option value="no">No</option>
         </select>
-      </details>
-      <details class="schoolblock inline-summary" open id="det_main_income" style="border-left:4px solid var(--green);">
-        <summary><h3>💰 Income &amp; Pay</h3></summary>
-        <label>Net Monthly Pay</label><input type="number" id="netPay" value="">
-        <label>Annual Pay Raise %</label><input type="number" id="payRaise" value="2.3" step="0.1">
-        <div class="subsection-divider"></div>
-        <label>Future Promotion #1 Net Increase /mo</label><input type="number" id="promo1Bump" value="">
-        <label>Promo #1 Start Month</label><input type="number" id="promo1Month" value="10">
-        <label>Promo #1 Start Year</label><input type="number" id="promo1Start" value="2030">
-        <label>Promo #1 End Year</label><input type="number" id="promo1End" value="2033">
-        <div class="subsection-divider"></div>
-        <label>Future Promotion #2 Net Increase /mo</label><input type="number" id="promo2Bump" value="">
-        <label>Promo #2 Start Month</label><input type="number" id="promo2Month" value="1">
-        <label>Promo #2 Start Year</label><input type="number" id="promo2Start" value="0">
-        <label>Promo #2 End Year</label><input type="number" id="promo2End" value="0">
       </details>
       <details class="schoolblock inline-summary" open id="det_main_post" style="border-left:4px solid #b87333;">
         <summary><h3>💼 Retirement Income</h3></summary>
@@ -990,7 +995,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         </details>
       <details class="schoolblock inline-summary" open id="det_inv_tsp" style="border-left:4px solid var(--purple);">
           <summary><h3>💵 TSP &amp; Roth Projections</h3></summary>
-          <label>Current TSP Balance</label><input type="number" id="tspBal" value="">
+          <label>Current TSP Balance (Roth/Traditional/401K)</label><input type="number" id="tspBal" value="">
           <label>TSP Avg Annual Return %</label><input type="number" id="tspRet" value="7.5" step="0.1">
           <label>Roll % of TSP into Down Payment</label><input type="number" id="tspRoll" value="0" step="1">
           <div class="subsection-divider"></div>
@@ -1204,6 +1209,77 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
     </div>
   </div>
 
+  <!-- TAB P: PROBATE LOG -->
+  <div class="tabpane" id="paneP">
+    <div class="collapse-row">
+      <button onclick="toggleAllDetails('paneP',true)">▼ Expand All</button>
+      <button onclick="toggleAllDetails('paneP',false)">▲ Collapse All</button>
+    </div>
+
+    <!-- BANK ACCOUNTS -->
+    <details class="schoolblock inline-summary" open id="det_pb_bank" style="border-left:4px solid var(--blue);">
+      <summary><h3>🏦 Bank Accounts <span id="pb_bank_total" style="font-weight:normal;font-size:13px;color:var(--text-2);margin-left:8px;">Total: $0</span></h3></summary>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;" id="pb_bank_table">
+          <thead><tr style="background:var(--surface-2);text-align:left;">
+            <th style="padding:6px 4px;">Financial Institution</th>
+            <th style="padding:6px 4px;">Account Opened</th>
+            <th style="padding:6px 4px;">Account Closed</th>
+            <th style="padding:6px 4px;">Account #</th>
+            <th style="padding:6px 4px;">Account Type</th>
+            <th style="padding:6px 4px;">Balance</th>
+            <th style="padding:6px 4px;">Ownership</th>
+            <th style="padding:6px 4px;width:30px;"></th>
+          </tr></thead>
+          <tbody id="pb_bank_body"></tbody>
+        </table>
+      </div>
+      <button onclick="addProbateRow('bank')" style="margin-top:8px;font-size:11px;padding:4px 12px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text);">＋ Add Row</button>
+    </details>
+
+    <!-- PERSONAL INVESTMENTS -->
+    <details class="schoolblock inline-summary" open id="det_pb_inv" style="border-left:4px solid var(--green);margin-top:12px;">
+      <summary><h3>📈 Personal Investments <span id="pb_inv_total" style="font-weight:normal;font-size:13px;color:var(--text-2);margin-left:8px;">Total: $0</span></h3></summary>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;" id="pb_inv_table">
+          <thead><tr style="background:var(--surface-2);text-align:left;">
+            <th style="padding:6px 4px;">Company</th>
+            <th style="padding:6px 4px;">Account Opened</th>
+            <th style="padding:6px 4px;">Account Closed</th>
+            <th style="padding:6px 4px;">Account #</th>
+            <th style="padding:6px 4px;">Account Type</th>
+            <th style="padding:6px 4px;">Balance</th>
+            <th style="padding:6px 4px;">Ownership</th>
+            <th style="padding:6px 4px;width:30px;"></th>
+          </tr></thead>
+          <tbody id="pb_inv_body"></tbody>
+        </table>
+      </div>
+      <button onclick="addProbateRow('inv')" style="margin-top:8px;font-size:11px;padding:4px 12px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text);">＋ Add Row</button>
+    </details>
+
+    <!-- PENSION PLANS -->
+    <details class="schoolblock inline-summary" open id="det_pb_pension" style="border-left:4px solid var(--purple);margin-top:12px;">
+      <summary><h3>🏛️ Pension Plans <span id="pb_pension_total" style="font-weight:normal;font-size:13px;color:var(--text-2);margin-left:8px;">Total: $0</span></h3></summary>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;" id="pb_pension_table">
+          <thead><tr style="background:var(--surface-2);text-align:left;">
+            <th style="padding:6px 4px;">Company</th>
+            <th style="padding:6px 4px;">Account Opened</th>
+            <th style="padding:6px 4px;">Account Closed</th>
+            <th style="padding:6px 4px;">Account #</th>
+            <th style="padding:6px 4px;">Plan Type</th>
+            <th style="padding:6px 4px;">Balance</th>
+            <th style="padding:6px 4px;">Ownership</th>
+            <th style="padding:6px 4px;width:30px;"></th>
+          </tr></thead>
+          <tbody id="pb_pension_body"></tbody>
+        </table>
+      </div>
+      <button onclick="addProbateRow('pension')" style="margin-top:8px;font-size:11px;padding:4px 12px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text);">＋ Add Row</button>
+    </details>
+  </div>
+
   <!-- TAB 5: DEBTS -->
   <div class="tabpane" id="pane5">
     <div class="collapse-row">
@@ -1374,12 +1450,12 @@ function getSelectedTownNum(){
   return r?r.value:'1';
 }
 function showTab(n){
-  [1,'H',2,3,5].forEach(i=>{
+  [1,'H',2,3,'P',5].forEach(i=>{
     const p=document.getElementById('pane'+i),b=document.getElementById('tab'+i);
     if(p)p.classList.toggle('active',i===n);
     if(b)b.classList.toggle('active',i===n);
   });
-  [1,'H',2,3,5].forEach(i=>{const s=document.getElementById('sl-'+i);if(s)s.classList.toggle('active',i===n);});
+  [1,'H',2,3,'P',5].forEach(i=>{const s=document.getElementById('sl-'+i);if(s)s.classList.toggle('active',i===n);});
 }
 function showGroup(g){
   ['cash','inv','edu'].forEach(x=>{const el=document.getElementById('grp_'+x);if(el)el.classList.toggle('active',x===g);});
@@ -1394,6 +1470,146 @@ function fillYears(){
 }
 
 /* =======================================================
+   PROBATE LOG
+   ======================================================= */
+const PB_FIELDS={
+  bank:{cols:['institution','opened','closed','accountNum','accountType','balance','ownership'],
+    typeOpts:[{v:'checking',l:'Checking'},{v:'savings',l:'Savings'},{v:'moneyMarket',l:'Money Market'},{v:'cd',l:'CD'}],
+    typeCol:'accountType',nameCol:'institution'},
+  inv:{cols:['company','opened','closed','accountNum','accountType','balance','ownership'],
+    typeOpts:[{v:'taxable',l:'Taxable Stock'},{v:'savCash',l:'Savings/Cash'},{v:'crypto',l:'Crypto'},{v:'gold',l:'Gold/Silver'}],
+    typeCol:'accountType',nameCol:'company'},
+  pension:{cols:['company','opened','closed','accountNum','planType','balance','ownership'],
+    typeOpts:[{v:'tsp',l:'TSP'},{v:'tspGs',l:'TSP (GS)'},{v:'rothMe',l:'Roth IRA (Me)'},{v:'rothSpouse',l:'Roth IRA (Spouse)'},{v:'401k',l:'401(k)'},{v:'tradIra',l:'Traditional IRA'}],
+    typeCol:'planType',nameCol:'company'}
+};
+const PB_TARGET={
+  bank:{checking:'savBal',savings:'savBal',moneyMarket:'savBal',cd:'savBal'},
+  inv:{taxable:'taxBal',savCash:'savBal',crypto:'cryptoBal',gold:'goldBal'},
+  pension:{tsp:'tspBal',tspGs:'tspBal',rothMe:'rothBalMe',rothSpouse:'rothBalWife','401k':'tspBal',tradIra:'tspBal'}
+};
+
+function addProbateRow(section,data){
+  const body=document.getElementById('pb_'+section+'_body');
+  const cfg=PB_FIELDS[section];
+  const tr=document.createElement('tr');
+  tr.className='pb-row';
+  tr.style.cssText='border-bottom:1px solid var(--border);';
+  cfg.cols.forEach(col=>{
+    const td=document.createElement('td');
+    td.style.padding='4px 2px';
+    if(col===cfg.typeCol){
+      const sel=document.createElement('select');
+      sel.className='pb-'+col;
+      sel.style.cssText='width:100%;padding:4px;font-size:11px;border:1px solid var(--border);border-radius:3px;background:var(--bg);color:var(--text);';
+      cfg.typeOpts.forEach(o=>{const opt=document.createElement('option');opt.value=o.v;opt.textContent=o.l;sel.appendChild(opt);});
+      if(data&&data[col])sel.value=data[col];
+      sel.addEventListener('change',()=>{syncProbateBalances();autoSave();});
+      td.appendChild(sel);
+    }else if(col==='balance'){
+      const inp=document.createElement('input');
+      inp.type='number';inp.className='pb-balance';
+      inp.style.cssText='width:90px;padding:4px;font-size:11px;border:1px solid var(--border);border-radius:3px;background:var(--bg);color:var(--text);';
+      if(data&&data[col])inp.value=data[col];
+      inp.addEventListener('change',()=>{syncProbateBalances();autoSave();});
+      td.appendChild(inp);
+    }else if(col==='ownership'){
+      const sel=document.createElement('select');
+      sel.className='pb-ownership';
+      sel.style.cssText='padding:4px;font-size:11px;border:1px solid var(--border);border-radius:3px;background:var(--bg);color:var(--text);';
+      [{v:'sole',l:'Sole'},{v:'joint',l:'Joint'}].forEach(o=>{const opt=document.createElement('option');opt.value=o.v;opt.textContent=o.l;sel.appendChild(opt);});
+      if(data&&data[col])sel.value=data[col];
+      sel.addEventListener('change',autoSave);
+      td.appendChild(sel);
+    }else if(col==='opened'||col==='closed'){
+      const inp=document.createElement('input');
+      inp.type='text';inp.className='pb-'+col;inp.placeholder='YYYY';
+      inp.style.cssText='width:60px;padding:4px;font-size:11px;border:1px solid var(--border);border-radius:3px;background:var(--bg);color:var(--text);';
+      if(data&&data[col])inp.value=data[col];
+      inp.addEventListener('change',()=>{if(col==='closed')syncProbateBalances();autoSave();});
+      td.appendChild(inp);
+    }else{
+      const inp=document.createElement('input');
+      inp.type='text';inp.className='pb-'+col;
+      inp.style.cssText='width:100%;padding:4px;font-size:11px;border:1px solid var(--border);border-radius:3px;background:var(--bg);color:var(--text);';
+      if(col==='accountNum')inp.style.width='80px';
+      if(data&&data[col])inp.value=data[col];
+      inp.addEventListener('change',autoSave);
+      td.appendChild(inp);
+    }
+    tr.appendChild(td);
+  });
+  const tdDel=document.createElement('td');
+  tdDel.style.padding='4px 2px';
+  const btn=document.createElement('button');
+  btn.textContent='❌';btn.title='Remove row';
+  btn.style.cssText='font-size:10px;cursor:pointer;border:none;background:none;padding:2px;';
+  btn.addEventListener('click',()=>{tr.remove();syncProbateBalances();autoSave();});
+  tdDel.appendChild(btn);
+  tr.appendChild(tdDel);
+  body.appendChild(tr);
+}
+
+function getProbateData(){
+  const result={bank:[],inv:[],pension:[]};
+  ['bank','inv','pension'].forEach(section=>{
+    const cfg=PB_FIELDS[section];
+    document.querySelectorAll('#pb_'+section+'_body .pb-row').forEach(row=>{
+      const entry={};
+      cfg.cols.forEach(col=>{
+        const el=row.querySelector('.pb-'+col);
+        if(el)entry[col]=el.value;
+      });
+      result[section].push(entry);
+    });
+  });
+  return result;
+}
+
+function syncProbateBalances(){
+  const sums={savBal:0,taxBal:0,cryptoBal:0,goldBal:0,tspBal:0,rothBalMe:0,rothBalWife:0};
+  let hasAnyRows=false;
+  ['bank','inv','pension'].forEach(section=>{
+    const cfg=PB_FIELDS[section];
+    const targets=PB_TARGET[section];
+    let sectionTotal=0;
+    document.querySelectorAll('#pb_'+section+'_body .pb-row').forEach(row=>{
+      hasAnyRows=true;
+      const typeEl=row.querySelector('.pb-'+cfg.typeCol);
+      const balEl=row.querySelector('.pb-balance');
+      const closedEl=row.querySelector('.pb-closed');
+      if(!typeEl||!balEl)return;
+      const typ=typeEl.value;
+      const bal=parseFloat(balEl.value)||0;
+      const closed=closedEl&&closedEl.value.trim()!=='';
+      const target=targets[typ];
+      if(!closed&&target){
+        sums[target]+=bal;
+        sectionTotal+=bal;
+      }
+    });
+    const totalEl=document.getElementById('pb_'+section+'_total');
+    if(totalEl)totalEl.textContent='Total: '+fmt(sectionTotal);
+  });
+  if(hasAnyRows){
+    Object.keys(sums).forEach(fieldId=>{
+      const el=document.getElementById(fieldId);
+      if(el){el.value=Math.round(sums[fieldId]);el.title='Managed by Probate Log';el.style.background='var(--surface-2)';}
+    });
+  }
+}
+
+function loadProbateData(data){
+  if(!data)return;
+  ['bank','inv','pension'].forEach(section=>{
+    const body=document.getElementById('pb_'+section+'_body');
+    if(body)body.innerHTML='';
+    if(data[section]){data[section].forEach(entry=>addProbateRow(section,entry));}
+  });
+  syncProbateBalances();
+}
+
+/* =======================================================
    AUTO-SAVE
    ======================================================= */
 function autoSave(){
@@ -1402,6 +1618,7 @@ function autoSave(){
   const act={};
   for(let y=Y0;y<=YEND;y++){ACCTS.forEach(a=>{['aBal'+a+'_'+y,'aCon'+a+'_'+y].forEach(k=>{const el=document.getElementById(k);if(el&&el.value!=='')act[k]=el.value;});});}
   data.__actuals=act;
+  data.__probate=getProbateData();
   const detStates={};
   document.querySelectorAll('details').forEach(d=>{if(d.id)detStates[d.id]=d.open;});
   data.__details=detStates;
@@ -1413,6 +1630,7 @@ function autoLoad(){
     const data=JSON.parse(raw);
     ALL_IDS.forEach(id=>{const el=document.getElementById(id);if(!el||data[id]===undefined)return;if(el.type==='checkbox')el.checked=data[id];else el.value=data[id];});
     if(data.__actuals)Object.keys(data.__actuals).forEach(k=>{const el=document.getElementById(k);if(el)el.value=data.__actuals[k];});
+    if(data.__probate)loadProbateData(data.__probate);
     if(data.__details){window._detailStates=data.__details;Object.keys(data.__details).forEach(k=>{if(k==='det_actuals')return;const el=document.getElementById(k);if(el)el.open=data.__details[k];});}
     return true;
   }catch(e){return false;}
@@ -1734,6 +1952,20 @@ function runModel(){
     card('Age '+myAge(2040)+' (2040)',nw(2040))+
     card('Age '+myAge(2060)+' (2060)',nw(2060));
 
+  (function(){
+    const n=nw(curYear);
+    const items=[
+      {label:'Liquid Cash',value:n.liquid,color:'var(--green)'},
+      {label:'Crypto',value:n.crypto,color:'#e8a838'},
+      {label:'Retirement',value:n.retire,color:'var(--purple)'},
+      {label:'Home Equity',value:n.eq,color:'var(--blue)'},
+      {label:'Debt',value:-(n.consDebt+n.mortDebt),color:'var(--red)'},
+      {label:'Net Worth',value:n.netWithMort,color:'var(--gold)'}
+    ];
+    const mc=document.getElementById('nw-mini-cards');
+    if(mc)mc.innerHTML=items.map(i=>`<div style="background:var(--surface-2);border-radius:6px;padding:6px 10px;min-width:90px;border-left:3px solid ${i.color};"><div style="font-size:10px;color:var(--text-2);white-space:nowrap;">${i.label}</div><div style="font-size:14px;font-weight:700;color:var(--text);">${fmt(i.value)}</div></div>`).join('');
+  })();
+
   window._cf={incomeParts,expensesMonthly,investMonthly,homeForYear,homeExpenseForYear,homePIForYear,utilForYear,bahForYear,debtPaymentMonthly,myAge,wAge,locked,jbHomeMonthly,pcs2HomeMonthly,townHomeMonthly,selTownNum,jbBuy,jbSell,wakeBuy,retireYr,util1Loc:txt('util1Loc'),util2Loc:txt('util2Loc'),util3Loc:txt('util3Loc'),totalDown,townPI,townRate,wifeStart,wifeEnd,wifeIncome,retGross,payRaise,pensionCOLA,fedTax,vaDis,myWork,gsGross,gsFedTax,gsStateTax,gsIncomeStart,gsIncomeEnd,townExpenses,netTspForDown,optSBP,sbpAnnual,nw};
   window._ctx={v,curYear,myAge,wAge,jbSell,proj,actual,actPct,capPaid,projWd,locked,projRet,useActuals,retireYr,accCashFlow};
 
@@ -1767,6 +1999,7 @@ function buildSectionGroups(){buildCashGroup();buildInvGroup();buildEduGroup();r
 function buildCashGroup(){
   const c=window._cf,ctx=window._ctx,v=ctx.v;
   let html='';
+  html+='<div class="collapse-row"><button onclick="toggleAllDetails(\'grp_cash\',true)">▼ Expand All</button><button onclick="toggleAllDetails(\'grp_cash\',false)">▲ Collapse All</button></div>';
   html+=`<div class="panel"><details id="det_cashflow" ${getOpen('det_cashflow')}><summary><h2>2. Year-by-Year Cash Flow</h2></summary>`;
   html+='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">';
   html+='<button id="btnWith" class="toggle-btn active" onclick="toggleWife(true)">WITH Spouse Income</button>';
@@ -1875,6 +2108,7 @@ function buildInvGroup(){
   let html='';
   function actCell(val,show){return !show?`<td class="locked">—</td>`:`<td class="good">${fmt(val)}</td>`;}
 
+  html+='<div class="collapse-row"><button onclick="toggleAllDetails(\'grp_inv\',true)">▼ Expand All</button><button onclick="toggleAllDetails(\'grp_inv\',false)">▲ Collapse All</button></div>';
   html+='<div class="view-toggle"><button class="view-btn active" onclick="showInvView(\'table\')">📋 Table</button><button class="view-btn" onclick="showInvView(\'chart\')">📊 Chart</button></div>';
   html+='<div class="chart-wrap" id="inv-chart-wrap" style="display:none"><canvas id="chart-inv"></canvas></div>';
   html+=`<div class="panel"><details id="det_tsp_roth" ${getOpen('det_tsp_roth')}><summary><h2>4. TSP & Roth IRA Year-by-Year Projection</h2></summary>`;
@@ -1922,13 +2156,13 @@ function buildInvGroup(){
     const cd=window._assetCards[detId][ctx.curYear]||{con:0,proj:0,act:null,diff:null,projPct:null,actPct:null,cumContrib:0};
     h+=`<div id="${cardsId}" style="flex:0 0 180px;display:flex;flex-direction:column;gap:10px;padding-top:14px;">`;
     h+=`<div style="font-size:16px;color:var(--text);text-align:center;font-weight:700;">📅 ${ctx.curYear}</div>`;
-    h+=`<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.con)}</strong>Contrib / mo</div>`;
     h+=`<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.proj)}</strong>Proj Balance</div>`;
+    h+=`<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.cumContrib)}</strong>Total Contributions</div>`;
+    h+=`<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.con)}</strong>Contrib / mo</div>`;
     h+=`<div class="metric" style="margin:0;width:100%;"><strong>${cd.act!==null?fmt(cd.act):'—'}</strong>Actual Balance</div>`;
     h+=`<div class="metric" style="margin:0;width:100%;"><strong style="color:${cd.diff!==null?(cd.diff>=0?'var(--green)':'var(--red)'):'var(--blue)'}">${cd.diff!==null?(cd.diff>=0?'+':'')+fmt(cd.diff):'—'}</strong>Variance (A−P)</div>`;
     h+=`<div class="metric" style="margin:0;width:100%;"><strong style="color:${cd.projPct!==null?(cd.projPct>=0?'var(--green)':'var(--red)'):'var(--blue)'}">${cd.projPct!==null?(cd.projPct>=0?'+':'')+cd.projPct.toFixed(1)+'%':'—'}</strong>Proj YoY%</div>`;
     h+=`<div class="metric" style="margin:0;width:100%;"><strong style="color:${cd.actPct!==null?(cd.actPct>=0?'var(--green)':'var(--red)'):'var(--blue)'}">${cd.actPct!==null?(cd.actPct>=0?'+':'')+cd.actPct.toFixed(1)+'%':'—'}</strong>Act YoY%</div>`;
-    h+=`<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.cumContrib)}</strong>Total Contributions</div>`;
     h+=`</div></div>`;
     h+='<div style="font-size:10.5px;color:var(--text-2);padding:8px 10px;border-top:1px solid var(--border);line-height:1.7;">';
     h+='<b style="color:var(--text);">Column guide:</b> &nbsp;';
@@ -1943,8 +2177,8 @@ function buildInvGroup(){
       const t=chartTheme();
       new Chart(canvas,{type:'bar',data:{labels:chartYears,datasets:[
         {label:'Cumulative Contributions',data:chartContrib,backgroundColor:'rgba(74,114,168,0.6)',borderColor:'#4a72a8',borderWidth:1,borderRadius:3,order:2},
-        {label:'Projected Balance',data:chartBal,type:'line',borderColor:'#7b5ea7',backgroundColor:'rgba(123,94,167,0.08)',fill:true,tension:0.3,pointRadius:2,borderWidth:2.5,order:1}
-      ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{color:t.legend,usePointStyle:true,padding:12}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)}}},scales:{x:{ticks:{maxRotation:45,color:t.tick},grid:{color:t.grid}},y:{ticks:{callback:val=>'$'+(val>=1e6?(val/1e6).toFixed(1)+'M':val>=1e3?(val/1e3).toFixed(0)+'K':val),color:t.tick},grid:{color:t.grid}}}}});
+        {label:'Projected Balance',data:chartBal,type:'line',borderColor:'#7b5ea7',backgroundColor:'rgba(123,94,167,0.08)',fill:true,tension:0.3,pointRadius:3,pointHitRadius:20,pointHoverRadius:6,borderWidth:2.5,order:1}
+      ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{color:t.legend,usePointStyle:true,pointStyle:'circle',padding:12,boxWidth:8,boxHeight:8}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)}}},scales:{x:{ticks:{maxRotation:45,color:t.tick},grid:{color:t.grid}},y:{ticks:{callback:val=>'$'+(val>=1e6?(val/1e6).toFixed(1)+'M':val>=1e3?(val/1e3).toFixed(0)+'K':val),color:t.tick},grid:{color:t.grid}}}}});
     },0);
     return h;
   }
@@ -2078,10 +2312,40 @@ function renderNWChart(){
   const cd=window._chartData;if(!cd)return;
   const t=chartTheme();
   new Chart(canvas,{type:'line',data:{labels:cd.years,datasets:[
-    {label:'Total Net Worth',data:cd.netWorth,borderColor:'#4a72a8',backgroundColor:'rgba(74,114,168,0.1)',fill:true,tension:0.3,pointRadius:2},
-    {label:'Liquid Cash',data:cd.liquid,borderColor:'#2d9e54',backgroundColor:'transparent',tension:0.3,pointRadius:2,borderDash:[4,4]},
-    {label:'Retirement Accts',data:cd.retire,borderColor:'#d4a843',backgroundColor:'transparent',tension:0.3,pointRadius:2}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:t.legend}}},scales:{y:{ticks:{callback:v=>'$'+(v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v),color:t.tick},grid:{color:t.grid}},x:{ticks:{color:t.tick},grid:{color:t.grid}}}}});
+    {label:'Total Net Worth',data:cd.netWorth,borderColor:'#4a72a8',backgroundColor:'rgba(74,114,168,0.1)',fill:true,tension:0.3,pointRadius:3,pointHitRadius:20,pointHoverRadius:6},
+    {label:'Liquid Cash',data:cd.liquid,borderColor:'#2d9e54',backgroundColor:'transparent',tension:0.3,pointRadius:3,pointHitRadius:20,pointHoverRadius:6,borderDash:[4,4]},
+    {label:'Retirement Accts',data:cd.retire,borderColor:'#d4a843',backgroundColor:'transparent',tension:0.3,pointRadius:3,pointHitRadius:20,pointHoverRadius:6}
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{color:t.legend,usePointStyle:true,pointStyle:'circle',padding:14,boxWidth:8,boxHeight:8}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+(v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v),color:t.tick},grid:{color:t.grid}},x:{ticks:{color:t.tick},grid:{color:t.grid}}}}});
+  renderAccountLegend();
+}
+function renderAccountLegend(){
+  const el=document.getElementById('nw-account-legend');if(!el)return;
+  const pb=getProbateData();
+  const palette=['#4a72a8','#2d9e54','#d4a843','#b87333','#7b5ea7','#e8a838','#3da4ab','#c94c4c','#6b8e23','#708090'];
+  let items=[];let ci=0;
+  ['inv','pension','bank'].forEach(section=>{
+    const cfg=PB_FIELDS[section];
+    (pb[section]||[]).forEach(row=>{
+      const name=row[cfg.nameCol]||cfg.typeOpts.find(o=>o.v===row[cfg.typeCol])?.l||row[cfg.typeCol];
+      const bal=parseFloat(row.balance)||0;
+      const closed=row.closed&&row.closed.trim()!=='';
+      const typeLabel=cfg.typeOpts.find(o=>o.v===row[cfg.typeCol])?.l||row[cfg.typeCol];
+      if(!closed&&bal>0){
+        items.push({name,bal,typeLabel,color:palette[ci%palette.length]});
+        ci++;
+      }
+    });
+  });
+  if(items.length===0){el.innerHTML='';return;}
+  el.innerHTML='<div style="font-size:11px;font-weight:600;color:var(--text-2);margin-bottom:6px;">Account Breakdown (Current)</div>'+
+    '<div style="display:flex;gap:12px;flex-wrap:wrap;">'+items.map(i=>
+      `<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text);">
+        <span style="width:8px;height:8px;border-radius:50%;background:${i.color};display:inline-block;flex-shrink:0;"></span>
+        <span>${i.name}</span>
+        <span style="color:var(--text-2);">(${i.typeLabel})</span>
+        <span style="font-weight:600;">${fmt(i.bal)}</span>
+      </div>`
+    ).join('')+'</div>';
 }
 
 function updateCombinedCards(year,row){
@@ -2108,13 +2372,13 @@ function updateAssetCards(detId,year,row){
   const pctFmt=(v)=>v!==null?(v>=0?'+':'')+v.toFixed(1)+'%':'—';
   el.innerHTML=
     `<div style="font-size:16px;color:var(--text);text-align:center;font-weight:700;">📅 ${year}</div>`+
-    `<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.con)}</strong>Contrib / mo</div>`+
     `<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.proj)}</strong>Proj Balance</div>`+
+    `<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.cumContrib)}</strong>Total Contributions</div>`+
+    `<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.con)}</strong>Contrib / mo</div>`+
     `<div class="metric" style="margin:0;width:100%;"><strong>${cd.act!==null?fmt(cd.act):'—'}</strong>Actual Balance</div>`+
     `<div class="metric" style="margin:0;width:100%;"><strong style="color:${colorOf(cd.diff)}">${cd.diff!==null?(cd.diff>=0?'+':'')+fmt(cd.diff):'—'}</strong>Variance (A−P)</div>`+
     `<div class="metric" style="margin:0;width:100%;"><strong style="color:${colorOf(cd.projPct)}">${pctFmt(cd.projPct)}</strong>Proj YoY%</div>`+
-    `<div class="metric" style="margin:0;width:100%;"><strong style="color:${colorOf(cd.actPct)}">${pctFmt(cd.actPct)}</strong>Act YoY%</div>`+
-    `<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.cumContrib)}</strong>Total Contributions</div>`;
+    `<div class="metric" style="margin:0;width:100%;"><strong style="color:${colorOf(cd.actPct)}">${pctFmt(cd.actPct)}</strong>Act YoY%</div>`;
   const table=row.closest('table');if(table)table.querySelectorAll('tr').forEach(r=>r.style.outline='');
   row.style.outline='2px solid var(--blue)';row.style.outlineOffset='-1px';
 }
@@ -2132,6 +2396,8 @@ function showCashView(v){
 function showDashView(v){
   const dash=document.getElementById('dashboard');const wrap=document.getElementById('nw-chart-wrap');
   if(dash)dash.style.display=v==='chart'?'none':'';if(wrap)wrap.style.display=v==='chart'?'block':'none';
+  const mc=document.getElementById('nw-mini-cards');if(mc)mc.style.display=v==='chart'?'flex':'none';
+  const al=document.getElementById('nw-account-legend');if(al)al.style.display=v==='chart'?'block':'none';
   document.querySelectorAll('.view-toggle .view-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&v==='cards')||(i===1&&v==='chart')));
   if(v==='chart')renderNWChart();
 }
@@ -2141,6 +2407,7 @@ function showDashView(v){
    ======================================================= */
 function buildEduGroup(){
   const ctx=window._ctx,v=ctx.v;let html='';
+  html+='<div class="collapse-row"><button onclick="toggleAllDetails(\'grp_edu\',true)">▼ Expand All</button><button onclick="toggleAllDetails(\'grp_edu\',false)">▲ Collapse All</button></div>';
   const ret=v('ret529')/100,mr=Math.pow(1+ret,1/12)-1;
   function giValue(prefix){const gm=v(prefix+'GibMonths'),giT=v(prefix+'GiTuition');return (gm/9)*giT+(gm/9)*1000;}
   function p529(bal,monthly,stopYear){let b=bal;const n=(stopYear-2026)*12+6;for(let i=0;i<n;i++)b=b*(1+mr)+monthly;return b;}
