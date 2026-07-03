@@ -495,7 +495,7 @@ body.sb-collapsed .main-content { margin-left: 54px; }
    ===================================================== */
 .sb-toggle {
   margin-left: auto; flex-shrink: 0;
-  width: 22px; height: 22px;
+  width: 28px; height: 24px; gap: 2px;
   background: var(--surface-3); border: 1px solid var(--border);
   border-radius: 5px; display: flex; align-items: center; justify-content: center;
   cursor: pointer; font-size: 15px; font-weight: 700; color: var(--blue);
@@ -504,7 +504,10 @@ body.sb-collapsed .main-content { margin-left: 54px; }
 }
 .sb-toggle:hover { background: var(--sb-hover); border-color: var(--blue); }
 .sidebar.collapsed { width: 54px; }
+.sidebar.collapsed .sidebar-logo { padding: 16px 6px 14px; justify-content: center; }
 .sidebar.collapsed .sb-logo-text { display: none; }
+.sidebar.collapsed .sb-logo-icon { display: none; }
+.sidebar.collapsed .sb-toggle { margin-left: 0; }
 .sidebar.collapsed .sidebar-label { height: 0; padding: 0; overflow: hidden; opacity: 0; pointer-events: none; }
 .sidebar.collapsed .sidebar-link { padding: 8px 0; margin: 2px 4px; text-align: center; font-size: 18px; border: none; background: transparent; }
 .sidebar.collapsed .sidebar-link.active { border-left: 3px solid var(--blue); border-radius: 7px; }
@@ -624,8 +627,8 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
 <!-- ===== LEFT SIDEBAR ===== -->
 <div class="sidebar">
   <div class="sidebar-logo">
-    🏦<span class="sb-logo-text"> Financial and Retirement Planner</span>
-    <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()" title="Collapse sidebar">‹</button>
+    <span class="sb-logo-icon">🏦</span><span class="sb-logo-text"> Financial and Retirement Planner</span>
+    <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()" title="Collapse sidebar"><span style="font-size:10px;">‹</span>☰</button>
   </div>
 
   <div class="sidebar-label">Overview</div>
@@ -713,9 +716,12 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <option value="brs">BRS (2.0% × YOS + TSP match)</option>
           <option value="redux">REDUX (2.0%/yr, $30K bonus at 15 YOS)</option>
         </select>
-        <label>YOS at Retirement</label><input type="number" id="yosMonths" value="" onchange="runModel()">
-        <label>Avg Monthly Base Pay (High-3 estimate) <span style="font-size:10px;color:var(--text-3);">(avg of highest 36 months basic pay — see militarypay.defense.gov pay tables)</span></label><input type="number" id="high3Pay" value="" onchange="runModel()">
+        <label>Years of Service at Retirement</label><input type="number" id="yos" value="" onchange="runModel()">
+        <label>+ Months (0–11)</label><input type="number" id="yosMonths" value="" min="0" max="11" onchange="runModel()">
+        <label>Avg Monthly Base Pay (High-3 estimate) <a href="https://militarypay.defense.gov/Pay/Retirement/" target="_blank" style="font-size:10px;color:var(--blue);">militarypay.defense.gov</a></label><input type="number" id="high3Pay" value="" onchange="runModel()">
         <label>Retirement GROSS Annual <span style="font-size:10px;color:var(--text-3);">(auto-calculated if YOS &amp; Base Pay are filled in)</span></label><input type="number" id="retGross" value="">
+        <label>VA Disability Monthly (tax-free)</label><input type="number" id="vaDisability" value="">
+        <label>Other Post-Ret Net Monthly</label><input type="number" id="myWorkManual" value="">
         <label>Pension COLA % /yr <span style="font-size:10px;color:var(--text-3);">(separate from pay raise)</span></label><input type="number" id="pensionCOLA" value="2.3" step="0.1">
         <label>Federal Tax % on Pension (no FICA)</label><input type="number" id="fedTaxPct" value="12" step="0.5">
         <label>Opt into SBP? (6.5% of gross)</label>
@@ -741,10 +747,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       </details>
       <details class="schoolblock inline-summary" open id="det_main_post" style="border-left:4px solid #b87333;">
         <summary><h3>💼 Retirement Income</h3></summary>
-        <label>VA Disability Monthly (tax-free)</label><input type="number" id="vaDisability" value="">
-        <label>Other Post-Ret Net Monthly</label><input type="number" id="myWorkManual" value="">
-        <div class="subsection-divider"></div>
-        <b style="font-size:12px;color:var(--text);">🏛️ GS / Federal Civilian Job <span class="gs-badge">NEW</span></b>
+        <b style="font-size:12px;color:var(--text);">🏛️ GS / Federal Civilian Job</b>
         <label>GS Annual Salary (Gross)</label><input type="number" id="gsGross" value="">
         <label>Federal Tax % on GS Income</label><input type="number" id="gsFedTax" value="22" step="0.5">
         <label>State Tax % on GS Income</label><input type="number" id="gsStateTax" value="5" step="0.5">
@@ -969,24 +972,24 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
     </div>
     <div class="grid4">
       <details class="schoolblock inline-summary" open id="det_inv_retcon" style="border-left:4px solid var(--blue);">
-          <summary><h3>📥 Retirement Contributions</h3></summary>
-          <label>TSP Monthly (Active) <a href="https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-401k-and-profit-sharing-plan-contribution-limits" target="_blank" style="font-size:10px;color:var(--blue);font-weight:400;">Check max /yr</a></label><input type="number" id="tspContribAD" value="">
+          <summary><h3>📥 Retirement Contributions <a href="https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-401k-and-profit-sharing-plan-contribution-limits" target="_blank" style="font-size:10px;color:var(--blue);font-weight:400;">IRS Contribution Limits</a></h3></summary>
+          <label>TSP Monthly (Active)</label><input type="number" id="tspContribAD" value="">
           <label>TSP STOP Year</label><input type="number" id="tspStopYear" value="2033">
           <div class="subsection-divider"></div>
-          <label>YOUR Roth IRA Monthly <a href="https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-ira-contribution-limits" target="_blank" style="font-size:10px;color:var(--blue);font-weight:400;">Check max /yr</a></label><input type="number" id="rothMe" value="">
+          <label>YOUR Roth IRA Monthly</label><input type="number" id="rothMe" value="">
           <label>YOUR Roth STOP Year</label><input type="number" id="rothMeStop" value="2038">
           <div class="subsection-divider"></div>
-          <label>SPOUSE Roth IRA Monthly <a href="https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-ira-contribution-limits" target="_blank" style="font-size:10px;color:var(--blue);font-weight:400;">Check max /yr</a></label><input type="number" id="rothWife" value="">
+          <label>SPOUSE Roth IRA Monthly</label><input type="number" id="rothWife" value="">
           <label>SPOUSE Roth STOP Year</label><input type="number" id="rothWifeStop" value="2048">
         </details>
         <details class="schoolblock inline-summary" open id="det_inv_gs" style="border-left:4px solid var(--green);">
-          <summary><h3>🏛️ GS Job TSP <span class="gs-badge">GS</span></h3></summary>
+          <summary><h3>🏛️ GS Job TSP</h3></summary>
           <label>GS Monthly TSP Contribution</label><input type="number" id="gsTsp" value="">
           <label>GS TSP Start Year</label><input type="number" id="gsTspStart" value="2034">
           <label>GS TSP End Year</label><input type="number" id="gsTspEnd" value="2040">
         </details>
       <details class="schoolblock inline-summary" open id="det_inv_tsp" style="border-left:4px solid var(--purple);">
-          <summary><h3>💵 TSP &amp; Roth Projector</h3></summary>
+          <summary><h3>💵 TSP &amp; Roth Projections</h3></summary>
           <label>Current TSP Balance</label><input type="number" id="tspBal" value="">
           <label>TSP Avg Annual Return %</label><input type="number" id="tspRet" value="7.5" step="0.1">
           <label>Roll % of TSP into Down Payment</label><input type="number" id="tspRoll" value="0" step="1">
@@ -1035,7 +1038,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>End Year</label><input type="number" id="savWdEnd2" value="0">
         </details>
       <details class="schoolblock inline-summary" open id="det_in_cryp" style="border-left:4px solid var(--purple);">
-          <summary><h3>₿ Crypto (volatile)</h3></summary>
+          <summary><h3><span style="color:var(--gold);">₿</span> Crypto</h3></summary>
           <label>Current Crypto Balance</label><input type="number" id="cryptoBal" value="">
           <label>Monthly Contribution</label><input type="number" id="cryptoMonthly" value="">
           <label>Contribution START Year</label><input type="number" id="cryptoStart" value="2026">
@@ -1084,6 +1087,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <!-- CHILD 1 -->
       <details class="schoolblock inline-summary" open id="det_c1" style="border-left:4px solid var(--blue);">
         <summary><h3>Child 1</h3></summary>
+        <div style="display:flex;gap:4px;margin-bottom:6px;"><button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="event.stopPropagation();document.querySelectorAll('#det_c1 details').forEach(d=>d.open=true)">▼ Expand</button><button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="event.stopPropagation();document.querySelectorAll('#det_c1 details').forEach(d=>d.open=false)">▲ Collapse</button></div>
         <details style="background:var(--surface-3);padding:8px;border-radius:6px;margin-bottom:8px;margin-top:8px;">
           <summary><b style="color:var(--text);">Private K-12 Schooling</b></summary>
           <label>Start Year (0=none)</label><input type="number" id="c1privStart" value="0">
@@ -1091,10 +1095,10 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Private Tuition /yr</label><input type="number" id="c1privTuition" value="">
           <label>Books &amp; Fees /yr</label><input type="number" id="c1privFees" value="">
         </details>
-        <details style="margin-top:10px;" open id="det_c1_ug">
+        <details style="margin-top:10px;" id="det_c1_ug">
           <summary><b style="color:var(--text);">529 &amp; Undergrad Data</b></summary>
           <label>Current 529 Balance</label><input type="number" id="c1bal" value="">
-          <label>529 Monthly</label><input type="number" id="c1mo" value="">
+          <label>529 Monthly Contributions</label><input type="number" id="c1mo" value="">
           <label>529 STOP Year</label><input type="number" id="c1stop" value="">
           <div class="subsection-divider"></div>
           <label>GI Bill Months</label><input type="number" id="c1GibMonths" value="">
@@ -1122,6 +1126,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <!-- CHILD 2 -->
       <details class="schoolblock inline-summary" open id="det_c2" style="border-left:4px solid var(--green);">
         <summary><h3>Child 2</h3></summary>
+        <div style="display:flex;gap:4px;margin-bottom:6px;"><button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="event.stopPropagation();document.querySelectorAll('#det_c2 details').forEach(d=>d.open=true)">▼ Expand</button><button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="event.stopPropagation();document.querySelectorAll('#det_c2 details').forEach(d=>d.open=false)">▲ Collapse</button></div>
         <details style="background:var(--surface-3);padding:8px;border-radius:6px;margin-bottom:8px;margin-top:8px;">
           <summary><b style="color:var(--text);">Private K-12 Schooling</b></summary>
           <label>Start Year (0=none)</label><input type="number" id="c2privStart" value="0">
@@ -1129,10 +1134,10 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Private Tuition /yr</label><input type="number" id="c2privTuition" value="">
           <label>Books &amp; Fees /yr</label><input type="number" id="c2privFees" value="">
         </details>
-        <details style="margin-top:10px;" open id="det_c2_ug">
+        <details style="margin-top:10px;" id="det_c2_ug">
           <summary><b style="color:var(--text);">529 &amp; Undergrad Data</b></summary>
           <label>Current 529 Balance</label><input type="number" id="c2bal" value="">
-          <label>529 Monthly</label><input type="number" id="c2mo" value="">
+          <label>529 Monthly Contributions</label><input type="number" id="c2mo" value="">
           <label>529 STOP Year</label><input type="number" id="c2stop" value="2033">
           <div class="subsection-divider"></div>
           <label>GI Bill Months</label><input type="number" id="c2GibMonths" value="">
@@ -1160,6 +1165,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <!-- CHILD 3 -->
       <details class="schoolblock inline-summary" open id="det_c3" style="border-left:4px solid var(--purple);">
         <summary><h3>Child 3</h3></summary>
+        <div style="display:flex;gap:4px;margin-bottom:6px;"><button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="event.stopPropagation();document.querySelectorAll('#det_c3 details').forEach(d=>d.open=true)">▼ Expand</button><button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="event.stopPropagation();document.querySelectorAll('#det_c3 details').forEach(d=>d.open=false)">▲ Collapse</button></div>
         <details style="background:var(--surface-3);padding:8px;border-radius:6px;margin-bottom:8px;margin-top:8px;">
           <summary><b style="color:var(--text);">Private K-12 Schooling</b></summary>
           <label>Start Year (0=none)</label><input type="number" id="c3privStart" value="0">
@@ -1167,10 +1173,10 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Private Tuition /yr</label><input type="number" id="c3privTuition" value="">
           <label>Books &amp; Fees /yr</label><input type="number" id="c3privFees" value="">
         </details>
-        <details style="margin-top:10px;" open id="det_c3_ug">
+        <details style="margin-top:10px;" id="det_c3_ug">
           <summary><b style="color:var(--text);">529 &amp; Undergrad Data</b></summary>
           <label>Current 529 Balance</label><input type="number" id="c3bal" value="">
-          <label>529 Monthly</label><input type="number" id="c3mo" value="">
+          <label>529 Monthly Contributions</label><input type="number" id="c3mo" value="">
           <label>529 STOP Year</label><input type="number" id="c3stop" value="2036">
           <div class="subsection-divider"></div>
           <label>GI Bill Months</label><input type="number" id="c3GibMonths" value="">
@@ -1204,8 +1210,11 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <button onclick="toggleAllDetails('pane5',true)">▼ Expand All</button>
       <button onclick="toggleAllDetails('pane5',false)">▲ Collapse All</button>
     </div>
-    <details class="schoolblock inline-summary" open id="det_cc_cards" style="background:transparent;border:none;padding:0;margin:0;">
-      <summary><h3>💳 Credit Cards</h3></summary>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <h3 style="margin:0;font-size:14px;color:var(--text);">💳 Credit Cards</h3>
+        <button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="document.querySelectorAll('#det_cc1,#det_cc2,#det_cc3').forEach(d=>d.open=true)">▼ Expand</button>
+        <button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="document.querySelectorAll('#det_cc1,#det_cc2,#det_cc3').forEach(d=>d.open=false)">▲ Collapse</button>
+      </div>
       <div class="grid3">
         <details class="schoolblock inline-summary" open id="det_cc1" style="border-left:4px solid var(--blue);">
           <summary><h3>💳 Credit Card #1</h3></summary>
@@ -1238,9 +1247,11 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>End Year</label><input type="number" id="cc3End" value="2030">
         </details>
       </div>
-    </details>
-    <details class="schoolblock inline-summary" open id="det_loans_cars" style="background:transparent;border:none;padding:0;margin:16px 0 0 0;">
-      <summary><h3>🚗 Car Loans &amp; General</h3></summary>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:16px;margin-bottom:6px;">
+        <h3 style="margin:0;font-size:14px;color:var(--text);">🚗 Car Loans & 📋 General Loan</h3>
+        <button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="document.querySelectorAll('#det_car1,#det_car2,#det_loan1').forEach(d=>d.open=true)">▼ Expand</button>
+        <button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="document.querySelectorAll('#det_car1,#det_car2,#det_loan1').forEach(d=>d.open=false)">▲ Collapse</button>
+      </div>
       <div class="grid3">
         <details class="schoolblock inline-summary" open id="det_car1" style="border-left:4px solid var(--gold);">
           <summary><h3>🚗 Car Loan #1</h3></summary>
@@ -1273,7 +1284,6 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>End Year</label><input type="number" id="loanEnd" value="2032">
         </details>
       </div>
-    </details>
   </div>
 
 </div><!-- /panel -->
@@ -1308,7 +1318,7 @@ function toggleSidebar() {
   const btn = document.getElementById('sbToggle');
   const collapsed = sb.classList.toggle('collapsed');
   document.body.classList.toggle('sb-collapsed', collapsed);
-  if (btn) btn.textContent = collapsed ? '›' : '‹';
+  if (btn) btn.innerHTML = collapsed ? '<span style="font-size:10px;">›</span>☰' : '<span style="font-size:10px;">‹</span>☰';
   try { localStorage.setItem('frp_sidebar', collapsed ? '1' : '0'); } catch(e) {}
 }
 function applyTheme(theme) {
@@ -1868,60 +1878,83 @@ function buildInvGroup(){
   html+='<div class="view-toggle"><button class="view-btn active" onclick="showInvView(\'table\')">📋 Table</button><button class="view-btn" onclick="showInvView(\'chart\')">📊 Chart</button></div>';
   html+='<div class="chart-wrap" id="inv-chart-wrap" style="display:none"><canvas id="chart-inv"></canvas></div>';
   html+=`<div class="panel"><details id="det_tsp_roth" ${getOpen('det_tsp_roth')}><summary><h2>4. TSP & Roth IRA Year-by-Year Projection</h2></summary>`;
-  html+='<div class="table-wrapper"><table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Proj TSP</th><th>Actual TSP</th><th>Proj My Roth</th><th>Actual My Roth</th><th>Proj Spouse Roth</th><th>Actual Spouse Roth</th><th>TSP W/D</th><th>My Roth W/D</th><th>Spouse Roth W/D</th><th>Total W/D</th><th>Proj Combined</th><th>Actual Combined</th><th>Notes</th></tr>';
+  html+='<div class="table-wrapper"><table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Proj TSP</th><th>Actual TSP</th><th>Proj My Roth</th><th>Actual My Roth</th><th>Proj Spouse Roth</th><th>Actual Spouse Roth</th><th>TSP W/D</th><th>My Roth W/D</th><th>Spouse Roth W/D</th><th>Total W/D</th><th>Proj Combined</th><th>Actual Combined</th></tr>';
   for(let y=2026;y<=2060;y++){
     const p=proj[y],a=actual[y],wd=projWd[y];if(!p)continue;
-    let notes=[];
-    if(y===jbSell)notes.push('Military Retirement');
-    if(wAge(y)===60&&wAge(y-1)===59)notes.push('Spouse 59½ Roth penalty-free');
-    if(myAge(y)===73)notes.push('⚠️ TSP RMDs begin');
-    if(y===v('tspStopYear'))notes.push('Stop TSP Contrib');
-    if(y===v('rothMeStop'))notes.push('Stop My Roth');
-    if(y===v('rothWifeStop'))notes.push('Stop Spouse Roth');
     let tspWd=wd.Tsp*12,rothMeWd=wd.RothMe*12,rothWifeWd=wd.RothWife*12,totWd=tspWd+rothMeWd+rothWifeWd;
     let rc=(y===jbSell)?'retire-row':(locked(y)?'locked':'');if(y===ctx.curYear)rc+=' current-year-row';
     const showAct=useActuals&&y<=ctx.curYear;
-    html+=`<tr class="${rc}"><td><b>${y}</b></td><td>${myAge(y)}</td><td>${wAge(y)}</td><td>${fmt(p.Tsp)}</td>${actCell(a.Tsp,showAct)}<td>${fmt(p.RothMe)}</td>${actCell(a.RothMe,showAct)}<td>${fmt(p.RothWife)}</td>${actCell(a.RothWife,showAct)}<td>${fmt(tspWd)}</td><td>${fmt(rothMeWd)}</td><td>${fmt(rothWifeWd)}</td><td><b>${fmt(totWd)}</b></td><td><b>${fmt(p.Tsp+p.RothMe+p.RothWife)}</b></td>${actCell(a.Tsp+a.RothMe+a.RothWife,showAct)}<td style="font-size:9.5px;color:var(--text-2)">${notes.join('; ')}</td></tr>`;
+    html+=`<tr class="${rc}"><td><b>${y}</b></td><td>${myAge(y)}</td><td>${wAge(y)}</td><td>${fmt(p.Tsp)}</td>${actCell(a.Tsp,showAct)}<td>${fmt(p.RothMe)}</td>${actCell(a.RothMe,showAct)}<td>${fmt(p.RothWife)}</td>${actCell(a.RothWife,showAct)}<td>${fmt(tspWd)}</td><td>${fmt(rothMeWd)}</td><td>${fmt(rothWifeWd)}</td><td><b>${fmt(totWd)}</b></td><td><b>${fmt(p.Tsp+p.RothMe+p.RothWife)}</b></td>${actCell(a.Tsp+a.RothMe+a.RothWife,showAct)}</tr>`;
   }
   html+='</table></div></details></div>';
 
   function assetTable(label,detId,key,startId,stopId,monthlyId,wdId){
+    const chartId='chart-'+detId;
     let h=`<div class="panel"><details id="${detId}" ${getOpen(detId)}><summary><h2>${label}</h2></summary>`;
-    h+='<div class="table-wrapper"><table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Contrib/mo</th><th>W/D/mo</th><th>Cap-Gains Paid</th><th>Proj Balance</th><th>Actual Balance</th><th>Variance (A−P)</th><th>Proj YoY%</th><th>Act YoY%</th><th>Notes</th></tr>';
+    h+=`<div class="chart-wrap" style="height:220px;margin-bottom:12px;"><canvas id="${chartId}"></canvas></div>`;
+    h+='<div style="display:flex;gap:16px;align-items:flex-start;"><div class="table-wrapper" style="flex:0 1 auto;min-width:0;"><table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Contrib/mo</th><th>W/D/mo</th><th>Cap-Gains Paid</th><th>Proj Balance</th><th>Actual Balance</th><th>Variance (A−P)</th><th>Proj YoY%</th><th>Act YoY%</th></tr>';
+    const chartYears=[],chartContrib=[],chartBal=[];
+    const cardDataKey='_cardData_'+detId;
+    if(!window._assetCards)window._assetCards={};
+    window._assetCards[detId]={};
+    let cumContrib=0;
     for(let y=2026;y<=2060;y++){
       const p=proj[y],a=actual[y],wd=projWd[y];if(!p)continue;
       const con=(y>=v(startId)&&y<=v(stopId))?v(monthlyId):0;const cg=capPaid[y][key]||0;
+      cumContrib+=con*12;
+      chartYears.push(y);chartContrib.push(cumContrib);chartBal.push(p[key]||0);
       const showAct=useActuals&&y<=ctx.curYear;
-      // Variance (Actual − Proj)
       const aVal=a&&a[key]?a[key]:0;
       const diff=showAct&&aVal?aVal-p[key]:null;
       const diffCell=diff===null?`<td class="locked">—</td>`:`<td class="${diff>=0?'good':'warn'}">${diff>=0?'+':''}${fmt(diff)}</td>`;
-      // Proj YoY%
       const pp=proj[y-1];const projPrev=pp?pp[key]:0;
       const projPct=(projPrev&&p[key])?(p[key]-projPrev)/Math.abs(projPrev)*100:null;
       const projPctCell=projPct===null?`<td>—</td>`:`<td class="${projPct>=0?'good':'warn'}">${projPct>=0?'+':''}${projPct.toFixed(1)}%</td>`;
-      // Act YoY%
       const ap=actual[y-1];const actPrev=ap&&ap[key]?ap[key]:0;
       const actPct=(showAct&&aVal&&actPrev)?(aVal-actPrev)/Math.abs(actPrev)*100:null;
       const actPctCell=actPct===null?`<td class="locked">—</td>`:`<td class="${actPct>=0?'good':'warn'}">${actPct>=0?'+':''}${actPct.toFixed(1)}%</td>`;
-      let n=[];if(y===v(startId))n.push('Contrib begins');if(y===v(stopId))n.push('Contrib stops');if(y===v(wdId))n.push('W/D begins');
+      window._assetCards[detId][y]={con,proj:p[key]||0,act:showAct?aVal:null,diff,projPct,actPct,cumContrib};
       let rc=locked(y)?'locked':'';if(y===ctx.curYear)rc+=' current-year-row';
-      h+=`<tr class="${rc}"><td><b>${y}</b></td><td>${myAge(y)}</td><td>${wAge(y)}</td><td>${fmt(con)}</td><td>${fmt(wd[key])}</td><td class="warn">${fmt(cg)}</td><td>${fmt(p[key])}</td>${actCell(aVal,showAct)}${diffCell}${projPctCell}${actPctCell}<td style="font-size:9.5px;color:var(--text-2)">${n.join('; ')}</td></tr>`;
+      h+=`<tr class="${rc}" style="cursor:pointer;" onclick="updateAssetCards('${detId}',${y},this)"><td><b>${y}</b></td><td>${myAge(y)}</td><td>${wAge(y)}</td><td>${fmt(con)}</td><td>${fmt(wd[key])}</td><td class="warn">${fmt(cg)}</td><td>${fmt(p[key])}</td>${actCell(aVal,showAct)}${diffCell}${projPctCell}${actPctCell}</tr>`;
     }
     h+='</table></div>';
+    const cardsId='cards-'+detId;
+    const cd=window._assetCards[detId][ctx.curYear]||{con:0,proj:0,act:null,diff:null,projPct:null,actPct:null,cumContrib:0};
+    h+=`<div id="${cardsId}" style="flex:0 0 180px;display:flex;flex-direction:column;gap:10px;padding-top:14px;">`;
+    h+=`<div style="font-size:16px;color:var(--text);text-align:center;font-weight:700;">📅 ${ctx.curYear}</div>`;
+    h+=`<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.con)}</strong>Contrib / mo</div>`;
+    h+=`<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.proj)}</strong>Proj Balance</div>`;
+    h+=`<div class="metric" style="margin:0;width:100%;"><strong>${cd.act!==null?fmt(cd.act):'—'}</strong>Actual Balance</div>`;
+    h+=`<div class="metric" style="margin:0;width:100%;"><strong style="color:${cd.diff!==null?(cd.diff>=0?'var(--green)':'var(--red)'):'var(--blue)'}">${cd.diff!==null?(cd.diff>=0?'+':'')+fmt(cd.diff):'—'}</strong>Variance (A−P)</div>`;
+    h+=`<div class="metric" style="margin:0;width:100%;"><strong style="color:${cd.projPct!==null?(cd.projPct>=0?'var(--green)':'var(--red)'):'var(--blue)'}">${cd.projPct!==null?(cd.projPct>=0?'+':'')+cd.projPct.toFixed(1)+'%':'—'}</strong>Proj YoY%</div>`;
+    h+=`<div class="metric" style="margin:0;width:100%;"><strong style="color:${cd.actPct!==null?(cd.actPct>=0?'var(--green)':'var(--red)'):'var(--blue)'}">${cd.actPct!==null?(cd.actPct>=0?'+':'')+cd.actPct.toFixed(1)+'%':'—'}</strong>Act YoY%</div>`;
+    h+=`<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.cumContrib)}</strong>Total Contributions</div>`;
+    h+=`</div></div>`;
     h+='<div style="font-size:10.5px;color:var(--text-2);padding:8px 10px;border-top:1px solid var(--border);line-height:1.7;">';
     h+='<b style="color:var(--text);">Column guide:</b> &nbsp;';
     h+='<b>Variance (A−P)</b> = Actual Balance minus Projected Balance — positive (green) means you\'re ahead of projection, negative (red) means behind. &nbsp;|&nbsp; ';
     h+='<b>Proj YoY%</b> = year-over-year % change in the projected balance (growth or loss vs prior year). &nbsp;|&nbsp; ';
     h+='<b>Act YoY%</b> = same calculation on your entered actual balance — only visible once actuals are entered.';
-    h+='</div></details></div>';return h;
+    h+='</div></details></div>';
+    setTimeout(()=>{
+      if(typeof Chart==='undefined')return;
+      const canvas=document.getElementById(chartId);if(!canvas)return;
+      _destroyChart(chartId);
+      const t=chartTheme();
+      new Chart(canvas,{type:'bar',data:{labels:chartYears,datasets:[
+        {label:'Cumulative Contributions',data:chartContrib,backgroundColor:'rgba(74,114,168,0.6)',borderColor:'#4a72a8',borderWidth:1,borderRadius:3,order:2},
+        {label:'Projected Balance',data:chartBal,type:'line',borderColor:'#7b5ea7',backgroundColor:'rgba(123,94,167,0.08)',fill:true,tension:0.3,pointRadius:2,borderWidth:2.5,order:1}
+      ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{color:t.legend,usePointStyle:true,padding:12}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)}}},scales:{x:{ticks:{maxRotation:45,color:t.tick},grid:{color:t.grid}},y:{ticks:{callback:val=>'$'+(val>=1e6?(val/1e6).toFixed(1)+'M':val>=1e3?(val/1e3).toFixed(0)+'K':val),color:t.tick},grid:{color:t.grid}}}}});
+    },0);
+    return h;
   }
   html+=assetTable('4a. Taxable Stock / Brokerage','det_taxable','Tax','taxStart','taxStop','taxMonthly','taxWdYear');
   html+=assetTable('4b. Crypto Projection (volatile)','det_crypto','Crypto','cryptoStart','cryptoStop','cryptoMonthly','cryptoWdYear');
   html+=assetTable('4c. Gold / Silver Projection','det_gold','Gold','goldStart','goldStop','goldMonthly','goldWdYear');
 
   html+=`<div class="panel"><details id="det_combined_inv" ${getOpen('det_combined_inv')}><summary><h2>4d. Combined Investments Overview</h2></summary>`;
-  html+='<div class="table-wrapper"><table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Proj TSP</th><th>Proj My Roth</th><th>Proj Spouse Roth</th><th>Proj Taxable</th><th>Proj Crypto</th><th>Proj Gold</th><th>Proj Combined</th><th>Actual Combined</th><th>Variance (A−P)</th><th>Proj YoY%</th><th>Act YoY%</th></tr>';
+  html+='<div style="display:flex;gap:16px;align-items:flex-start;"><div class="table-wrapper" style="flex:0 1 auto;min-width:0;"><table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Proj TSP</th><th>Proj My Roth</th><th>Proj Spouse Roth</th><th>Proj Taxable</th><th>Proj Crypto</th><th>Proj Gold</th><th>Proj Combined</th><th>Actual Combined</th><th>Variance (A−P)</th><th>Proj YoY%</th><th>Act YoY%</th></tr>';
+  window._assetCards['det_combined_inv']={};
   for(let y=2026;y<=2060;y++){
     const p=proj[y];if(!p)continue;
     const act=actual[y]||{};
@@ -1929,22 +1962,29 @@ function buildInvGroup(){
     const comb=p.Tsp+p.RothMe+p.RothWife+p.Tax+p.Crypto+p.Gold;
     const actComb=(act.Tsp||0)+(act.RothMe||0)+(act.RothWife||0)+(act.Tax||0)+(act.Crypto||0)+(act.Gold||0);
     const showAct=useActuals&&y<=ctx.curYear;
-    // Variance
     const diff=showAct&&actComb?actComb-comb:null;
     const diffCell=diff===null?`<td class="locked">—</td>`:`<td class="${diff>=0?'good':'warn'}">${diff>=0?'+':''}${fmt(diff)}</td>`;
-    // Proj YoY%
     const prevComb=pp?(pp.Tsp+pp.RothMe+pp.RothWife+pp.Tax+pp.Crypto+pp.Gold):0;
     const projPct=(prevComb&&comb)?(comb-prevComb)/Math.abs(prevComb)*100:null;
     const projPctCell=projPct===null?`<td>—</td>`:`<td class="${projPct>=0?'good':'warn'}">${projPct>=0?'+':''}${projPct.toFixed(1)}%</td>`;
-    // Act YoY%
     const prevAct=actual[y-1]||{};
     const prevActComb=(prevAct.Tsp||0)+(prevAct.RothMe||0)+(prevAct.RothWife||0)+(prevAct.Tax||0)+(prevAct.Crypto||0)+(prevAct.Gold||0);
     const actPct=(showAct&&actComb&&prevActComb)?(actComb-prevActComb)/Math.abs(prevActComb)*100:null;
     const actPctCell=actPct===null?`<td class="locked">—</td>`:`<td class="${actPct>=0?'good':'warn'}">${actPct>=0?'+':''}${actPct.toFixed(1)}%</td>`;
+    window._assetCards['det_combined_inv'][y]={proj:comb,act:showAct?actComb:null,diff,projPct,actPct};
     let rc=(y===jbSell)?'retire-row':(locked(y)?'locked':'');if(y===ctx.curYear)rc+=' current-year-row';
-    html+=`<tr class="${rc}"><td><b>${y}</b></td><td>${myAge(y)}</td><td>${wAge(y)}</td><td>${fmt(p.Tsp)}</td><td>${fmt(p.RothMe)}</td><td>${fmt(p.RothWife)}</td><td>${fmt(p.Tax)}</td><td>${fmt(p.Crypto)}</td><td>${fmt(p.Gold)}</td><td><b>${fmt(comb)}</b></td>${actCell(actComb,showAct)}${diffCell}${projPctCell}${actPctCell}</tr>`;
+    html+=`<tr class="${rc}" style="cursor:pointer;" onclick="updateCombinedCards(${y},this)"><td><b>${y}</b></td><td>${myAge(y)}</td><td>${wAge(y)}</td><td>${fmt(p.Tsp)}</td><td>${fmt(p.RothMe)}</td><td>${fmt(p.RothWife)}</td><td>${fmt(p.Tax)}</td><td>${fmt(p.Crypto)}</td><td>${fmt(p.Gold)}</td><td><b>${fmt(comb)}</b></td>${actCell(actComb,showAct)}${diffCell}${projPctCell}${actPctCell}</tr>`;
   }
   html+='</table></div>';
+  const combCd=window._assetCards['det_combined_inv'][ctx.curYear]||{proj:0,act:null,diff:null,projPct:null,actPct:null};
+  html+=`<div id="cards-det_combined_inv" style="flex:0 0 180px;display:flex;flex-direction:column;gap:10px;padding-top:14px;">`;
+  html+=`<div style="font-size:16px;color:var(--text);text-align:center;font-weight:700;">📅 ${ctx.curYear}</div>`;
+  html+=`<div class="metric" style="margin:0;width:100%;"><strong>${fmt(combCd.proj)}</strong>Proj Combined</div>`;
+  html+=`<div class="metric" style="margin:0;width:100%;"><strong>${combCd.act!==null?fmt(combCd.act):'—'}</strong>Actual Combined</div>`;
+  html+=`<div class="metric" style="margin:0;width:100%;"><strong style="color:${combCd.diff!==null?(combCd.diff>=0?'var(--green)':'var(--red)'):'var(--blue)'}">${combCd.diff!==null?(combCd.diff>=0?'+':'')+fmt(combCd.diff):'—'}</strong>Variance (A−P)</div>`;
+  html+=`<div class="metric" style="margin:0;width:100%;"><strong style="color:${combCd.projPct!==null?(combCd.projPct>=0?'var(--green)':'var(--red)'):'var(--blue)'}">${combCd.projPct!==null?(combCd.projPct>=0?'+':'')+combCd.projPct.toFixed(1)+'%':'—'}</strong>Proj YoY%</div>`;
+  html+=`<div class="metric" style="margin:0;width:100%;"><strong style="color:${combCd.actPct!==null?(combCd.actPct>=0?'var(--green)':'var(--red)'):'var(--blue)'}">${combCd.actPct!==null?(combCd.actPct>=0?'+':'')+combCd.actPct.toFixed(1)+'%':'—'}</strong>Act YoY%</div>`;
+  html+=`</div></div>`;
   html+='<div style="font-size:10.5px;color:var(--text-2);padding:8px 10px;border-top:1px solid var(--border);line-height:1.7;">';
   html+='<b style="color:var(--text);">Column guide:</b> &nbsp;';
   html+='<b>Variance (A−P)</b> = Actual Combined minus Projected Combined — green means ahead of projection, red means behind. &nbsp;|&nbsp; ';
@@ -2044,6 +2084,40 @@ function renderNWChart(){
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:t.legend}}},scales:{y:{ticks:{callback:v=>'$'+(v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v),color:t.tick},grid:{color:t.grid}},x:{ticks:{color:t.tick},grid:{color:t.grid}}}}});
 }
 
+function updateCombinedCards(year,row){
+  const d=(window._assetCards||{})['det_combined_inv'];if(!d||!d[year])return;
+  const cd=d[year];
+  const el=document.getElementById('cards-det_combined_inv');if(!el)return;
+  const colorOf=(v)=>v!==null?(v>=0?'var(--green)':'var(--red)'):'var(--blue)';
+  const pctFmt=(v)=>v!==null?(v>=0?'+':'')+v.toFixed(1)+'%':'—';
+  el.innerHTML=
+    `<div style="font-size:16px;color:var(--text);text-align:center;font-weight:700;">📅 ${year}</div>`+
+    `<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.proj)}</strong>Proj Combined</div>`+
+    `<div class="metric" style="margin:0;width:100%;"><strong>${cd.act!==null?fmt(cd.act):'—'}</strong>Actual Combined</div>`+
+    `<div class="metric" style="margin:0;width:100%;"><strong style="color:${colorOf(cd.diff)}">${cd.diff!==null?(cd.diff>=0?'+':'')+fmt(cd.diff):'—'}</strong>Variance (A−P)</div>`+
+    `<div class="metric" style="margin:0;width:100%;"><strong style="color:${colorOf(cd.projPct)}">${pctFmt(cd.projPct)}</strong>Proj YoY%</div>`+
+    `<div class="metric" style="margin:0;width:100%;"><strong style="color:${colorOf(cd.actPct)}">${pctFmt(cd.actPct)}</strong>Act YoY%</div>`;
+  const table=row.closest('table');if(table)table.querySelectorAll('tr').forEach(r=>r.style.outline='');
+  row.style.outline='2px solid var(--blue)';row.style.outlineOffset='-1px';
+}
+function updateAssetCards(detId,year,row){
+  const d=(window._assetCards||{})[detId];if(!d||!d[year])return;
+  const cd=d[year];
+  const el=document.getElementById('cards-'+detId);if(!el)return;
+  const colorOf=(v)=>v!==null?(v>=0?'var(--green)':'var(--red)'):'var(--blue)';
+  const pctFmt=(v)=>v!==null?(v>=0?'+':'')+v.toFixed(1)+'%':'—';
+  el.innerHTML=
+    `<div style="font-size:16px;color:var(--text);text-align:center;font-weight:700;">📅 ${year}</div>`+
+    `<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.con)}</strong>Contrib / mo</div>`+
+    `<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.proj)}</strong>Proj Balance</div>`+
+    `<div class="metric" style="margin:0;width:100%;"><strong>${cd.act!==null?fmt(cd.act):'—'}</strong>Actual Balance</div>`+
+    `<div class="metric" style="margin:0;width:100%;"><strong style="color:${colorOf(cd.diff)}">${cd.diff!==null?(cd.diff>=0?'+':'')+fmt(cd.diff):'—'}</strong>Variance (A−P)</div>`+
+    `<div class="metric" style="margin:0;width:100%;"><strong style="color:${colorOf(cd.projPct)}">${pctFmt(cd.projPct)}</strong>Proj YoY%</div>`+
+    `<div class="metric" style="margin:0;width:100%;"><strong style="color:${colorOf(cd.actPct)}">${pctFmt(cd.actPct)}</strong>Act YoY%</div>`+
+    `<div class="metric" style="margin:0;width:100%;"><strong>${fmt(cd.cumContrib)}</strong>Total Contributions</div>`;
+  const table=row.closest('table');if(table)table.querySelectorAll('tr').forEach(r=>r.style.outline='');
+  row.style.outline='2px solid var(--blue)';row.style.outlineOffset='-1px';
+}
 function showInvView(v){
   const wrap=document.getElementById('inv-chart-wrap');if(wrap)wrap.style.display=v==='chart'?'block':'none';
   document.querySelectorAll('#grp_inv .view-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&v==='table')||(i===1&&v==='chart')));
@@ -2183,12 +2257,12 @@ function sideNav(type,id){
     const el=document.getElementById('sl-'+id);if(el)el.classList.add('active');
     showTab(isNaN(id)?id:parseInt(id));
     const inp=document.getElementById('det_core');
-    if(inp)window.scrollTo({top:inp.getBoundingClientRect().top+window.scrollY-20,behavior:'smooth'});
+    if(inp){const bar=document.querySelector('.stickybar');const off=bar?bar.offsetHeight+10:60;window.scrollTo({top:inp.getBoundingClientRect().top+window.scrollY-off,behavior:'smooth'});}
   }else if(type==='result'){
     const el=document.getElementById('sl-'+id);if(el)el.classList.add('active');
     showGroup(id);
     const res=document.getElementById('results');
-    if(res)window.scrollTo({top:res.getBoundingClientRect().top+window.scrollY-20,behavior:'smooth'});
+    if(res){const bar=document.querySelector('.stickybar');const off=bar?bar.offsetHeight+10:60;window.scrollTo({top:res.getBoundingClientRect().top+window.scrollY-off,behavior:'smooth'});}
   }else if(type==='dash'){
     const el=document.getElementById('sl-dash');if(el)el.classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
@@ -2213,7 +2287,7 @@ window.onload=function(){
     const sb  = document.querySelector('.sidebar');
     const btn = document.getElementById('sbToggle');
     if (sb)  { sb.classList.add('collapsed'); document.body.classList.add('sb-collapsed'); }
-    if (btn) btn.textContent = '›';
+    if (btn) btn.innerHTML = '<span style="font-size:10px;">›</span>☰';
   }
   runModel();
 };
