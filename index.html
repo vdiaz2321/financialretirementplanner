@@ -1599,6 +1599,65 @@ function syncProbateBalances(){
   }
 }
 
+function getProbateByTarget(){
+  const groups={};
+  const palette=['#4a72a8','#2d9e54','#d4a843','#b87333','#7b5ea7','#e8a838','#3da4ab','#c94c4c','#6b8e23','#708090'];
+  let ci=0;
+  const pb=getProbateData();
+  ['bank','inv','pension'].forEach(section=>{
+    const cfg=PB_FIELDS[section];
+    const targets=PB_TARGET[section];
+    (pb[section]||[]).forEach(row=>{
+      const typ=row[cfg.typeCol];
+      const target=targets[typ];
+      const bal=parseFloat(row.balance)||0;
+      const closed=row.closed&&row.closed.trim()!=='';
+      if(closed||!target||bal<=0)return;
+      const name=row[cfg.nameCol]||cfg.typeOpts.find(o=>o.v===typ)?.l||typ;
+      const typeLabel=cfg.typeOpts.find(o=>o.v===typ)?.l||typ;
+      if(!groups[target])groups[target]=[];
+      groups[target].push({name,bal,typeLabel,color:palette[ci%palette.length]});
+      ci++;
+    });
+  });
+  return groups;
+}
+
+function buildProbateLegend(targetFields){
+  const groups=getProbateByTarget();
+  let items=[];
+  targetFields.forEach(f=>{if(groups[f])items=items.concat(groups[f]);});
+  if(items.length===0)return '';
+  return '<div style="padding:8px 10px;border-top:1px solid var(--border);margin-top:4px;">'+
+    '<div style="font-size:11px;font-weight:600;color:var(--text-2);margin-bottom:6px;">Account Breakdown (Probate)</div>'+
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;">'+items.map(i=>
+      `<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text);">
+        <span style="width:8px;height:8px;border-radius:50%;background:${i.color};display:inline-block;flex-shrink:0;"></span>
+        <span>${i.name}</span>
+        <span style="color:var(--text-2);">(${i.typeLabel})</span>
+        <span style="font-weight:600;">${fmt(i.bal)}</span>
+      </div>`
+    ).join('')+'</div></div>';
+}
+
+function buildProbateLegendCards(targetFields){
+  const groups=getProbateByTarget();
+  let items=[];
+  targetFields.forEach(f=>{if(groups[f])items=items.concat(groups[f]);});
+  if(items.length===0)return '';
+  let h='<div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px;">';
+  h+='<div style="font-size:10px;font-weight:600;color:var(--text-3);text-align:center;margin-bottom:6px;">ACCOUNTS</div>';
+  items.forEach(i=>{
+    h+=`<div style="background:var(--surface-2);border:1px solid var(--border);border-left:3px solid ${i.color};border-radius:6px;padding:6px 8px;margin-bottom:5px;">
+      <div style="font-size:12px;font-weight:700;color:var(--text);">${fmt(i.bal)}</div>
+      <div style="font-size:10px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${i.name}</div>
+      <div style="font-size:9px;color:var(--text-3);">${i.typeLabel}</div>
+    </div>`;
+  });
+  h+='</div>';
+  return h;
+}
+
 function loadProbateData(data){
   if(!data)return;
   ['bank','inv','pension'].forEach(section=>{
@@ -1866,8 +1925,9 @@ function runModel(){
   let pBal={},aBal={};ACCTS.forEach(a=>{pBal[a]=startBal[a];aBal[a]=startBal[a];});
   let pRolled=false,aRolled=false;
 
+  const hasActual={};
   for(let y=Y0;y<=YEND;y++){
-    proj[y]={};actual[y]={};actPct[y]={};capPaid[y]={};projWd[y]={};
+    proj[y]={};actual[y]={};actPct[y]={};capPaid[y]={};projWd[y]={};hasActual[y]={};
     ACCTS.forEach(a=>{
       let wd=baseWithdrawFor(a,y);
       if(a==='Tsp'&&myAge(y)>=73){let div=RMD_DIVISORS[myAge(y)]||6.0;let minWd=(pBal[a]/div)/12;if(minWd>wd)wd=minWd;}
@@ -1878,6 +1938,7 @@ function runModel(){
       const balA=(useActuals)?actBal(a,y):null;
       const conA=(useActuals)?actCon(a,y):null;
       const conUsed=(conA!==null)?conA:con;
+      hasActual[y][a]=(balA!==null&&y<=curYear);
       if(balA!==null&&y<=curYear){const netC=conUsed*12-wd*12;actPct[y][a]=(aBal[a]>0)?(((balA-netC)/aBal[a])-1)*100:0;aBal[a]=balA;}
       else{let ab=aBal[a];for(let m=0;m<12;m++){ab=ab*(1+mr)+conUsed-wd;if(ab<0)ab=0;}aBal[a]=ab;actPct[y][a]=null;}
       actual[y][a]=aBal[a];
@@ -1967,7 +2028,7 @@ function runModel(){
   })();
 
   window._cf={incomeParts,expensesMonthly,investMonthly,homeForYear,homeExpenseForYear,homePIForYear,utilForYear,bahForYear,debtPaymentMonthly,myAge,wAge,locked,jbHomeMonthly,pcs2HomeMonthly,townHomeMonthly,selTownNum,jbBuy,jbSell,wakeBuy,retireYr,util1Loc:txt('util1Loc'),util2Loc:txt('util2Loc'),util3Loc:txt('util3Loc'),totalDown,townPI,townRate,wifeStart,wifeEnd,wifeIncome,retGross,payRaise,pensionCOLA,fedTax,vaDis,myWork,gsGross,gsFedTax,gsStateTax,gsIncomeStart,gsIncomeEnd,townExpenses,netTspForDown,optSBP,sbpAnnual,nw};
-  window._ctx={v,curYear,myAge,wAge,jbSell,proj,actual,actPct,capPaid,projWd,locked,projRet,useActuals,retireYr,accCashFlow};
+  window._ctx={v,curYear,myAge,wAge,jbSell,proj,actual,actPct,capPaid,projWd,locked,projRet,useActuals,hasActual,retireYr,accCashFlow};
 
   (function(){
     const cd={years:[],tsp:[],rothMe:[],rothWife:[],tax:[],sav:[],crypto:[],gold:[],netWorth:[],liquid:[],retire:[],annualSurplus:[]};
@@ -2103,7 +2164,7 @@ function renderCashFlow(){
    ======================================================= */
 function buildInvGroup(){
   const ctx=window._ctx,v=ctx.v;
-  const proj=ctx.proj,actual=ctx.actual,capPaid=ctx.capPaid,projWd=ctx.projWd,useActuals=ctx.useActuals,locked=ctx.locked,jbSell=ctx.jbSell;
+  const proj=ctx.proj,actual=ctx.actual,capPaid=ctx.capPaid,projWd=ctx.projWd,useActuals=ctx.useActuals,hasActual=ctx.hasActual,locked=ctx.locked,jbSell=ctx.jbSell;
   const myAge=ctx.myAge,wAge=ctx.wAge;
   let html='';
   function actCell(val,show){return !show?`<td class="locked">—</td>`:`<td class="good">${fmt(val)}</td>`;}
@@ -2111,18 +2172,22 @@ function buildInvGroup(){
   html+='<div class="collapse-row"><button onclick="toggleAllDetails(\'grp_inv\',true)">▼ Expand All</button><button onclick="toggleAllDetails(\'grp_inv\',false)">▲ Collapse All</button></div>';
   html+='<div class="view-toggle"><button class="view-btn active" onclick="showInvView(\'table\')">📋 Table</button><button class="view-btn" onclick="showInvView(\'chart\')">📊 Chart</button></div>';
   html+='<div class="chart-wrap" id="inv-chart-wrap" style="display:none"><canvas id="chart-inv"></canvas></div>';
+  html+='<div id="inv-account-legend" style="display:none;padding:8px 12px;margin-top:6px;"></div>';
   html+=`<div class="panel"><details id="det_tsp_roth" ${getOpen('det_tsp_roth')}><summary><h2>4. TSP & Roth IRA Year-by-Year Projection</h2></summary>`;
-  html+='<div class="table-wrapper"><table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Proj TSP</th><th>Actual TSP</th><th>Proj My Roth</th><th>Actual My Roth</th><th>Proj Spouse Roth</th><th>Actual Spouse Roth</th><th>TSP W/D</th><th>My Roth W/D</th><th>Spouse Roth W/D</th><th>Total W/D</th><th>Proj Combined</th><th>Actual Combined</th></tr>';
+  html+='<div style="display:flex;gap:16px;align-items:flex-start;"><div class="table-wrapper" style="flex:1 1 auto;min-width:0;"><table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Proj TSP</th><th>Actual TSP</th><th>Proj My Roth</th><th>Actual My Roth</th><th>Proj Spouse Roth</th><th>Actual Spouse Roth</th><th>TSP W/D</th><th>My Roth W/D</th><th>Spouse Roth W/D</th><th>Total W/D</th><th>Proj Combined</th><th>Actual Combined</th></tr>';
   for(let y=2026;y<=2060;y++){
-    const p=proj[y],a=actual[y],wd=projWd[y];if(!p)continue;
+    const p=proj[y],a=actual[y],wd=projWd[y],ha=hasActual[y]||{};if(!p)continue;
     let tspWd=wd.Tsp*12,rothMeWd=wd.RothMe*12,rothWifeWd=wd.RothWife*12,totWd=tspWd+rothMeWd+rothWifeWd;
     let rc=(y===jbSell)?'retire-row':(locked(y)?'locked':'');if(y===ctx.curYear)rc+=' current-year-row';
-    const showAct=useActuals&&y<=ctx.curYear;
-    html+=`<tr class="${rc}"><td><b>${y}</b></td><td>${myAge(y)}</td><td>${wAge(y)}</td><td>${fmt(p.Tsp)}</td>${actCell(a.Tsp,showAct)}<td>${fmt(p.RothMe)}</td>${actCell(a.RothMe,showAct)}<td>${fmt(p.RothWife)}</td>${actCell(a.RothWife,showAct)}<td>${fmt(tspWd)}</td><td>${fmt(rothMeWd)}</td><td>${fmt(rothWifeWd)}</td><td><b>${fmt(totWd)}</b></td><td><b>${fmt(p.Tsp+p.RothMe+p.RothWife)}</b></td>${actCell(a.Tsp+a.RothMe+a.RothWife,showAct)}</tr>`;
+    const hasComb=ha.Tsp||ha.RothMe||ha.RothWife;
+    html+=`<tr class="${rc}"><td><b>${y}</b></td><td>${myAge(y)}</td><td>${wAge(y)}</td><td>${fmt(p.Tsp)}</td>${actCell(a.Tsp,ha.Tsp)}<td>${fmt(p.RothMe)}</td>${actCell(a.RothMe,ha.RothMe)}<td>${fmt(p.RothWife)}</td>${actCell(a.RothWife,ha.RothWife)}<td>${fmt(tspWd)}</td><td>${fmt(rothMeWd)}</td><td>${fmt(rothWifeWd)}</td><td><b>${fmt(totWd)}</b></td><td><b>${fmt(p.Tsp+p.RothMe+p.RothWife)}</b></td>${actCell(a.Tsp+a.RothMe+a.RothWife,hasComb)}</tr>`;
   }
-  html+='</table></div></details></div>';
+  html+='</table></div>';
+  const tspLegend=buildProbateLegendCards(['tspBal','rothBalMe','rothBalWife']);
+  if(tspLegend) html+=`<div style="flex:0 0 180px;padding-top:14px;">${tspLegend}</div>`;
+  html+='</div></details></div>';
 
-  function assetTable(label,detId,key,startId,stopId,monthlyId,wdId){
+  function assetTable(label,detId,key,startId,stopId,monthlyId,wdId,pbTargets){
     const chartId='chart-'+detId;
     let h=`<div class="panel"><details id="${detId}" ${getOpen(detId)}><summary><h2>${label}</h2></summary>`;
     h+=`<div class="chart-wrap" style="height:220px;margin-bottom:12px;"><canvas id="${chartId}"></canvas></div>`;
@@ -2133,19 +2198,19 @@ function buildInvGroup(){
     window._assetCards[detId]={};
     let cumContrib=0;
     for(let y=2026;y<=2060;y++){
-      const p=proj[y],a=actual[y],wd=projWd[y];if(!p)continue;
+      const p=proj[y],a=actual[y],wd=projWd[y],ha=hasActual[y]||{};if(!p)continue;
       const con=(y>=v(startId)&&y<=v(stopId))?v(monthlyId):0;const cg=capPaid[y][key]||0;
       cumContrib+=con*12;
       chartYears.push(y);chartContrib.push(cumContrib);chartBal.push(p[key]||0);
-      const showAct=useActuals&&y<=ctx.curYear;
-      const aVal=a&&a[key]?a[key]:0;
+      const showAct=!!ha[key];
+      const aVal=showAct?(a&&a[key]?a[key]:0):0;
       const diff=showAct&&aVal?aVal-p[key]:null;
       const diffCell=diff===null?`<td class="locked">—</td>`:`<td class="${diff>=0?'good':'warn'}">${diff>=0?'+':''}${fmt(diff)}</td>`;
       const pp=proj[y-1];const projPrev=pp?pp[key]:0;
       const projPct=(projPrev&&p[key])?(p[key]-projPrev)/Math.abs(projPrev)*100:null;
       const projPctCell=projPct===null?`<td>—</td>`:`<td class="${projPct>=0?'good':'warn'}">${projPct>=0?'+':''}${projPct.toFixed(1)}%</td>`;
-      const ap=actual[y-1];const actPrev=ap&&ap[key]?ap[key]:0;
-      const actPct=(showAct&&aVal&&actPrev)?(aVal-actPrev)/Math.abs(actPrev)*100:null;
+      const ap=actual[y-1];const actPrev=ap&&ap[key]?ap[key]:0;const haP=hasActual[y-1]||{};
+      const actPct=(showAct&&aVal&&haP[key]&&actPrev)?(aVal-actPrev)/Math.abs(actPrev)*100:null;
       const actPctCell=actPct===null?`<td class="locked">—</td>`:`<td class="${actPct>=0?'good':'warn'}">${actPct>=0?'+':''}${actPct.toFixed(1)}%</td>`;
       window._assetCards[detId][y]={con,proj:p[key]||0,act:showAct?aVal:null,diff,projPct,actPct,cumContrib};
       let rc=locked(y)?'locked':'';if(y===ctx.curYear)rc+=' current-year-row';
@@ -2163,6 +2228,7 @@ function buildInvGroup(){
     h+=`<div class="metric" style="margin:0;width:100%;"><strong style="color:${cd.diff!==null?(cd.diff>=0?'var(--green)':'var(--red)'):'var(--blue)'}">${cd.diff!==null?(cd.diff>=0?'+':'')+fmt(cd.diff):'—'}</strong>Variance (A−P)</div>`;
     h+=`<div class="metric" style="margin:0;width:100%;"><strong style="color:${cd.projPct!==null?(cd.projPct>=0?'var(--green)':'var(--red)'):'var(--blue)'}">${cd.projPct!==null?(cd.projPct>=0?'+':'')+cd.projPct.toFixed(1)+'%':'—'}</strong>Proj YoY%</div>`;
     h+=`<div class="metric" style="margin:0;width:100%;"><strong style="color:${cd.actPct!==null?(cd.actPct>=0?'var(--green)':'var(--red)'):'var(--blue)'}">${cd.actPct!==null?(cd.actPct>=0?'+':'')+cd.actPct.toFixed(1)+'%':'—'}</strong>Act YoY%</div>`;
+    if(pbTargets)h+=buildProbateLegendCards(pbTargets);
     h+=`</div></div>`;
     h+='<div style="font-size:10.5px;color:var(--text-2);padding:8px 10px;border-top:1px solid var(--border);line-height:1.7;">';
     h+='<b style="color:var(--text);">Column guide:</b> &nbsp;';
@@ -2182,28 +2248,30 @@ function buildInvGroup(){
     },0);
     return h;
   }
-  html+=assetTable('4a. Taxable Stock / Brokerage','det_taxable','Tax','taxStart','taxStop','taxMonthly','taxWdYear');
-  html+=assetTable('4b. Crypto Projection (volatile)','det_crypto','Crypto','cryptoStart','cryptoStop','cryptoMonthly','cryptoWdYear');
-  html+=assetTable('4c. Gold / Silver Projection','det_gold','Gold','goldStart','goldStop','goldMonthly','goldWdYear');
+  html+=assetTable('4a. Taxable Stock / Brokerage','det_taxable','Tax','taxStart','taxStop','taxMonthly','taxWdYear',['taxBal']);
+  html+=assetTable('4b. Crypto Projection (volatile)','det_crypto','Crypto','cryptoStart','cryptoStop','cryptoMonthly','cryptoWdYear',['cryptoBal']);
+  html+=assetTable('4c. Gold / Silver Projection','det_gold','Gold','goldStart','goldStop','goldMonthly','goldWdYear',['goldBal']);
 
   html+=`<div class="panel"><details id="det_combined_inv" ${getOpen('det_combined_inv')}><summary><h2>4d. Combined Investments Overview</h2></summary>`;
   html+='<div style="display:flex;gap:16px;align-items:flex-start;"><div class="table-wrapper" style="flex:0 1 auto;min-width:0;"><table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Proj TSP</th><th>Proj My Roth</th><th>Proj Spouse Roth</th><th>Proj Taxable</th><th>Proj Crypto</th><th>Proj Gold</th><th>Proj Combined</th><th>Actual Combined</th><th>Variance (A−P)</th><th>Proj YoY%</th><th>Act YoY%</th></tr>';
   window._assetCards['det_combined_inv']={};
   for(let y=2026;y<=2060;y++){
     const p=proj[y];if(!p)continue;
-    const act=actual[y]||{};
+    const act=actual[y]||{};const ha=hasActual[y]||{};
     const pp=proj[y-1];
     const comb=p.Tsp+p.RothMe+p.RothWife+p.Tax+p.Crypto+p.Gold;
-    const actComb=(act.Tsp||0)+(act.RothMe||0)+(act.RothWife||0)+(act.Tax||0)+(act.Crypto||0)+(act.Gold||0);
-    const showAct=useActuals&&y<=ctx.curYear;
+    const hasAnyComb=ha.Tsp||ha.RothMe||ha.RothWife||ha.Tax||ha.Crypto||ha.Gold;
+    const actComb=hasAnyComb?((ha.Tsp?act.Tsp:0)+(ha.RothMe?act.RothMe:0)+(ha.RothWife?act.RothWife:0)+(ha.Tax?act.Tax:0)+(ha.Crypto?act.Crypto:0)+(ha.Gold?act.Gold:0)):0;
+    const showAct=!!hasAnyComb;
     const diff=showAct&&actComb?actComb-comb:null;
     const diffCell=diff===null?`<td class="locked">—</td>`:`<td class="${diff>=0?'good':'warn'}">${diff>=0?'+':''}${fmt(diff)}</td>`;
     const prevComb=pp?(pp.Tsp+pp.RothMe+pp.RothWife+pp.Tax+pp.Crypto+pp.Gold):0;
     const projPct=(prevComb&&comb)?(comb-prevComb)/Math.abs(prevComb)*100:null;
     const projPctCell=projPct===null?`<td>—</td>`:`<td class="${projPct>=0?'good':'warn'}">${projPct>=0?'+':''}${projPct.toFixed(1)}%</td>`;
+    const prevHa=hasActual[y-1]||{};const hasPrevComb=prevHa.Tsp||prevHa.RothMe||prevHa.RothWife||prevHa.Tax||prevHa.Crypto||prevHa.Gold;
     const prevAct=actual[y-1]||{};
-    const prevActComb=(prevAct.Tsp||0)+(prevAct.RothMe||0)+(prevAct.RothWife||0)+(prevAct.Tax||0)+(prevAct.Crypto||0)+(prevAct.Gold||0);
-    const actPct=(showAct&&actComb&&prevActComb)?(actComb-prevActComb)/Math.abs(prevActComb)*100:null;
+    const prevActComb=hasPrevComb?((prevHa.Tsp?prevAct.Tsp:0)+(prevHa.RothMe?prevAct.RothMe:0)+(prevHa.RothWife?prevAct.RothWife:0)+(prevHa.Tax?prevAct.Tax:0)+(prevHa.Crypto?prevAct.Crypto:0)+(prevHa.Gold?prevAct.Gold:0)):0;
+    const actPct=(showAct&&actComb&&hasPrevComb&&prevActComb)?(actComb-prevActComb)/Math.abs(prevActComb)*100:null;
     const actPctCell=actPct===null?`<td class="locked">—</td>`:`<td class="${actPct>=0?'good':'warn'}">${actPct>=0?'+':''}${actPct.toFixed(1)}%</td>`;
     window._assetCards['det_combined_inv'][y]={proj:comb,act:showAct?actComb:null,diff,projPct,actPct};
     let rc=(y===jbSell)?'retire-row':(locked(y)?'locked':'');if(y===ctx.curYear)rc+=' current-year-row';
@@ -2218,6 +2286,7 @@ function buildInvGroup(){
   html+=`<div class="metric" style="margin:0;width:100%;"><strong style="color:${combCd.diff!==null?(combCd.diff>=0?'var(--green)':'var(--red)'):'var(--blue)'}">${combCd.diff!==null?(combCd.diff>=0?'+':'')+fmt(combCd.diff):'—'}</strong>Variance (A−P)</div>`;
   html+=`<div class="metric" style="margin:0;width:100%;"><strong style="color:${combCd.projPct!==null?(combCd.projPct>=0?'var(--green)':'var(--red)'):'var(--blue)'}">${combCd.projPct!==null?(combCd.projPct>=0?'+':'')+combCd.projPct.toFixed(1)+'%':'—'}</strong>Proj YoY%</div>`;
   html+=`<div class="metric" style="margin:0;width:100%;"><strong style="color:${combCd.actPct!==null?(combCd.actPct>=0?'var(--green)':'var(--red)'):'var(--blue)'}">${combCd.actPct!==null?(combCd.actPct>=0?'+':'')+combCd.actPct.toFixed(1)+'%':'—'}</strong>Act YoY%</div>`;
+  html+=buildProbateLegendCards(['tspBal','rothBalMe','rothBalWife','taxBal','savBal','cryptoBal','goldBal']);
   html+=`</div></div>`;
   html+='<div style="font-size:10.5px;color:var(--text-2);padding:8px 10px;border-top:1px solid var(--border);line-height:1.7;">';
   html+='<b style="color:var(--text);">Column guide:</b> &nbsp;';
@@ -2292,7 +2361,25 @@ function renderInvChart(){
     {label:'Savings',data:cd.sav,backgroundColor:'#17a2b8',stack:'s'},
     {label:'Crypto',data:cd.crypto,backgroundColor:'#e67e22',stack:'s'},
     {label:'Gold',data:cd.gold,backgroundColor:'#d4a843',stack:'s'}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:t.legend}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),footer:items=>'Total: '+fmt(items.reduce((s,i)=>s+i.raw,0))}}},scales:{x:{stacked:true,ticks:{maxRotation:45,color:t.tick},grid:{color:t.grid}},y:{stacked:true,ticks:{callback:v=>'$'+(v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v),color:t.tick},grid:{color:t.grid}}}}});
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:t.legend,usePointStyle:true,pointStyle:'circle',padding:12,boxWidth:8,boxHeight:8}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),footer:items=>'Total: '+fmt(items.reduce((s,i)=>s+i.raw,0))}}},scales:{x:{stacked:true,ticks:{maxRotation:45,color:t.tick},grid:{color:t.grid}},y:{stacked:true,ticks:{callback:v=>'$'+(v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v),color:t.tick},grid:{color:t.grid}}}}});
+  renderInvAccountLegend();
+}
+function renderInvAccountLegend(){
+  const el=document.getElementById('inv-account-legend');if(!el)return;
+  const groups=getProbateByTarget();
+  const allTargets=['tspBal','rothBalMe','rothBalWife','taxBal','savBal','cryptoBal','goldBal'];
+  let items=[];
+  allTargets.forEach(f=>{if(groups[f])items=items.concat(groups[f]);});
+  if(items.length===0){el.innerHTML='';return;}
+  el.innerHTML='<div style="font-size:11px;font-weight:600;color:var(--text-2);margin-bottom:6px;">Account Breakdown (Current)</div>'+
+    '<div style="display:flex;gap:12px;flex-wrap:wrap;">'+items.map(i=>
+      `<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text);">
+        <span style="width:8px;height:8px;border-radius:50%;background:${i.color};display:inline-block;flex-shrink:0;"></span>
+        <span>${i.name}</span>
+        <span style="color:var(--text-2);">(${i.typeLabel})</span>
+        <span style="font-weight:600;">${fmt(i.bal)}</span>
+      </div>`
+    ).join('')+'</div>';
 }
 function renderCashChart(){
   if(typeof Chart==='undefined')return;
@@ -2384,6 +2471,7 @@ function updateAssetCards(detId,year,row){
 }
 function showInvView(v){
   const wrap=document.getElementById('inv-chart-wrap');if(wrap)wrap.style.display=v==='chart'?'block':'none';
+  const al=document.getElementById('inv-account-legend');if(al)al.style.display=v==='chart'?'block':'none';
   document.querySelectorAll('#grp_inv .view-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&v==='table')||(i===1&&v==='chart')));
   if(v==='chart')renderInvChart();
 }
