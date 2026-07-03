@@ -726,6 +726,9 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>Spouse's Current Age</label><input type="number" id="wifeAge" value="36">
         <label>Retirement Start Month</label><input type="number" id="retireMonth" value="11">
         <label>Retirement Start Year</label><input type="number" id="retireYear" value="2033">
+        <div class="subsection-divider"></div>
+        <label>Projection Start Year</label><input type="number" id="projStartYear" value="2026" onchange="rebuildYearRange()">
+        <label>Projection End Year</label><input type="number" id="projEndYear" value="2060" onchange="rebuildYearRange()">
       </details>
       <details class="schoolblock inline-summary" open id="det_main_income" style="border-left:4px solid var(--green);">
         <summary><h3>💰 Income &amp; Pay</h3></summary>
@@ -1082,14 +1085,6 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         </details>
     </div>
 
-    <label style="display:inline-block;width:auto;margin-right:8px;text-transform:none;letter-spacing:0;font-size:13px;">
-      <input type="checkbox" id="useActuals" style="width:auto;display:inline;" onchange="runModel()"> Use Yearly Actuals (app back-calculates your % and re-projects future from your real balance)
-    </label>
-    <details id="det_actuals">
-      <summary><h2>Open Actuals Grid (years ≤ Current Year editable)</h2></summary>
-      <div class="note">Enter ACTUAL end-of-year balance + actual contributions per account. <b>Future years are grayed out until you advance the "Current Year" dropdown.</b></div>
-      <div class="actuals-wrap" id="actualsGrid"></div>
-    </details>
   </div>
 
   <!-- TAB 3: EDUCATION -->
@@ -1292,6 +1287,17 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       </div>
       <button onclick="addProbateRow('pension')" style="margin-top:8px;font-size:11px;padding:4px 12px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text);">＋ Add Row</button>
     </details>
+
+    <div style="margin-top:16px;">
+      <label style="display:inline-block;width:auto;margin-right:8px;text-transform:none;letter-spacing:0;font-size:13px;">
+        <input type="checkbox" id="useActuals" style="width:auto;display:inline;" onchange="runModel()"> Use Yearly Actuals (app back-calculates your % and re-projects future from your real balance)
+      </label>
+      <details id="det_actuals">
+        <summary><h2>Open Actuals Grid (years ≤ Current Year editable)</h2></summary>
+        <div class="note">Enter ACTUAL end-of-year balance + actual contributions per account. <b>Future years are grayed out until you advance the "Current Year" dropdown.</b></div>
+        <div class="actuals-wrap" id="actualsGrid"></div>
+      </details>
+    </div>
   </div>
 
   <!-- TAB 5: DEBTS -->
@@ -1460,7 +1466,20 @@ function chartTheme() {
 /* =======================================================
    CONSTANTS & CONFIG
    ======================================================= */
-const Y0=2026, YEND=2060;
+let Y0=2026, YEND=2060;
+function rebuildYearRange(){
+  const s=document.getElementById('projStartYear'),e=document.getElementById('projEndYear');
+  if(s)Y0=parseInt(s.value)||2026;
+  if(e)YEND=parseInt(e.value)||2060;
+  if(YEND<Y0+10)YEND=Y0+10;
+  const sel=document.getElementById('currentYear');
+  const cur=parseInt(sel.value)||Y0;
+  sel.innerHTML='';
+  for(let y=Y0;y<=YEND;y++){const o=document.createElement('option');o.value=y;o.textContent=y;if(y===cur)o.selected=true;sel.appendChild(o);}
+  if(cur<Y0)sel.value=Y0;
+  if(cur>YEND)sel.value=YEND;
+  runModel();
+}
 let showWife=true;
 const ACCTS=['Tsp','RothMe','RothWife','Tax','Sav','Crypto','Gold'];
 
@@ -1471,7 +1490,7 @@ const RMD_DIVISORS = {
   97:7.8,98:7.3,99:6.8,100:6.4
 };
 
-const ALL_IDS=['currentYear','age','wifeAge','retireYear','retireMonth','netPay','payRaise','promoBump','promo1Bump','promo1Month','promo1Start','promo1End','promo2Bump','promo2Month','promo2Start','promo2End','bah1','bah1Month','bah1Start','bah1End','bah2','bah2Month','bah2Start','bah2End','bahRaise','bah1Raise','bah2Raise','retSystem','yos','yosMonths','high3Pay','retGross','pensionCOLA','fedTaxPct','optSBP','myWorkManual','gsGross','gsFedTax','gsStateTax','gsIncomeStart','gsIncomeEnd','wifeManual','wifeStartYear','wifeEndYear','vaDisability','ssMe','ssMeYear','ssWife','ssWifeYear','exp1Bills','exp1Disc','exp1Start','exp1End','exp2Bills','exp2Disc','exp2Start','exp2End','exp1Inflation','exp2Inflation','tricareMo','tricareStart','tricareEnd','medInsMo','medInsStart','medInsEnd','denInsMo','denInsStart','denInsEnd','jbBuyYear','jbBuyMonth','jbSellYear','homeCost','downPct','rate','term','propTax','jbIns','jbHOA','vaFee','pcs2BuyYear','pcs2BuyMonth','pcs2SellYear','pcs2Cost','pcs2DownPct','pcs2Rate','pcs2Term','pcs2PropTax','pcs2Ins','pcs2VaFee','wakeBuyYear','wakeBuyMonth','townSel','town1Name','town1Price','town1Tax','town1Ins','town1HOA','town1School','town2Name','town2Price','town2Tax','town2Ins','town2HOA','town2School','town3Name','town3Price','town3Tax','town3Ins','town3HOA','town3School','town4Name','town4Price','town4Tax','town4Ins','town4HOA','town4School','townRate','equity2033','pcs2EquityRoll','util1Loc','util1WS','util1Gas','util1Elec','util1HOA','util1Maint','util1Start','util1End','util3Loc','util3WS','util3Gas','util3Elec','util3HOA','util3Maint','util3Start','util3End','util2Loc','util2WS','util2Gas','util2Elec','util2HOA','util2Maint','util2Start','util2End','tspContribAD','tspStopYear','rothMe','rothMeStop','rothWife','rothWifeStop','gsTsp','gsTspStart','gsTspEnd','savBal','savMonthly','savAPY','savWithdraw','savWdYear','savWdEnd','savWithdraw2','savWdYear2','savWdEnd2','tspBal','tspRet','tspRoll','rothBalMe','rothBalWife','rothRet','tspWithdraw','tspWdYear','rothWithdraw','rothWdYear','rothWifeWithdraw','rothWifeWdYear','taxBal','taxMonthly','taxStart','taxStop','taxRet','taxWithdraw','taxWdYear','taxCapGains','cryptoBal','cryptoMonthly','cryptoStart','cryptoStop','cryptoRet','cryptoWithdraw','cryptoWdYear','cryptoCapGains','goldBal','goldMonthly','goldStart','goldStop','goldRet','goldWithdraw','goldWdYear','goldCapGains','useActuals','ret529','c1GibMonths','c1GiTuition','c2GibMonths','c2GiTuition','c3GibMonths','c3GiTuition','cc1Name','cc1Bal','cc1Pmt','cc1Rate','cc1Month','cc1Start','cc1End','cc2Name','cc2Bal','cc2Pmt','cc2Rate','cc2Month','cc2Start','cc2End','cc3Name','cc3Bal','cc3Pmt','cc3Rate','cc3Month','cc3Start','cc3End','car1Name','car1Bal','car1Pmt','car1Rate','car1Month','car1Start','car1End','car2Name','car2Bal','car2Pmt','car2Rate','car2Month','car2Start','car2End','loanName','loanBal','loanPmt','loanRate','loanMonth','loanStart','loanEnd'];
+const ALL_IDS=['currentYear','projStartYear','projEndYear','age','wifeAge','retireYear','retireMonth','netPay','payRaise','promoBump','promo1Bump','promo1Month','promo1Start','promo1End','promo2Bump','promo2Month','promo2Start','promo2End','bah1','bah1Month','bah1Start','bah1End','bah2','bah2Month','bah2Start','bah2End','bahRaise','bah1Raise','bah2Raise','retSystem','yos','yosMonths','high3Pay','retGross','pensionCOLA','fedTaxPct','optSBP','myWorkManual','gsGross','gsFedTax','gsStateTax','gsIncomeStart','gsIncomeEnd','wifeManual','wifeStartYear','wifeEndYear','vaDisability','ssMe','ssMeYear','ssWife','ssWifeYear','exp1Bills','exp1Disc','exp1Start','exp1End','exp2Bills','exp2Disc','exp2Start','exp2End','exp1Inflation','exp2Inflation','tricareMo','tricareStart','tricareEnd','medInsMo','medInsStart','medInsEnd','denInsMo','denInsStart','denInsEnd','jbBuyYear','jbBuyMonth','jbSellYear','homeCost','downPct','rate','term','propTax','jbIns','jbHOA','vaFee','pcs2BuyYear','pcs2BuyMonth','pcs2SellYear','pcs2Cost','pcs2DownPct','pcs2Rate','pcs2Term','pcs2PropTax','pcs2Ins','pcs2VaFee','wakeBuyYear','wakeBuyMonth','townSel','town1Name','town1Price','town1Tax','town1Ins','town1HOA','town1School','town2Name','town2Price','town2Tax','town2Ins','town2HOA','town2School','town3Name','town3Price','town3Tax','town3Ins','town3HOA','town3School','town4Name','town4Price','town4Tax','town4Ins','town4HOA','town4School','townRate','equity2033','pcs2EquityRoll','util1Loc','util1WS','util1Gas','util1Elec','util1HOA','util1Maint','util1Start','util1End','util3Loc','util3WS','util3Gas','util3Elec','util3HOA','util3Maint','util3Start','util3End','util2Loc','util2WS','util2Gas','util2Elec','util2HOA','util2Maint','util2Start','util2End','tspContribAD','tspStopYear','rothMe','rothMeStop','rothWife','rothWifeStop','gsTsp','gsTspStart','gsTspEnd','savBal','savMonthly','savAPY','savWithdraw','savWdYear','savWdEnd','savWithdraw2','savWdYear2','savWdEnd2','tspBal','tspRet','tspRoll','rothBalMe','rothBalWife','rothRet','tspWithdraw','tspWdYear','rothWithdraw','rothWdYear','rothWifeWithdraw','rothWifeWdYear','taxBal','taxMonthly','taxStart','taxStop','taxRet','taxWithdraw','taxWdYear','taxCapGains','cryptoBal','cryptoMonthly','cryptoStart','cryptoStop','cryptoRet','cryptoWithdraw','cryptoWdYear','cryptoCapGains','goldBal','goldMonthly','goldStart','goldStop','goldRet','goldWithdraw','goldWdYear','goldCapGains','useActuals','ret529','c1GibMonths','c1GiTuition','c2GibMonths','c2GiTuition','c3GibMonths','c3GiTuition','cc1Name','cc1Bal','cc1Pmt','cc1Rate','cc1Month','cc1Start','cc1End','cc2Name','cc2Bal','cc2Pmt','cc2Rate','cc2Month','cc2Start','cc2End','cc3Name','cc3Bal','cc3Pmt','cc3Rate','cc3Month','cc3Start','cc3End','car1Name','car1Bal','car1Pmt','car1Rate','car1Month','car1Start','car1End','car2Name','car2Bal','car2Pmt','car2Rate','car2Month','car2Start','car2End','loanName','loanBal','loanPmt','loanRate','loanMonth','loanStart','loanEnd'];
 ['c1','c2','c3'].forEach(c=>['privStart','privEnd','privTuition','privFees','bal','mo','stop','ugStart','ugEnd','ugTuition','ugRB','rbStart','rbEnd','scholUG','gStart','gEnd','gTuition','gRB','grbStart','grbEnd','scholGrad'].forEach(s=>ALL_IDS.push(c+s)));
 
 /* =======================================================
@@ -1499,8 +1518,16 @@ function showGroup(g){
 }
 function toggleWife(state){showWife=state;renderCashFlow();document.getElementById('btnWith').classList.toggle('active',state);document.getElementById('btnNo').classList.toggle('active',!state);}
 function fillYears(){
-  const s=document.getElementById('currentYear');if(s.options.length)return;
-  for(let y=Y0;y<=YEND;y++){const o=document.createElement('option');o.value=y;o.textContent=y;if(y===Y0)o.selected=true;s.appendChild(o);}
+  const ps=document.getElementById('projStartYear'),pe=document.getElementById('projEndYear');
+  if(ps)Y0=parseInt(ps.value)||2026;
+  if(pe)YEND=parseInt(pe.value)||2060;
+  if(YEND<Y0+10)YEND=Y0+10;
+  const s=document.getElementById('currentYear');
+  const cur=parseInt(s.value)||Y0;
+  s.innerHTML='';
+  for(let y=Y0;y<=YEND;y++){const o=document.createElement('option');o.value=y;o.textContent=y;if(y===cur)o.selected=true;s.appendChild(o);}
+  if(cur<Y0)s.value=Y0;
+  if(cur>YEND)s.value=YEND;
 }
 
 /* =======================================================
@@ -1784,7 +1811,7 @@ function attachAutoSave(){ALL_IDS.forEach(id=>{const el=document.getElementById(
    ======================================================= */
 function buildActualsGrid(){
   const wrap=document.getElementById('actualsGrid');
-  const curYear=parseInt(document.getElementById('currentYear').value)||2026;
+  const curYear=parseInt(document.getElementById('currentYear').value)||Y0;
   const labels={Tsp:'Actual TSP',RothMe:'Actual My Roth',RothWife:'Actual Spouse Roth',Tax:'Actual Taxable',Sav:'Actual Savings',Crypto:'Actual Crypto',Gold:'Actual Gold/Silver'};
   let h='<table><tr><th>Year</th>';ACCTS.forEach(a=>{h+=`<th>${labels[a]} Bal</th><th>${labels[a]} Contrib</th>`;});h+='</tr>';
   for(let y=Y0;y<=YEND;y++){
@@ -2037,7 +2064,7 @@ function runModel(){
 
   const accCashFlow={};
   let runningCF=0;
-  for(let y=2026;y<=YEND;y++){
+  for(let y=Y0;y<=YEND;y++){
     if(y<2027){accCashFlow[y]=0;continue;}
     const ip=incomeParts(y);const spouse=showWife?ip.spouse:0;const combined=ip.mine+spouse;
     const bah=bahForYear(y);const home=homeForYear(y);const util=utilForYear(y);const debtPmt=debtPaymentMonthly(y);const exp=expensesMonthly(y,true);const inv=investMonthly(y);
@@ -2073,8 +2100,8 @@ function runModel(){
   }
   document.getElementById('dashboard').innerHTML=
     card('Current ('+curYear+')',nw(curYear))+
-    card('Age '+myAge(2040)+' (2040)',nw(2040))+
-    card('Age '+myAge(2060)+' (2060)',nw(2060));
+    card('Age '+myAge(Math.round((Y0+YEND)/2))+' ('+Math.round((Y0+YEND)/2)+')',nw(Math.round((Y0+YEND)/2)))+
+    card('Age '+myAge(YEND)+' ('+YEND+')',nw(YEND));
 
   (function(){
     const n=nw(curYear);
@@ -2095,12 +2122,12 @@ function runModel(){
 
   (function(){
     const cd={years:[],tsp:[],rothMe:[],rothWife:[],tax:[],sav:[],crypto:[],gold:[],netWorth:[],liquid:[],retire:[],annualSurplus:[]};
-    for(let y=2026;y<=2060;y++){
+    for(let y=Y0;y<=YEND;y++){
       const p=proj[y];if(!p)continue;
       cd.years.push(y);cd.tsp.push(p.Tsp||0);cd.rothMe.push(p.RothMe||0);cd.rothWife.push(p.RothWife||0);cd.tax.push(p.Tax||0);cd.sav.push(p.Sav||0);cd.crypto.push(p.Crypto||0);cd.gold.push(p.Gold||0);
       const n=nw(y);cd.netWorth.push(n.netWithMort);cd.liquid.push(n.liquid);cd.retire.push(n.retire);
     }
-    for(let y=2027;y<=2060;y++){
+    for(let y=Y0+1;y<=YEND;y++){
       const ip=incomeParts(y);
       const disc=ip.mine+(showWife?ip.spouse:0)+bahForYear(y)-homeForYear(y)-utilForYear(y)-debtPaymentMonthly(y)-expensesMonthly(y,true)-investMonthly(y);
       cd.annualSurplus.push({y,v:disc*12});
@@ -2208,7 +2235,7 @@ function renderCashFlow(){
   let h=`<p style="font-size:12px;color:var(--text-2);padding:8px 8px 0;"><em>Home auto-switches: PCS#1 (${c.jbBuy>0?c.jbBuy:'—'}) → ${townName} (${c.wakeBuy}+). ${showWife?'<b>WITH spouse income.</b>':'<b>WITHOUT spouse income.</b>'}</em></p>`;
   h+='<table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Status</th><th>My Net/mo</th><th>Spouse/mo</th><th>Combined/mo</th><th>BAH/mo</th><th>SBP/mo</th><th>Home/mo</th><th>Utils/mo</th><th>Debt/mo</th><th>Exp/mo</th><th>Invest/mo</th><th>Surplus/mo</th><th>Annual</th><th>Projected Net Worth</th></tr>';
   let total=0;
-  for(let y=2027;y<=2060;y++){
+  for(let y=Y0+1;y<=YEND;y++){
     const ip=incomeParts(y);const spouse=showWife?ip.spouse:0;const combined=ip.mine+spouse;
     const bah=bahForYear(y);const home=homeForYear(y);const util=utilForYear(y);const debtPmt=debtPaymentMonthly(y);const exp=expensesMonthly(y,true);const inv=investMonthly(y);
     const disc=combined+bah-home-util-debtPmt-exp-inv;total+=disc*12;
@@ -2238,7 +2265,7 @@ function buildInvGroup(){
   html+='<div id="inv-account-legend" style="display:none;padding:8px 12px;margin-top:6px;"></div>';
   html+=`<div class="panel"><details id="det_tsp_roth" ${getOpen('det_tsp_roth')}><summary><h2>4. TSP & Roth IRA Year-by-Year Projection</h2></summary>`;
   html+='<div style="display:flex;gap:16px;align-items:flex-start;"><div class="table-wrapper" style="flex:1 1 auto;min-width:0;"><table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Proj TSP</th><th>Actual TSP</th><th>Proj My Roth</th><th>Actual My Roth</th><th>Proj Spouse Roth</th><th>Actual Spouse Roth</th><th>TSP W/D</th><th>My Roth W/D</th><th>Spouse Roth W/D</th><th>Total W/D</th><th>Proj Combined</th><th>Actual Combined</th></tr>';
-  for(let y=2026;y<=2060;y++){
+  for(let y=Y0;y<=YEND;y++){
     const p=proj[y],a=actual[y],wd=projWd[y],ha=hasActual[y]||{};if(!p)continue;
     let tspWd=wd.Tsp*12,rothMeWd=wd.RothMe*12,rothWifeWd=wd.RothWife*12,totWd=tspWd+rothMeWd+rothWifeWd;
     let rc=(y===jbSell)?'retire-row':(locked(y)?'locked':'');if(y===ctx.curYear)rc+=' current-year-row';
@@ -2260,7 +2287,7 @@ function buildInvGroup(){
     if(!window._assetCards)window._assetCards={};
     window._assetCards[detId]={};
     let cumContrib=0;
-    for(let y=2026;y<=2060;y++){
+    for(let y=Y0;y<=YEND;y++){
       const p=proj[y],a=actual[y],wd=projWd[y],ha=hasActual[y]||{};if(!p)continue;
       const con=(y>=v(startId)&&y<=v(stopId))?v(monthlyId):0;const cg=capPaid[y][key]||0;
       cumContrib+=con*12;
@@ -2318,7 +2345,7 @@ function buildInvGroup(){
   html+=`<div class="panel"><details id="det_combined_inv" ${getOpen('det_combined_inv')}><summary><h2>4d. Combined Investments Overview</h2></summary>`;
   html+='<div class="table-wrapper"><table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Proj TSP</th><th>Proj My Roth</th><th>Proj Spouse Roth</th><th>Proj Taxable</th><th>Proj Crypto</th><th>Proj Gold</th><th>Proj Combined</th><th>Actual Combined</th><th>Variance (A−P)</th><th>Proj YoY%</th><th>Act YoY%</th></tr>';
   window._assetCards['det_combined_inv']={};
-  for(let y=2026;y<=2060;y++){
+  for(let y=Y0;y<=YEND;y++){
     const p=proj[y];if(!p)continue;
     const act=actual[y]||{};const ha=hasActual[y]||{};
     const pp=proj[y-1];
@@ -2545,13 +2572,13 @@ function buildEduGroup(){
   html+='<div class="collapse-row"><button onclick="toggleAllDetails(\'grp_edu\',true)">▼ Expand All</button><button onclick="toggleAllDetails(\'grp_edu\',false)">▲ Collapse All</button></div>';
   const ret=v('ret529')/100,mr=Math.pow(1+ret,1/12)-1;
   function giValue(prefix){const gm=v(prefix+'GibMonths'),giT=v(prefix+'GiTuition');return (gm/9)*giT+(gm/9)*1000;}
-  function p529(bal,monthly,stopYear){let b=bal;const n=(stopYear-2026)*12+6;for(let i=0;i<n;i++)b=b*(1+mr)+monthly;return b;}
+  function p529(bal,monthly,stopYear){let b=bal;const n=(stopYear-Y0)*12+6;for(let i=0;i<n;i++)b=b*(1+mr)+monthly;return b;}
   const kids=[{id:'c1',name:'Child 1'},{id:'c2',name:'Child 2'},{id:'c3',name:'Child 3'}];
   const kidData={};
 
   html+=`<div class="panel"><details id="det_priv_school" ${getOpen('det_priv_school')}><summary><h2>5. Private K-12 Schooling Costs</h2></summary>`;
   html+='<div class="table-wrapper"><table><tr><th>Year</th><th>Child 1</th><th>Child 2</th><th>Child 3</th><th>Combined Yearly Cost</th></tr>';
-  let totalPriv=0,minPrivY=2060,maxPrivY=2026;
+  let totalPriv=0,minPrivY=YEND,maxPrivY=Y0;
   kids.forEach(k=>{let s=v(k.id+'privStart'),e=v(k.id+'privEnd');if(s>0&&s<minPrivY)minPrivY=s;if(e>0&&e>maxPrivY)maxPrivY=e;});
   if(minPrivY<=maxPrivY){
     for(let y=minPrivY;y<=maxPrivY;y++){
