@@ -632,6 +632,10 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
   details.schoolblock > summary { background: var(--surface-3); border-radius: 4px; padding: 8px 10px; margin: -4px -6px 8px; }
   .grid3, .grid4 { gap: 8px; }
 }
+#det_pcs_compare_help > summary { list-style: none; }
+#det_pcs_compare_help > summary::-webkit-details-marker { display: none; }
+.pcs-help-arrow { display: inline-block; margin-right: 4px; font-size: 10px; transition: transform 0.15s; }
+#det_pcs_compare_help[open] .pcs-help-arrow { transform: rotate(90deg); }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
@@ -652,16 +656,16 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
   <div class="sidebar-label">Core Inputs</div>
   <a class="sidebar-link" id="sl-1" onclick="sideNav('input','1')" title="Main Data">📋<span class="sb-link-text"> Main Data</span></a>
   <a class="sidebar-link" id="sl-H" onclick="sideNav('input','H')" title="Housing &amp; Real Estate">🏡<span class="sb-link-text"> Housing &amp; Real Estate</span></a>
-  <a class="sidebar-link" id="sl-2" onclick="sideNav('input','2')" title="Investments">📈<span class="sb-link-text"> Investments</span></a>
-  <a class="sidebar-link" id="sl-3" onclick="sideNav('input','3')" title="Education">🎓<span class="sb-link-text"> Education</span></a>
+  <a class="sidebar-link" id="sl-2" onclick="sideNavInvestments('input')" title="Investments">📈<span class="sb-link-text"> Investments</span></a>
+  <a class="sidebar-link" id="sl-3" onclick="sideNavEducation('input')" title="Education">🎓<span class="sb-link-text"> Education</span></a>
   <a class="sidebar-link" id="sl-5" onclick="sideNav('input','5')" title="Debt">💳<span class="sb-link-text"> Debt</span></a>
   <a class="sidebar-link" id="sl-P" onclick="sideNav('input','P')" title="Probate Log">📒<span class="sb-link-text"> Probate Log</span></a>
 
   <div class="sidebar-divider"></div>
   <div class="sidebar-label">Results</div>
   <a class="sidebar-link" id="sl-cash" onclick="sideNav('result','cash')" title="Cash Flow">💵<span class="sb-link-text"> Cash Flow</span></a>
-  <a class="sidebar-link" id="sl-inv"  onclick="sideNav('result','inv')" title="Investments">📊<span class="sb-link-text"> Investments</span></a>
-  <a class="sidebar-link" id="sl-edu"  onclick="sideNav('result','edu')" title="Education">🎓<span class="sb-link-text"> Education</span></a>
+  <a class="sidebar-link" id="sl-inv"  onclick="sideNavInvestments('result')" title="Investments">📊<span class="sb-link-text"> Investments</span></a>
+  <a class="sidebar-link" id="sl-edu"  onclick="sideNavEducation('result')" title="Education">🎓<span class="sb-link-text"> Education</span></a>
 
   <div class="sidebar-divider"></div>
   <div class="sb-run-wrap" style="padding:10px 16px 6px;">
@@ -697,9 +701,25 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
     <h2 style="margin-top:0;border-left:5px solid var(--gold);padding-left:12px;white-space:nowrap;">📊 Net Worth Dashboard</h2>
     <div id="nw-mini-cards" style="display:none;gap:8px;flex-wrap:wrap;flex:1;justify-content:flex-end;"></div>
   </div>
-  <div class="view-toggle" style="margin-top:12px;">
-    <button class="view-btn active" onclick="showDashView('cards')">🃏 Cards</button>
-    <button class="view-btn"        onclick="showDashView('chart')">📊 Chart</button>
+  <div class="view-toggle" style="margin-top:12px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <div>
+      <button class="view-btn active" onclick="showDashView('cards')">🃏 Cards</button>
+      <button class="view-btn"        onclick="showDashView('chart')">📊 Chart</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <label style="font-size:11px;margin:0;cursor:pointer;display:flex;align-items:center;gap:6px;">
+          <input type="checkbox" id="showTodaysDollars" onchange="runModel();autoSave();" style="margin:0;">
+          <b>Show in Today's Dollars</b>
+        </label>
+        <span style="font-size:10px;color:var(--text-3);">Display Discount %/yr:</span>
+        <input type="number" id="inflationRate" value="3" step="0.1" style="width:50px;padding:2px 4px;font-size:11px;" onchange="runModel();autoSave();">
+        <span class="frp-tt" onmouseover="this.querySelector('.frp-tt-b').style.opacity='1'" onmouseout="this.querySelector('.frp-tt-b').style.opacity='0'" onclick="const t=document.getElementById('discountHelp');t.style.display=(t.style.display==='none'?'block':'none');" style="position:relative;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:700;cursor:pointer;user-select:none;">?<span class="frp-tt-b" style="position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.05s;z-index:1000;">Click for details</span></span>
+      </div>
+      <div id="discountHelp" style="display:none;font-size:10px;color:var(--text-2);line-height:1.4;max-width:420px;padding:4px 0;">
+        <b>Display-only.</b> Discounts future dollars to today's purchasing power. Does not change any calculation — to change model inputs, use <b>Expected Inflation to Expenses %</b> under Monthly Expenses #1 / #2.
+      </div>
+    </div>
   </div>
   <div class="dash" id="dashboard"><em style="color:var(--text-3);">Click "Run Projections" to see results.</em></div>
   <div class="chart-wrap" id="nw-chart-wrap" style="display:none"><canvas id="chart-nw"></canvas></div>
@@ -707,9 +727,9 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
   <details style="margin-top:10px;">
     <summary style="font-size:12px;color:var(--blue);cursor:pointer;font-weight:600;">How are these numbers calculated?</summary>
     <div class="note" style="margin-top:6px;line-height:1.6;">
-      <b>Liquid Cash</b> — Your Savings + Taxable Brokerage + Gold/Silver balances, plus any cash that has built up from yearly income exceeding expenses (or minus any shortfall if expenses exceed income). This represents money you can access without penalties.<br><br>
-      <b>Net Worth (Incl. Home)</b> — Liquid Cash + Retirement accounts (TSP, Roth IRA) + projected home equity. Your total picture including everything you own.<br><br>
-      <b>Net Worth (Excl. Home)</b> — Liquid Cash + Retirement accounts only, no home equity. Use this to gauge financial position independent of real estate.<br><br>
+      <b>Liquid Cash</b> — Your Savings + Taxable Brokerage + Gold/Silver balances, plus any cash that has built up from yearly income exceeding expenses (or minus any shortfall if expenses exceed income). This represents money you can access without penalties.<br>
+      <b>Net Worth (Incl. Home)</b> — Liquid Cash + Retirement accounts (TSP, Roth IRA) + projected home equity. Your total picture including everything you own.<br>
+      <b>Net Worth (Excl. Home)</b> — Liquid Cash + Retirement accounts only, no home equity. Use this to gauge financial position independent of real estate.<br>
       <b>Excl. Home &amp; Retirement</b> — Liquid Cash only. The most conservative view — what you could access today without selling your home or triggering early-withdrawal penalties on retirement accounts.
     </div>
   </details>
@@ -785,6 +805,12 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>Spouse Net Monthly Income (After Tax)</label><input type="number" id="wifeManual" value="">
         <label>Spouse Income START Year</label><input type="number" id="wifeStartYear" value="2034">
         <label>Spouse Income END Year</label><input type="number" id="wifeEndYear" value="2055">
+        <div class="subsection-divider"></div>
+        <b style="font-size:12px;color:var(--text);">🏛️ Social Security</b>
+        <label>YOUR SS Monthly Benefit</label><input type="number" id="ssMe" value="">
+        <label>YOUR SS Start Year</label><input type="number" id="ssMeYear" value="2048">
+        <label>SPOUSE SS Monthly Benefit</label><input type="number" id="ssWife" value="">
+        <label>SPOUSE SS Start Year</label><input type="number" id="ssWifeYear" value="2057">
       </details>
     </div>
 
@@ -821,12 +847,24 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>Dental Ins Start Year</label><input type="number" id="denInsStart" value="">
         <label>Dental Ins End Year</label><input type="number" id="denInsEnd" value="">
       </details>
-      <details class="schoolblock inline-summary" open id="det_main_ss" style="border-left:4px solid var(--blue-light);">
-        <summary><h3>🏛️ Social Security</h3></summary>
-        <label>YOUR SS Monthly Benefit</label><input type="number" id="ssMe" value="">
-        <label>YOUR SS Start Year</label><input type="number" id="ssMeYear" value="2048">
-        <label>SPOUSE SS Monthly Benefit</label><input type="number" id="ssWife" value="">
-        <label>SPOUSE SS Start Year</label><input type="number" id="ssWifeYear" value="2057">
+      <details class="schoolblock inline-summary" open id="det_main_lifeins" style="border-left:4px solid var(--gold);">
+        <summary><h3>🛡️ Life Insurance</h3></summary>
+        <div style="font-size:10px;color:var(--text-3);margin-bottom:6px;">VGLI / Term / Whole — treated as a monthly healthcare-adjacent expense.</div>
+        <label>Opt into Life Insurance?</label>
+        <select id="optLifeIns">
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+        <label>Policy Type</label>
+        <select id="lifeInsType">
+          <option value="vgli">VGLI (Post-Retirement)</option>
+          <option value="term">Private Term</option>
+          <option value="whole">Whole Life</option>
+        </select>
+        <label>Monthly Premium</label><input type="number" id="lifeInsPremium" value="">
+        <label>Face Value (info only)</label><input type="number" id="lifeInsFace" value="">
+        <label>Premium START Year</label><input type="number" id="lifeInsStart" value="">
+        <label>Premium END Year</label><input type="number" id="lifeInsEnd" value="">
       </details>
     </div>
   </div>
@@ -843,36 +881,59 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <summary><h3>🏠 PCS #1</h3></summary>
       <div class="grid3">
         <div>
-          <b style="color:var(--text);">PCS #1 Home</b>
-          <label>Purchase Year (0 = never)</label><input type="number" id="jbBuyYear" value="2027">
-          <label>Purchase Month (1-12)</label><input type="number" id="jbBuyMonth" value="7">
-          <label>Sale Year</label><input type="number" id="jbSellYear" value="2033">
-          <label>Home Cost (total)</label><input type="number" id="homeCost" value="">
-          <label>Down Payment %</label><input type="number" id="downPct" value="5" step="0.5">
-          <label>Loan Rate %</label><input type="number" id="rate" value="6.25" step="0.01">
-          <label>Loan Term (yrs)</label><input type="number" id="term" value="30">
-          <label>Property Tax (annual)</label><input type="number" id="propTax" value="">
-          <label>Insurance (annual)</label><input type="number" id="jbIns" value="">
-          <label>VA Funding Fee % (if VA)</label><input type="number" id="vaFee" value="1.65" step="0.05">
+          <b style="color:var(--text);">PCS #1 Housing</b>
+          <label>Housing Type <span style="font-size:10px;color:var(--text-3);">(controls costs &amp; BAH)</span></label>
+          <select id="jbHousingType" onchange="applyHousingVisibility();runModel();autoSave();">
+            <option value="purchase">🏠 Purchase Home (mortgage)</option>
+            <option value="rental">🏢 Rental (monthly rent)</option>
+            <option value="onbase">🪖 On-Base Housing (no BAH)</option>
+          </select>
+          <div id="jbRentBlock">
+            <label>Monthly Rent</label><input type="number" id="jbRent" value="">
+            <label>Rent START Year</label><input type="number" id="jbRentStart" value="">
+            <label>Rent END Year</label><input type="number" id="jbRentEnd" value="">
+          </div>
+          <div id="jbPurchaseBlock">
+            <div class="subsection-divider"></div>
+            <b style="color:var(--text);font-size:11px;">Purchase Details</b>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
+              <div><label>Purchase Year (0 = never)</label><input type="number" id="jbBuyYear" value="2027"></div>
+              <div><label>Purchase Month (1-12)</label><input type="number" id="jbBuyMonth" value="7"></div>
+              <div><label>Sale Year</label><input type="number" id="jbSellYear" value="2033"></div>
+              <div><label>Home Cost (total)</label><input type="number" id="homeCost" value=""></div>
+              <div><label>Down Payment %</label><input type="number" id="downPct" value="5" step="0.5"></div>
+              <div><label>Loan Rate %</label><input type="number" id="rate" value="6.25" step="0.01"></div>
+              <div><label>Loan Term (yrs)</label><input type="number" id="term" value="30"></div>
+              <div><label>Property Tax (annual)</label><input type="number" id="propTax" value=""></div>
+              <div><label>Insurance (annual)</label><input type="number" id="jbIns" value=""></div>
+              <div><label>VA Funding Fee % (if VA)</label><input type="number" id="vaFee" value="1.65" step="0.05"></div>
+            </div>
+          </div>
         </div>
         <div style="border-left:3px solid var(--blue);padding-left:12px;">
           <b style="color:var(--text);">⚡ PCS #1 Utilities &amp; Upkeep</b>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
+            <div><label>START Year</label><input type="number" id="util1Start" value=""></div>
+            <div><label>END Year</label><input type="number" id="util1End" value=""></div>
+          </div>
           <label>Location (free text)</label><input type="text" id="util1Loc" value="">
-          <label>Water / Sewer /mo</label><input type="number" id="util1WS" value="">
-          <label>Gas /mo</label><input type="number" id="util1Gas" value="">
-          <label>Electric /mo</label><input type="number" id="util1Elec" value="">
-          <label>HOA /mo</label><input type="number" id="util1HOA" value="">
-          <label>Repairs &amp; Maint /mo</label><input type="number" id="util1Maint" value="">
-          <label>START Year</label><input type="number" id="util1Start" value="">
-          <label>END Year</label><input type="number" id="util1End" value="">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
+            <div><label>Water / Sewer /mo</label><input type="number" id="util1WS" value=""></div>
+            <div><label>Gas /mo</label><input type="number" id="util1Gas" value=""></div>
+            <div><label>Electric /mo</label><input type="number" id="util1Elec" value=""></div>
+            <div><label>HOA /mo</label><input type="number" id="util1HOA" value=""></div>
+            <div><label>Repairs &amp; Maint /mo</label><input type="number" id="util1Maint" value=""></div>
+          </div>
         </div>
         <div style="border-left:3px solid var(--green);padding-left:12px;">
-          <b style="color:var(--text);">🪖 PCS #1 Allowances (BAH)</b>
-          <label>BAH #1 Monthly</label><input type="number" id="bah1" value="">
-          <label>BAH #1 Annual Increase %</label><input type="number" id="bah1Raise" value="1.2" step="0.1">
-          <label>BAH #1 Start Month (1-12)</label><input type="number" id="bah1Month" value="7">
-          <label>BAH #1 Start Year</label><input type="number" id="bah1Start" value="">
-          <label>BAH #1 End Year</label><input type="number" id="bah1End" value="">
+          <b style="color:var(--text);">🪖 PCS #1 (BAH)</b>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
+            <div><label>BAH #1 Start Year</label><input type="number" id="bah1Start" value=""></div>
+            <div><label>BAH #1 End Year</label><input type="number" id="bah1End" value=""></div>
+            <div><label>BAH #1 Monthly</label><input type="number" id="bah1" value=""></div>
+            <div><label>BAH #1 Annual Increase %</label><input type="number" id="bah1Raise" value="1.2" step="0.1"></div>
+            <div><label>BAH #1 Start Month (1-12)</label><input type="number" id="bah1Month" value="7"></div>
+          </div>
         </div>
       </div>
     </details>
@@ -881,70 +942,97 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <summary><h3>🏠 PCS #2</h3></summary>
       <div class="grid3">
         <div>
-          <b style="color:var(--text);">PCS #2 Home</b>
-          <label>Purchase Year (0 = never)</label><input type="number" id="pcs2BuyYear" value="">
-          <label>Purchase Month (1-12)</label><input type="number" id="pcs2BuyMonth" value="1">
-          <label>Sale Year</label><input type="number" id="pcs2SellYear" value="">
-          <label>Home Cost (total)</label><input type="number" id="pcs2Cost" value="">
-          <label>Down Payment %</label><input type="number" id="pcs2DownPct" value="5" step="0.5">
-          <label>Loan Rate %</label><input type="number" id="pcs2Rate" value="6.0" step="0.01">
-          <label>Loan Term (yrs)</label><input type="number" id="pcs2Term" value="30">
-          <label>Property Tax (annual)</label><input type="number" id="pcs2PropTax" value="">
-          <label>Insurance (annual)</label><input type="number" id="pcs2Ins" value="">
-          <label>VA Funding Fee % (if VA)</label><input type="number" id="pcs2VaFee" value="1.65" step="0.05">
+          <b style="color:var(--text);">PCS #2 Housing</b>
+          <label>Housing Type <span style="font-size:10px;color:var(--text-3);">(controls costs &amp; BAH)</span></label>
+          <select id="pcs2HousingType" onchange="applyHousingVisibility();runModel();autoSave();">
+            <option value="purchase">🏠 Purchase Home (mortgage)</option>
+            <option value="rental">🏢 Rental (monthly rent)</option>
+            <option value="onbase">🪖 On-Base Housing (no BAH)</option>
+          </select>
+          <div id="pcs2RentBlock">
+            <label>Monthly Rent</label><input type="number" id="pcs2Rent" value="">
+            <label>Rent START Year</label><input type="number" id="pcs2RentStart" value="">
+            <label>Rent END Year</label><input type="number" id="pcs2RentEnd" value="">
+          </div>
+          <div id="pcs2PurchaseBlock">
+            <div class="subsection-divider"></div>
+            <b style="color:var(--text);font-size:11px;">Purchase Details</b>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
+              <div><label>Purchase Year (0 = never)</label><input type="number" id="pcs2BuyYear" value=""></div>
+              <div><label>Purchase Month (1-12)</label><input type="number" id="pcs2BuyMonth" value="1"></div>
+              <div><label>Sale Year</label><input type="number" id="pcs2SellYear" value=""></div>
+              <div><label>Home Cost (total)</label><input type="number" id="pcs2Cost" value=""></div>
+              <div><label>Down Payment %</label><input type="number" id="pcs2DownPct" value="5" step="0.5"></div>
+              <div><label>Loan Rate %</label><input type="number" id="pcs2Rate" value="6.0" step="0.01"></div>
+              <div><label>Loan Term (yrs)</label><input type="number" id="pcs2Term" value="30"></div>
+              <div><label>Property Tax (annual)</label><input type="number" id="pcs2PropTax" value=""></div>
+              <div><label>Insurance (annual)</label><input type="number" id="pcs2Ins" value=""></div>
+              <div><label>VA Funding Fee % (if VA)</label><input type="number" id="pcs2VaFee" value="1.65" step="0.05"></div>
+            </div>
+          </div>
         </div>
         <div style="border-left:3px solid var(--blue);padding-left:12px;">
           <b style="color:var(--text);">⚡ PCS #2 Utilities &amp; Upkeep</b>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
+            <div><label>START Year</label><input type="number" id="util3Start" value=""></div>
+            <div><label>END Year</label><input type="number" id="util3End" value=""></div>
+          </div>
           <label>Location (free text)</label><input type="text" id="util3Loc" value="">
-          <label>Water / Sewer /mo</label><input type="number" id="util3WS" value="">
-          <label>Gas /mo</label><input type="number" id="util3Gas" value="">
-          <label>Electric /mo</label><input type="number" id="util3Elec" value="">
-          <label>HOA /mo</label><input type="number" id="util3HOA" value="">
-          <label>Repairs &amp; Maint /mo</label><input type="number" id="util3Maint" value="">
-          <label>START Year</label><input type="number" id="util3Start" value="">
-          <label>END Year</label><input type="number" id="util3End" value="">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
+            <div><label>Water / Sewer /mo</label><input type="number" id="util3WS" value=""></div>
+            <div><label>Gas /mo</label><input type="number" id="util3Gas" value=""></div>
+            <div><label>Electric /mo</label><input type="number" id="util3Elec" value=""></div>
+            <div><label>HOA /mo</label><input type="number" id="util3HOA" value=""></div>
+            <div><label>Repairs &amp; Maint /mo</label><input type="number" id="util3Maint" value=""></div>
+          </div>
         </div>
         <div style="border-left:3px solid var(--green);padding-left:12px;">
-          <b style="color:var(--text);">🪖 PCS #2 Allowances (BAH)</b>
-          <label>BAH #2 Monthly</label><input type="number" id="bah2" value="">
-          <label>BAH #2 Annual Increase %</label><input type="number" id="bah2Raise" value="1.2" step="0.1">
-          <label>BAH #2 Start Month (1-12)</label><input type="number" id="bah2Month" value="1">
-          <label>BAH #2 Start Year</label><input type="number" id="bah2Start" value="">
-          <label>BAH #2 End Year</label><input type="number" id="bah2End" value="">
+          <b style="color:var(--text);">🪖 PCS #2 (BAH)</b>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
+            <div><label>BAH #2 Start Year</label><input type="number" id="bah2Start" value=""></div>
+            <div><label>BAH #2 End Year</label><input type="number" id="bah2End" value=""></div>
+            <div><label>BAH #2 Monthly</label><input type="number" id="bah2" value=""></div>
+            <div><label>BAH #2 Annual Increase %</label><input type="number" id="bah2Raise" value="1.2" step="0.1"></div>
+            <div><label>BAH #2 Start Month (1-12)</label><input type="number" id="bah2Month" value="1"></div>
+          </div>
         </div>
       </div>
     </details>
 
     <details class="schoolblock inline-summary" open id="det_ret_home">
       <summary><h3>🏡 Retirement Home</h3></summary>
-      <div class="grid3">
+      <div class="grid3" style="grid-template-columns:1fr 1fr;">
         <div>
           <b style="color:var(--text);">Retirement Home</b>
-          <label>Purchase Year</label><input type="number" id="wakeBuyYear" value="2034">
-          <label>Purchase Month (1-12)</label><input type="number" id="wakeBuyMonth" value="1">
-          <label>Retirement Loan Rate %</label><input type="number" id="townRate" value="6.0" step="0.01">
-          <label>PCS #1 Equity Rollover (Down Pmt)</label><input type="number" id="equity2033" value="">
-          <label>PCS #2 Equity Rollover (Down Pmt)</label><input type="number" id="pcs2EquityRoll" value="">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
+            <div><label>Purchase Year</label><input type="number" id="wakeBuyYear" value="2034"></div>
+            <div><label>Purchase Month (1-12)</label><input type="number" id="wakeBuyMonth" value="1"></div>
+            <div><label>Retirement Loan Rate %</label><input type="number" id="townRate" value="6.0" step="0.01"></div>
+            <div><label>PCS #1 Equity Rollover (Down Pmt)</label><input type="number" id="equity2033" value=""></div>
+            <div><label>PCS #2 Equity Rollover (Down Pmt)</label><input type="number" id="pcs2EquityRoll" value=""></div>
+          </div>
         </div>
         <div style="border-left:3px solid var(--blue);padding-left:12px;">
           <b style="color:var(--text);">⚡ Retirement Utilities &amp; Upkeep</b>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
+            <div><label>START Year</label><input type="number" id="util2Start" value="2034"></div>
+            <div><label>END Year</label><input type="number" id="util2End" value="2060"></div>
+          </div>
           <label>Location (free text)</label><input type="text" id="util2Loc" value="Wake County">
-          <label>Water / Sewer /mo</label><input type="number" id="util2WS" value="">
-          <label>Gas /mo</label><input type="number" id="util2Gas" value="">
-          <label>Electric /mo</label><input type="number" id="util2Elec" value="">
-          <label>HOA /mo</label><input type="number" id="util2HOA" value="">
-        </div>
-        <div style="padding-left:12px;">
-          <label>Repairs &amp; Maint /mo</label><input type="number" id="util2Maint" value="">
-          <label>START Year</label><input type="number" id="util2Start" value="2034">
-          <label>END Year</label><input type="number" id="util2End" value="2060">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
+            <div><label>Water / Sewer /mo</label><input type="number" id="util2WS" value=""></div>
+            <div><label>Gas /mo</label><input type="number" id="util2Gas" value=""></div>
+            <div><label>Electric /mo</label><input type="number" id="util2Elec" value=""></div>
+            <div><label>HOA /mo</label><input type="number" id="util2HOA" value=""></div>
+            <div><label>Repairs &amp; Maint /mo</label><input type="number" id="util2Maint" value=""></div>
+          </div>
         </div>
       </div>
 
       <div style="margin-top:16px;padding:12px;border:1px solid var(--border);border-radius:6px;">
         <b style="color:var(--text);font-size:15px;">🏘️ Compare Up to 4 Locations</b>
         <p style="font-size:12px;color:var(--text-3);margin:4px 0 6px;">Enter towns you're considering. Select <b>"Use for mortgage"</b> for the one that drives Section 3's projections. Blank rows are hidden from Table 3. Look up home prices on <a href="https://www.zillow.com/home-values/102001/united-states/" target="_blank" style="color:var(--blue);">Zillow</a> / <a href="https://www.redfin.com/us-housing-market" target="_blank" style="color:var(--blue);">Redfin</a> and school ratings on <a href="https://www.greatschools.org" target="_blank" style="color:var(--blue);">GreatSchools.org</a>.</p>
-        <p style="font-size:12px;color:var(--text-3);margin:0 0 10px;">Fill in the fields below for each town. Click the bubble on your top choice — it will automatically adjust Home/mo expenses in Section 1 Cash Flow and Section 3 Town Comparison.</p>
+        <p style="font-size:12px;color:var(--text-3);margin:0 0 10px;">Fill in the fields below for each town. Click the bubble on your top choice — it will automatically adjust Home/mo expenses in Section 1 Cash Flow and <a href="javascript:void(0)" onclick="gotoTownCompare()" style="color:var(--blue);text-decoration:underline;cursor:pointer;">Section 3 Town Comparison</a>.</p>
 
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
           <div style="padding:10px;border:1px solid var(--border);border-radius:6px;">
@@ -989,6 +1077,8 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         </div>
       </div>
     </details>
+
+    <div class="panel" id="pcs-compare-panel" style="margin-top:14px;"></div>
   </div>
 
   <!-- TAB 2: INVESTMENTS -->
@@ -999,7 +1089,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
     </div>
     <div class="grid4">
       <details class="schoolblock inline-summary" open id="det_inv_retcon" style="border-left:4px solid var(--blue);">
-          <summary><h3>📥 Retirement Contributions <a href="https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-401k-and-profit-sharing-plan-contribution-limits" target="_blank" style="font-size:10px;color:var(--blue);font-weight:400;">IRS Contribution Limits</a></h3></summary>
+          <summary><h3>📥 Retirement Contributions<br><a href="https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-401k-and-profit-sharing-plan-contribution-limits" target="_blank" style="font-size:10px;color:var(--blue);font-weight:400;">IRS Contribution Limits</a></h3></summary>
           <label>TSP Monthly (Active)</label><input type="number" id="tspContribAD" value="">
           <label>TSP STOP Year</label><input type="number" id="tspStopYear" value="2033">
           <div class="subsection-divider"></div>
@@ -1027,6 +1117,9 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         </details>
         <details class="schoolblock inline-summary" open id="det_inv_wd" style="border-left:4px solid var(--red);">
           <summary><h3>📤 Retirement Withdrawals</h3></summary>
+          <div style="font-size:11px;color:var(--text-3);margin-bottom:6px;padding:6px 8px;background:var(--surface-2);border-left:3px solid var(--blue);border-radius:4px;">
+            📌 <b>RMDs auto-enforced:</b> At age 73+, the IRS requires minimum TSP/Traditional withdrawals. If your entered monthly amount is below the RMD, it's automatically increased using the IRS Uniform Lifetime Table. Roth IRAs are exempt (no RMDs).
+          </div>
           <label>TSP Monthly Withdrawal (Auto-adjusts for RMD &gt;73)</label><input type="number" id="tspWithdraw" value="">
           <label>TSP Withdrawal Start Year</label><input type="number" id="tspWdYear" value="2040">
           <div class="subsection-divider"></div>
@@ -1495,13 +1588,31 @@ const RMD_DIVISORS = {
   97:7.8,98:7.3,99:6.8,100:6.4
 };
 
-const ALL_IDS=['currentYear','projStartYear','projEndYear','age','wifeAge','retireYear','retireMonth','netPay','payRaise','promoBump','promo1Bump','promo1Month','promo1Start','promo1End','promo2Bump','promo2Month','promo2Start','promo2End','bah1','bah1Month','bah1Start','bah1End','bah2','bah2Month','bah2Start','bah2End','bahRaise','bah1Raise','bah2Raise','retSystem','yos','yosMonths','high3Pay','retGross','pensionCOLA','fedTaxPct','optSBP','myWorkManual','gsGross','gsFedTax','gsStateTax','gsIncomeStart','gsIncomeEnd','wifeManual','wifeStartYear','wifeEndYear','vaDisability','ssMe','ssMeYear','ssWife','ssWifeYear','exp1Bills','exp1Disc','exp1Start','exp1End','exp2Bills','exp2Disc','exp2Start','exp2End','exp1Inflation','exp2Inflation','tricareMo','tricareStart','tricareEnd','medInsMo','medInsStart','medInsEnd','denInsMo','denInsStart','denInsEnd','jbBuyYear','jbBuyMonth','jbSellYear','homeCost','downPct','rate','term','propTax','jbIns','jbHOA','vaFee','pcs2BuyYear','pcs2BuyMonth','pcs2SellYear','pcs2Cost','pcs2DownPct','pcs2Rate','pcs2Term','pcs2PropTax','pcs2Ins','pcs2VaFee','wakeBuyYear','wakeBuyMonth','townSel','town1Name','town1Price','town1Tax','town1Ins','town1HOA','town1School','town2Name','town2Price','town2Tax','town2Ins','town2HOA','town2School','town3Name','town3Price','town3Tax','town3Ins','town3HOA','town3School','town4Name','town4Price','town4Tax','town4Ins','town4HOA','town4School','townRate','equity2033','pcs2EquityRoll','util1Loc','util1WS','util1Gas','util1Elec','util1HOA','util1Maint','util1Start','util1End','util3Loc','util3WS','util3Gas','util3Elec','util3HOA','util3Maint','util3Start','util3End','util2Loc','util2WS','util2Gas','util2Elec','util2HOA','util2Maint','util2Start','util2End','tspContribAD','tspStopYear','rothMe','rothMeStop','rothWife','rothWifeStop','gsTsp','gsTspStart','gsTspEnd','savBal','savMonthly','savAPY','savWithdraw','savWdYear','savWdEnd','savWithdraw2','savWdYear2','savWdEnd2','tspBal','tspRet','tspRoll','rothBalMe','rothBalWife','rothRet','tspWithdraw','tspWdYear','rothWithdraw','rothWdYear','rothWifeWithdraw','rothWifeWdYear','taxBal','taxMonthly','taxStart','taxStop','taxRet','taxWithdraw','taxWdYear','taxCapGains','cryptoBal','cryptoMonthly','cryptoStart','cryptoStop','cryptoRet','cryptoWithdraw','cryptoWdYear','cryptoCapGains','goldBal','goldMonthly','goldStart','goldStop','goldRet','goldWithdraw','goldWdYear','goldCapGains','useActuals','ret529','c1GibMonths','c1GiTuition','c2GibMonths','c2GiTuition','c3GibMonths','c3GiTuition','cc1Name','cc1Bal','cc1Pmt','cc1Rate','cc1Month','cc1Start','cc1End','cc2Name','cc2Bal','cc2Pmt','cc2Rate','cc2Month','cc2Start','cc2End','cc3Name','cc3Bal','cc3Pmt','cc3Rate','cc3Month','cc3Start','cc3End','car1Name','car1Bal','car1Pmt','car1Rate','car1Month','car1Start','car1End','car2Name','car2Bal','car2Pmt','car2Rate','car2Month','car2Start','car2End','loanName','loanBal','loanPmt','loanRate','loanMonth','loanStart','loanEnd'];
+const ALL_IDS=['currentYear','projStartYear','projEndYear','showTodaysDollars','inflationRate','age','wifeAge','retireYear','retireMonth','netPay','payRaise','promoBump','promo1Bump','promo1Month','promo1Start','promo1End','promo2Bump','promo2Month','promo2Start','promo2End','bah1','bah1Month','bah1Start','bah1End','bah2','bah2Month','bah2Start','bah2End','bahRaise','bah1Raise','bah2Raise','retSystem','yos','yosMonths','high3Pay','retGross','pensionCOLA','fedTaxPct','optSBP','optLifeIns','lifeInsType','lifeInsPremium','lifeInsFace','lifeInsStart','lifeInsEnd','jbHousingType','jbRent','jbRentStart','jbRentEnd','pcs2HousingType','pcs2Rent','pcs2RentStart','pcs2RentEnd','myWorkManual','gsGross','gsFedTax','gsStateTax','gsIncomeStart','gsIncomeEnd','wifeManual','wifeStartYear','wifeEndYear','vaDisability','ssMe','ssMeYear','ssWife','ssWifeYear','exp1Bills','exp1Disc','exp1Start','exp1End','exp2Bills','exp2Disc','exp2Start','exp2End','exp1Inflation','exp2Inflation','tricareMo','tricareStart','tricareEnd','medInsMo','medInsStart','medInsEnd','denInsMo','denInsStart','denInsEnd','jbBuyYear','jbBuyMonth','jbSellYear','homeCost','downPct','rate','term','propTax','jbIns','jbHOA','vaFee','pcs2BuyYear','pcs2BuyMonth','pcs2SellYear','pcs2Cost','pcs2DownPct','pcs2Rate','pcs2Term','pcs2PropTax','pcs2Ins','pcs2VaFee','wakeBuyYear','wakeBuyMonth','townSel','town1Name','town1Price','town1Tax','town1Ins','town1HOA','town1School','town2Name','town2Price','town2Tax','town2Ins','town2HOA','town2School','town3Name','town3Price','town3Tax','town3Ins','town3HOA','town3School','town4Name','town4Price','town4Tax','town4Ins','town4HOA','town4School','townRate','equity2033','pcs2EquityRoll','util1Loc','util1WS','util1Gas','util1Elec','util1HOA','util1Maint','util1Start','util1End','util3Loc','util3WS','util3Gas','util3Elec','util3HOA','util3Maint','util3Start','util3End','util2Loc','util2WS','util2Gas','util2Elec','util2HOA','util2Maint','util2Start','util2End','tspContribAD','tspStopYear','rothMe','rothMeStop','rothWife','rothWifeStop','gsTsp','gsTspStart','gsTspEnd','savBal','savMonthly','savAPY','savWithdraw','savWdYear','savWdEnd','savWithdraw2','savWdYear2','savWdEnd2','tspBal','tspRet','tspRoll','rothBalMe','rothBalWife','rothRet','tspWithdraw','tspWdYear','rothWithdraw','rothWdYear','rothWifeWithdraw','rothWifeWdYear','taxBal','taxMonthly','taxStart','taxStop','taxRet','taxWithdraw','taxWdYear','taxCapGains','cryptoBal','cryptoMonthly','cryptoStart','cryptoStop','cryptoRet','cryptoWithdraw','cryptoWdYear','cryptoCapGains','goldBal','goldMonthly','goldStart','goldStop','goldRet','goldWithdraw','goldWdYear','goldCapGains','useActuals','ret529','c1GibMonths','c1GiTuition','c2GibMonths','c2GiTuition','c3GibMonths','c3GiTuition','cc1Name','cc1Bal','cc1Pmt','cc1Rate','cc1Month','cc1Start','cc1End','cc2Name','cc2Bal','cc2Pmt','cc2Rate','cc2Month','cc2Start','cc2End','cc3Name','cc3Bal','cc3Pmt','cc3Rate','cc3Month','cc3Start','cc3End','car1Name','car1Bal','car1Pmt','car1Rate','car1Month','car1Start','car1End','car2Name','car2Bal','car2Pmt','car2Rate','car2Month','car2Start','car2End','loanName','loanBal','loanPmt','loanRate','loanMonth','loanStart','loanEnd'];
 ['c1','c2','c3'].forEach(c=>['privStart','privEnd','privTuition','privFees','bal','mo','stop','ugStart','ugEnd','ugTuition','ugRB','rbStart','rbEnd','scholUG','gStart','gEnd','gTuition','gRB','grbStart','grbEnd','scholGrad'].forEach(s=>ALL_IDS.push(c+s)));
 
 /* =======================================================
    HELPERS
    ======================================================= */
 function fmt(n){return (n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString();}
+function todaysDollars(n,year){
+  const el=document.getElementById('showTodaysDollars');
+  if(!el||!el.checked)return n;
+  const baseYear=parseInt(document.getElementById('currentYear')?.value||new Date().getFullYear());
+  const infl=parseFloat(document.getElementById('inflationRate')?.value||3)/100;
+  const yrs=Math.max(0,year-baseYear);
+  return n/Math.pow(1+infl,yrs);
+}
+function fmtTD(n,year){return fmt(todaysDollars(n,year));}
+function applyHousingVisibility(){
+  [['jbHousingType','jbRentBlock','jbPurchaseBlock'],['pcs2HousingType','pcs2RentBlock','pcs2PurchaseBlock']].forEach(([sel,rent,purch])=>{
+    const type=document.getElementById(sel)?.value||'purchase';
+    const rentEl=document.getElementById(rent);
+    const purchEl=document.getElementById(purch);
+    if(rentEl)rentEl.style.display=(type==='rental')?'':'none';
+    if(purchEl)purchEl.style.display=(type==='purchase')?'':'none';
+  });
+}
 function pmt(rate,nper,pv){if(pv<=0||nper<=0)return 0;const r=rate/12/100;if(r===0)return pv/nper;return (pv*r)/(1-Math.pow(1+r,-nper));}
 function getSelectedTownNum(){
   const r=document.querySelector('input[name="townSel"]:checked');
@@ -1800,7 +1911,7 @@ function downloadBackup(){
 function uploadBackup(ev){
   const file=ev.target.files[0];if(!file)return;
   const r=new FileReader();
-  r.onload=function(e){try{localStorage.setItem('frp_v80',e.target.result);autoLoad();runModel();alert('📂 Backup restored!');}catch(err){alert('Invalid backup file.');}};
+  r.onload=function(e){try{localStorage.setItem('frp_v80',e.target.result);autoLoad();applyHousingVisibility();runModel();alert('📂 Backup restored!');}catch(err){alert('Invalid backup file.');}};
   r.readAsText(file);
 }
 function clearData(){
@@ -1906,37 +2017,45 @@ function runModel(){
 
   function utilForYear(y){
     let u=0;
-    if(y>=v('util1Start')&&y<=v('util1End'))u+=v('util1WS')+v('util1Gas')+v('util1Elec')+v('util1Maint');
-    if(y>=v('util3Start')&&y<=v('util3End'))u+=v('util3WS')+v('util3Gas')+v('util3Elec')+v('util3Maint');
+    const jbT=txt('jbHousingType')||'purchase',pcs2T=txt('pcs2HousingType')||'purchase';
+    if(jbT!=='onbase'&&y>=v('util1Start')&&y<=v('util1End'))u+=v('util1WS')+v('util1Gas')+v('util1Elec')+v('util1Maint');
+    if(pcs2T!=='onbase'&&y>=v('util3Start')&&y<=v('util3End'))u+=v('util3WS')+v('util3Gas')+v('util3Elec')+v('util3Maint');
     if(y>=v('util2Start')&&y<=v('util2End'))u+=v('util2WS')+v('util2Gas')+v('util2Elec')+v('util2Maint');
     return u;
   }
+  function jbRentRange(y){const s=v('jbRentStart'),e=v('jbRentEnd');return s>0&&y>=s&&(e===0||y<=e);}
+  function pcs2RentRange(y){const s=v('pcs2RentStart'),e=v('pcs2RentEnd');return s>0&&y>=s&&(e===0||y<=e);}
+  const jbType=txt('jbHousingType')||'purchase';
+  const pcs2Type=txt('pcs2HousingType')||'purchase';
+  const jbRentM=v('jbRent'),pcs2RentM=v('pcs2Rent');
   function homeForYear(y){
     let cost=0;
-    if(jbBuy>0&&y>=jbBuy&&(jbSell===0||y<=jbSell)){let f=(y===jbBuy)?((12-jbBuyMonth+1)/12):1;cost+=jbHomeMonthly*f;}
-    if(pcs2Buy>0&&y>=pcs2Buy&&(pcs2Sell===0||y<=pcs2Sell)){let f=(y===pcs2Buy)?((12-pcs2BuyMonth+1)/12):1;cost+=pcs2HomeMonthly*f;}
+    if(jbType==='purchase'&&jbBuy>0&&y>=jbBuy&&(jbSell===0||y<=jbSell)){let f=(y===jbBuy)?((12-jbBuyMonth+1)/12):1;cost+=jbHomeMonthly*f;}
+    else if(jbType==='rental'&&jbRentRange(y))cost+=jbRentM;
+    if(pcs2Type==='purchase'&&pcs2Buy>0&&y>=pcs2Buy&&(pcs2Sell===0||y<=pcs2Sell)){let f=(y===pcs2Buy)?((12-pcs2BuyMonth+1)/12):1;cost+=pcs2HomeMonthly*f;}
+    else if(pcs2Type==='rental'&&pcs2RentRange(y))cost+=pcs2RentM;
     if(y>=wakeBuy){let f=(y===wakeBuy)?((12-wakeBuyMonth+1)/12):1;cost+=townHomeMonthly*f;}
     return cost;
   }
   function homeExpenseForYear(y){
     let cost=0;
-    if(jbBuy>0&&y>=jbBuy&&(jbSell===0||y<=jbSell))cost+=jbExpenses*((y===jbBuy)?((12-jbBuyMonth+1)/12):1);
-    if(pcs2Buy>0&&y>=pcs2Buy&&(pcs2Sell===0||y<=pcs2Sell))cost+=pcs2Expenses*((y===pcs2Buy)?((12-pcs2BuyMonth+1)/12):1);
+    if(jbType==='purchase'&&jbBuy>0&&y>=jbBuy&&(jbSell===0||y<=jbSell))cost+=jbExpenses*((y===jbBuy)?((12-jbBuyMonth+1)/12):1);
+    if(pcs2Type==='purchase'&&pcs2Buy>0&&y>=pcs2Buy&&(pcs2Sell===0||y<=pcs2Sell))cost+=pcs2Expenses*((y===pcs2Buy)?((12-pcs2BuyMonth+1)/12):1);
     if(y>=wakeBuy)cost+=townExpenses*((y===wakeBuy)?((12-wakeBuyMonth+1)/12):1);
     return cost;
   }
   function homePIForYear(y){
     let cost=0;
-    if(jbBuy>0&&y>=jbBuy&&(jbSell===0||y<=jbSell))cost+=jbPI*((y===jbBuy)?((12-jbBuyMonth+1)/12):1);
-    if(pcs2Buy>0&&y>=pcs2Buy&&(pcs2Sell===0||y<=pcs2Sell))cost+=pcs2PI*((y===pcs2Buy)?((12-pcs2BuyMonth+1)/12):1);
+    if(jbType==='purchase'&&jbBuy>0&&y>=jbBuy&&(jbSell===0||y<=jbSell))cost+=jbPI*((y===jbBuy)?((12-jbBuyMonth+1)/12):1);
+    if(pcs2Type==='purchase'&&pcs2Buy>0&&y>=pcs2Buy&&(pcs2Sell===0||y<=pcs2Sell))cost+=pcs2PI*((y===pcs2Buy)?((12-pcs2BuyMonth+1)/12):1);
     if(y>=wakeBuy)cost+=townPI*((y===wakeBuy)?((12-wakeBuyMonth+1)/12):1);
     return cost;
   }
   function bahForYear(y){
     if(y>=retireYr)return 0;
     let total=0;
-    if(v('bah1Start')>0&&y>=v('bah1Start')&&(v('bah1End')===0||y<=v('bah1End'))&&y<retireYr){const rate=v('bah1')*Math.pow(1+bah1Raise,Math.max(0,y-v('bah1Start')));total+=(y===v('bah1Start'))?rate*((12-v('bah1Month')+1)/12):rate;}
-    if(v('bah2Start')>0&&y>=v('bah2Start')&&(v('bah2End')===0||y<=v('bah2End'))&&y<retireYr){const rate=v('bah2')*Math.pow(1+bah2Raise,Math.max(0,y-v('bah2Start')));total+=(y===v('bah2Start'))?rate*((12-v('bah2Month')+1)/12):rate;}
+    if(jbType!=='onbase'&&v('bah1Start')>0&&y>=v('bah1Start')&&(v('bah1End')===0||y<=v('bah1End'))&&y<retireYr){const rate=v('bah1')*Math.pow(1+bah1Raise,Math.max(0,y-v('bah1Start')));total+=(y===v('bah1Start'))?rate*((12-v('bah1Month')+1)/12):rate;}
+    if(pcs2Type!=='onbase'&&v('bah2Start')>0&&y>=v('bah2Start')&&(v('bah2End')===0||y<=v('bah2End'))&&y<retireYr){const rate=v('bah2')*Math.pow(1+bah2Raise,Math.max(0,y-v('bah2Start')));total+=(y===v('bah2Start'))?rate*((12-v('bah2Month')+1)/12):rate;}
     return total;
   }
   function debtPaymentMonthly(y){
@@ -1954,6 +2073,7 @@ function runModel(){
     if(v('tricareStart')>0&&year>=v('tricareStart')&&(v('tricareEnd')===0||year<=v('tricareEnd')))e+=v('tricareMo');
     if(v('medInsStart')>0&&year>=v('medInsStart')&&(v('medInsEnd')===0||year<=v('medInsEnd')))e+=v('medInsMo');
     if(v('denInsStart')>0&&year>=v('denInsStart')&&(v('denInsEnd')===0||year<=v('denInsEnd')))e+=v('denInsMo');
+    if(txt('optLifeIns')==='yes'&&v('lifeInsStart')>0&&year>=v('lifeInsStart')&&(v('lifeInsEnd')===0||year<=v('lifeInsEnd')))e+=v('lifeInsPremium');
     if(forProjection){
       const inf1=v('exp1Inflation')/100;
       const inf2=v('exp2Inflation')/100;
@@ -2065,7 +2185,7 @@ function runModel(){
   }
   function amort(b0,pmtv,rate,fromY,toY){let b=b0;const r=rate/100/12;for(let yy=fromY;yy<=toY;yy++)for(let m=0;m<12;m++){b=b*(1+r)-pmtv;if(b<0)b=0;}return b;}
   function debtRemaining(y){let t=0;[['cc1'],['cc2'],['cc3'],['car1'],['car2'],['loan']].forEach(d=>{const id=d[0];t+=amort(v(id+'Bal'),v(id+'Pmt'),v(id+'Rate'),v(id+'Start'),y);});return t;}
-  function mortgageRemaining(y){let t=0;if(jbBuy>0&&y>=jbBuy&&(jbSell===0||y<=jbSell))t+=amort(jbLoan,jbPI,v('rate'),jbBuy,y);if(pcs2Buy>0&&y>=pcs2Buy&&(pcs2Sell===0||y<=pcs2Sell))t+=amort(pcs2Loan,pcs2PI,v('pcs2Rate'),pcs2Buy,y);if(y>=wakeBuy)t+=amort(townLoan,townPI,townRate,wakeBuy,y);return t;}
+  function mortgageRemaining(y){let t=0;const jbT=txt('jbHousingType')||'purchase',pcs2T=txt('pcs2HousingType')||'purchase';if(jbT==='purchase'&&jbBuy>0&&y>=jbBuy&&(jbSell===0||y<=jbSell))t+=amort(jbLoan,jbPI,v('rate'),jbBuy,y);if(pcs2T==='purchase'&&pcs2Buy>0&&y>=pcs2Buy&&(pcs2Sell===0||y<=pcs2Sell))t+=amort(pcs2Loan,pcs2PI,v('pcs2Rate'),pcs2Buy,y);if(y>=wakeBuy)t+=amort(townLoan,townPI,townRate,wakeBuy,y);return t;}
 
   const accCashFlow={};
   let runningCF=0;
@@ -2092,21 +2212,25 @@ function runModel(){
   }
 
   // Updated card() — uses CSS classes instead of inline colors
-  function card(title,n){
-    return `<div class="dashcard"><h4>${title}</h4>
-      <div class="dashrow"><span>Liquid Cash (Sav+Tax+Gold+Cash Flow)</span><span class="clr-pos">${fmt(n.liquid)}</span></div>
-      <div class="dashrow"><span>Crypto (volatile)</span><span>${fmt(n.crypto)}</span></div>
-      <div class="dashrow"><span>Retirement (TSP+Roth)</span><span>${fmt(n.retire)}</span></div>
-      <div class="dashrow"><span>Home Equity</span><span>${fmt(n.eq)}</span></div>
-      <div class="dashrow"><span>Consumer Debt</span><span class="clr-neg">−${fmt(n.consDebt)}</span></div>
-      <div class="dashrow"><span>Mortgage Debt</span><span class="clr-neg">−${fmt(n.mortDebt)}</span></div>
-      <div class="dashtotal-sub">Net Worth (Excl. Home): ${fmt(n.netNoMort)}</div>
-      <div class="dashtotal">Projected Net Worth: ${fmt(n.netWithMort)}</div></div>`;
+  function card(title,n,yr){
+    const tdOn=document.getElementById('showTodaysDollars')?.checked;
+    const tdBadge=tdOn?' <span style="font-size:9px;color:var(--blue);font-weight:600;">(TODAY $)</span>':'';
+    const f=(x)=>fmt(todaysDollars(x,yr));
+    return `<div class="dashcard"><h4>${title}${tdBadge}</h4>
+      <div class="dashrow"><span>Liquid Cash (Sav+Tax+Gold+Cash Flow)</span><span class="clr-pos">${f(n.liquid)}</span></div>
+      <div class="dashrow"><span>Crypto (volatile)</span><span>${f(n.crypto)}</span></div>
+      <div class="dashrow"><span>Retirement (TSP+Roth)</span><span>${f(n.retire)}</span></div>
+      <div class="dashrow"><span>Home Equity</span><span>${f(n.eq)}</span></div>
+      <div class="dashrow"><span>Consumer Debt</span><span class="clr-neg">−${f(n.consDebt)}</span></div>
+      <div class="dashrow"><span>Mortgage Debt</span><span class="clr-neg">−${f(n.mortDebt)}</span></div>
+      <div class="dashtotal-sub">Net Worth (Excl. Home): ${f(n.netNoMort)}</div>
+      <div class="dashtotal">Projected Net Worth: ${f(n.netWithMort)}</div></div>`;
   }
+  const midYr=Math.round((Y0+YEND)/2);
   document.getElementById('dashboard').innerHTML=
-    card('Current ('+curYear+')',nw(curYear))+
-    card('Age '+myAge(Math.round((Y0+YEND)/2))+' ('+Math.round((Y0+YEND)/2)+')',nw(Math.round((Y0+YEND)/2)))+
-    card('Age '+myAge(YEND)+' ('+YEND+')',nw(YEND));
+    card('Current ('+curYear+')',nw(curYear),curYear)+
+    card('Age '+myAge(midYr)+' ('+midYr+')',nw(midYr),midYr)+
+    card('Age '+myAge(YEND)+' ('+YEND+')',nw(YEND),YEND);
 
   (function(){
     const n=nw(curYear);
@@ -2122,7 +2246,21 @@ function runModel(){
     if(mc)mc.innerHTML=items.map(i=>`<div style="background:var(--surface-2);border-radius:6px;padding:6px 10px;min-width:90px;border-left:3px solid ${i.color};"><div style="font-size:10px;color:var(--text-2);white-space:nowrap;">${i.label}</div><div style="font-size:14px;font-weight:700;color:var(--text);">${fmt(i.value)}</div></div>`).join('');
   })();
 
-  window._cf={incomeParts,expensesMonthly,investMonthly,homeForYear,homeExpenseForYear,homePIForYear,utilForYear,bahForYear,debtPaymentMonthly,myAge,wAge,locked,jbHomeMonthly,pcs2HomeMonthly,townHomeMonthly,selTownNum,jbBuy,jbSell,wakeBuy,retireYr,util1Loc:txt('util1Loc'),util2Loc:txt('util2Loc'),util3Loc:txt('util3Loc'),totalDown,townPI,townRate,wifeStart,wifeEnd,wifeIncome,retGross,payRaise,pensionCOLA,fedTax,vaDis,myWork,gsGross,gsFedTax,gsStateTax,gsIncomeStart,gsIncomeEnd,townExpenses,netTspForDown,optSBP,sbpAnnual,nw};
+  function healthcareMonthly(year,forProjection){
+    let h=0;
+    if(v('tricareStart')>0&&year>=v('tricareStart')&&(v('tricareEnd')===0||year<=v('tricareEnd')))h+=v('tricareMo');
+    if(v('medInsStart')>0&&year>=v('medInsStart')&&(v('medInsEnd')===0||year<=v('medInsEnd')))h+=v('medInsMo');
+    if(v('denInsStart')>0&&year>=v('denInsStart')&&(v('denInsEnd')===0||year<=v('denInsEnd')))h+=v('denInsMo');
+    if(forProjection){const inf1=v('exp1Inflation')/100,inf2=v('exp2Inflation')/100;const inf=(year>=v('exp2Start')&&year<=v('exp2End'))?inf2:inf1;const yrs=Math.max(0,year-curYear);h*=Math.pow(1+inf,yrs);}
+    return h;
+  }
+  function lifeInsMonthly(year,forProjection){
+    let l=0;
+    if(txt('optLifeIns')==='yes'&&v('lifeInsStart')>0&&year>=v('lifeInsStart')&&(v('lifeInsEnd')===0||year<=v('lifeInsEnd')))l+=v('lifeInsPremium');
+    if(forProjection){const inf1=v('exp1Inflation')/100,inf2=v('exp2Inflation')/100;const inf=(year>=v('exp2Start')&&year<=v('exp2End'))?inf2:inf1;const yrs=Math.max(0,year-curYear);l*=Math.pow(1+inf,yrs);}
+    return l;
+  }
+  window._cf={incomeParts,expensesMonthly,investMonthly,homeForYear,homeExpenseForYear,homePIForYear,utilForYear,bahForYear,debtPaymentMonthly,healthcareMonthly,lifeInsMonthly,myAge,wAge,locked,jbHomeMonthly,pcs2HomeMonthly,townHomeMonthly,selTownNum,jbBuy,jbSell,wakeBuy,retireYr,util1Loc:txt('util1Loc'),util2Loc:txt('util2Loc'),util3Loc:txt('util3Loc'),totalDown,townPI,townRate,wifeStart,wifeEnd,wifeIncome,retGross,payRaise,pensionCOLA,fedTax,vaDis,myWork,gsGross,gsFedTax,gsStateTax,gsIncomeStart,gsIncomeEnd,townExpenses,netTspForDown,optSBP,sbpAnnual,nw};
   window._ctx={v,curYear,myAge,wAge,jbSell,proj,actual,actPct,capPaid,projWd,locked,projRet,useActuals,hasActual,retireYr,accCashFlow};
 
   (function(){
@@ -2150,7 +2288,159 @@ function getOpen(id){return (window._detailStates&&window._detailStates[id]!==fa
 /* =======================================================
    SECTION GROUPS
    ======================================================= */
-function buildSectionGroups(){buildCashGroup();buildInvGroup();buildEduGroup();renderCharts();}
+function buildSectionGroups(){buildCashGroup();buildInvGroup();buildEduGroup();renderPcsCompare();renderCharts();}
+
+function gotoTownCompare(){
+  if(typeof sideNav==='function')sideNav('result','cash');
+  setTimeout(()=>{const el=document.getElementById('det_towns');if(el){el.open=true;el.scrollIntoView({behavior:'smooth',block:'start'});}},50);
+}
+
+function activatePcsOption(pcsKey,typeKey,startY,endY){
+  const typeSelId=(pcsKey==='jb')?'jbHousingType':'pcs2HousingType';
+  const utilPfx=(pcsKey==='jb')?'util1':'util3';
+  const sel=document.getElementById(typeSelId);if(sel){sel.value=typeKey;}
+  const uS=document.getElementById(utilPfx+'Start'),uE=document.getElementById(utilPfx+'End');
+  if(uS&&!uS.value)uS.value=startY;
+  if(uE&&!uE.value)uE.value=endY;
+  if(typeof applyHousingVisibility==='function')applyHousingVisibility();
+  if(typeof autoSave==='function')autoSave();
+  runModel();
+}
+
+function renderPcsCompare(){
+  const host=document.getElementById('pcs-compare-panel');if(!host)return;
+  const v=id=>parseFloat(document.getElementById(id)?.value)||0;
+  const txt=id=>document.getElementById(id)?.value||'';
+  function utilSum(pfx){return v(pfx+'WS')+v(pfx+'Gas')+v(pfx+'Elec')+v(pfx+'HOA')+v(pfx+'Maint');}
+  function amort(b0,pmtv,rate,fromY,toY){let b=b0;const r=rate/100/12;for(let yy=fromY;yy<=toY;yy++)for(let m=0;m<12;m++){b=b*(1+r)-pmtv;if(b<0)b=0;}return b;}
+  const APPREC=0.03, SELL_COST=0.06;
+
+  function scenario(cfg){
+    const buyY=cfg.buyYear,sellY=cfg.sellYear,rentS=cfg.rentStart,rentE=cfg.rentEnd;
+    let startY=0,endY=0;
+    if(buyY>0&&sellY>0){startY=buyY;endY=sellY;}
+    else if(rentS>0&&rentE>0){startY=rentS;endY=rentE;}
+    else if(buyY>0){startY=buyY;endY=buyY+5;}
+    else if(rentS>0){startY=rentS;endY=rentS+5;}
+    else return null;
+    const months=Math.max(0,(endY-startY)*12);
+    const yrs=endY-startY;
+    const util=cfg.utilMo,bahMo=cfg.bahMo;
+
+    // BUY
+    const homeCost=cfg.homeCost,downPct=cfg.downPct,rate=cfg.rate,term=cfg.term;
+    const down=homeCost*downPct/100;
+    const vaFee=(homeCost-down)*cfg.vaFee/100;
+    const loan=(homeCost-down)+vaFee;
+    const PI=pmt(rate,term*12,loan);
+    const esc=cfg.propTax/12+cfg.ins/12;
+    const buyMonthlyOut=PI+esc+util-bahMo;
+    const buyTotalOut=down+(PI+esc+util)*months-bahMo*months;
+    const endMort=homeCost>0?amort(loan,PI,rate,startY,endY):0;
+    const endVal=homeCost*Math.pow(1+APPREC,yrs);
+    const endEquity=Math.max(0,endVal-endMort-endVal*SELL_COST);
+    const buyNet=buyTotalOut-endEquity;
+
+    // RENT
+    const rentM=cfg.rentMo;
+    const rentMonthlyOut=rentM+util-bahMo;
+    const rentTotalOut=(rentM+util-bahMo)*months;
+    const rentNet=rentTotalOut;
+
+    // ON-BASE
+    const obMonthlyOut=0;
+    const obTotalOut=0;
+    const obNet=0;
+
+    return {startY,endY,months,yrs,
+      buy:{monthly:buyMonthlyOut,total:buyTotalOut,equity:endEquity,net:buyNet,down,PI,esc,util,bah:bahMo,valid:homeCost>0},
+      rent:{monthly:rentMonthlyOut,total:rentTotalOut,equity:0,net:rentNet,rentM,util,bah:bahMo,valid:rentM>0},
+      onbase:{monthly:obMonthlyOut,total:obTotalOut,equity:0,net:obNet,valid:true}};
+  }
+
+  function tableFor(label,cfg,pcsKey){
+    const s=scenario(cfg);if(!s)return '';
+    const activeType=cfg.activeType;
+    const M=s.months;
+    const nets=[];if(s.buy.valid)nets.push(s.buy.net);if(s.rent.valid)nets.push(s.rent.net);
+    if(nets.length===0)return '';
+    const bestNet=Math.min(...nets);
+    function row(name,scn,typeKey){
+      if(!scn.valid)return `<tr><td><b>${name}</b></td><td colspan="12" style="text-align:center;color:var(--text-3);"><em>Not enough inputs to compute</em></td></tr>`;
+      const winCls=(scn.net===bestNet)?'best':'';
+      const isActive=(activeType===typeKey);
+      const activeMark=isActive?' 📍':'';
+      let verdict='',vc='';
+      const diff=scn.net-bestNet;
+      if(diff<1){verdict=(scn.net<0)?'✅ Best (net gain)':'✅ Best';vc='good';}
+      else if(diff<5000){verdict='⚠️ Close 2nd (+'+fmt(diff)+')';}
+      else{verdict='❌ Costs '+fmt(diff)+' more';vc='warn';}
+      let totHousing=0,totUtil=0,totBah=0,down=0,homeMo=0;
+      if(typeKey==='purchase'){homeMo=scn.PI+scn.esc;totHousing=homeMo*M;totUtil=scn.util*M;totBah=scn.bah*M;down=scn.down;}
+      else if(typeKey==='rental'){homeMo=scn.rentM;totHousing=homeMo*M;totUtil=scn.util*M;totBah=scn.bah*M;}
+      const downCell=(typeKey==='purchase')?`${fmt(down)}`:'—';
+      const btn=isActive
+        ? `<span style="font-size:10px;color:var(--green);font-weight:600;">✓ Active</span>`
+        : `<button onclick="activatePcsOption('${pcsKey}','${typeKey}',${s.startY},${s.endY})" style="font-size:10px;padding:3px 8px;background:var(--blue);color:#fff;border:0;border-radius:12px;cursor:pointer;font-weight:600;">Use this</button>`;
+      return `<tr class="${winCls}"><td><b>${name}${activeMark}</b></td><td>${fmt(homeMo)}</td><td>${fmt(scn.util)}</td><td class="good">${fmt(scn.bah)}</td><td>${fmt(scn.monthly)}</td><td>${downCell}</td><td>${fmt(totHousing)}</td><td>${fmt(totUtil)}</td><td class="good">${fmt(totBah)}</td><td>${fmt(scn.total)}</td><td>${fmt(scn.equity)}</td><td class="${scn.net<0?'good':(scn.net>bestNet?'warn':'')}"><b>${fmt(scn.net)}</b></td><td class="${vc}">${verdict}</td><td style="text-align:center;">${btn}</td></tr>`;
+    }
+    let h=`<h3 style="margin:14px 0 4px;">${label} <span style="font-size:11px;color:var(--text-2);font-weight:400;">— Start/End: ${s.startY}–${s.endY} (${s.yrs} yrs, ${M} months)</span></h3>`;
+    h+=`<div class="table-wrapper"><table><tr><th>Option</th><th>Home/mo</th><th>Utils/mo</th><th>BAH/mo</th><th>Net /mo</th><th>Down Pmt</th><th>Total Housing</th><th>Total Utils</th><th>Total BAH</th><th>Total Out-of-Pocket</th><th>End Equity</th><th>Net Cost</th><th>Verdict</th><th>Activate</th></tr>`;
+    h+=row('🏠 Buy',s.buy,'purchase');
+    h+=row('🏢 Rent',s.rent,'rental');
+    h+='</table></div>';
+    return h;
+  }
+
+  const bah1Active=v('bah1Start')>0||v('bah1End')>0;
+  const bah2Active=v('bah2Start')>0||v('bah2End')>0;
+  const util1Active=v('util1Start')>0||v('util1End')>0;
+  const util2Active=v('util3Start')>0||v('util3End')>0;
+  const pcs1={activeType:txt('jbHousingType')||'purchase',
+    buyYear:v('jbBuyYear'),sellYear:v('jbSellYear'),
+    rentStart:v('jbRentStart'),rentEnd:v('jbRentEnd'),
+    homeCost:v('homeCost'),downPct:v('downPct'),rate:v('rate'),term:v('term'),vaFee:v('vaFee'),propTax:v('propTax'),ins:v('jbIns'),
+    rentMo:v('jbRent'),utilMo:util1Active?utilSum('util1'):0,bahMo:bah1Active?v('bah1'):0};
+  const pcs2={activeType:txt('pcs2HousingType')||'purchase',
+    buyYear:v('pcs2BuyYear'),sellYear:v('pcs2SellYear'),
+    rentStart:v('pcs2RentStart'),rentEnd:v('pcs2RentEnd'),
+    homeCost:v('pcs2Cost'),downPct:v('pcs2DownPct'),rate:v('pcs2Rate'),term:v('pcs2Term'),vaFee:v('pcs2VaFee'),propTax:v('pcs2PropTax'),ins:v('pcs2Ins'),
+    rentMo:v('pcs2Rent'),utilMo:util2Active?utilSum('util3'):0,bahMo:bah2Active?v('bah2'):0};
+
+  let html=`<details id="det_pcs_compare" ${getOpen('det_pcs_compare')}><summary><h2>📊 Buy vs Rent Comparison</h2></summary>`;
+  const t1=tableFor('PCS #1',pcs1,'jb'),t2=tableFor('PCS #2',pcs2,'pcs2');
+  if(!t1&&!t2)html+='<p style="text-align:center;padding:16px;color:var(--text-3);"><em>Enter PCS #1 or #2 housing details (purchase year+sell year, or rent start+end) to see comparison.</em></p>';
+  else html+=t1+t2;
+
+  html+=`<div style="margin:16px 8px 6px;font-size:12.5px;color:var(--text);line-height:1.6;">
+    <details ${(window._detailStates&&window._detailStates.det_pcs_compare_help===true)?'open':''} id="det_pcs_compare_help"><summary style="cursor:pointer;font-weight:700;font-size:12.5px;display:inline-block;padding:6px 12px;background:var(--surface-2);border-radius:14px;user-select:none;"><span class="pcs-help-arrow">▶</span>📖 How to read this table</summary>
+    <div style="margin-top:10px;padding:12px 14px;background:var(--surface-2);border-radius:6px;">
+    <div style="margin-top:8px;">Each row shows what you'd pay (or gain) between the <b>Start/End dates</b> shown above the table. All "Total" columns are <b>monthly amount × number of months</b> between those dates. Example: if the Start/End date is 2027–2033 (72 months) and your net monthly is <b>$80</b>, Total Out-of-Pocket = <b>$80 × 72 = $5,760</b>.</div>
+    <div style="margin-top:10px;">
+      <b>Column formulas:</b>
+      <ul style="margin:4px 0 0 18px;padding:0;">
+        <li><b>Net /mo</b> — what leaves your pocket each month after BAH offsets housing costs.<br>
+          &nbsp;&nbsp;• Buy: <code>P+I + Escrow(tax+ins) + Utils − BAH</code><br>
+          &nbsp;&nbsp;• Rent: <code>Rent + Utils − BAH</code></li>
+        <li><b>Down Pmt</b> — one-time down payment + VA funding fee (Buy only).</li>
+        <li><b>Total Housing</b> — <code>monthly housing × months</code> (rent, or P+I + escrow).</li>
+        <li><b>Total Utils</b> — <code>monthly utilities × months</code>.</li>
+        <li><b>Total BAH</b> — <code>monthly BAH × months</code> (the BAH you'd receive between the Start/End dates).</li>
+        <li><b>Total Out-of-Pocket</b> — <code>Down + Total Housing + Total Utils − Total BAH</code>. Actual cash that leaves your bank between Start/End dates.</li>
+        <li><b>End Equity</b> — home value at 3% annual appreciation, minus remaining mortgage balance, minus 6% selling costs. Rent = $0 (no asset built).</li>
+        <li><b>Net Cost</b> — <code>Total Out-of-Pocket − End Equity</code>. A negative number means you came out ahead (equity gained > cash spent). Lowest wins.</li>
+        <li><b>Activate</b> — click <b>Use this</b> to make that scenario your active choice for the PCS (updates the Housing Type dropdown so Section 2 Cash Flow uses those numbers). If your utility Start/End years are blank, they auto-fill to match the Start/End dates so Utils/mo populates.</li>
+      </ul>
+    </div>
+    <div style="margin-top:10px;"><b>Leftover / "why doesn't it match my rent?"</b> — If your BAH is <i>bigger</i> than rent, most of your rent is "invisible" because BAH pays for it. Net /mo only shows what's <i>left over</i> after BAH. Look at the <b>Total Housing</b> and <b>Total BAH</b> columns to see the gross numbers side-by-side.</div>
+    <div style="margin-top:8px;font-size:11.5px;color:var(--text-3);"><em>Assumptions: home appreciation 3%/yr, selling costs 6% of sale price, mortgage uses your Purchase Details inputs.</em></div>
+    </div>
+    </details>
+  </div>`;
+
+  html+='</details>';
+  host.innerHTML=html;
+}
 
 function buildCashGroup(){
   const c=window._cf,ctx=window._ctx,v=ctx.v;
@@ -2189,7 +2479,7 @@ function buildCashGroup(){
   if(housingRows)html+='<tr style="background:var(--surface-3)"><td colspan="6" style="color:var(--text-2);font-weight:700;">— Housing (auto-pulled) —</td></tr>'+housingRows;
   if(!consumerRows&&!housingRows)html+='<tr><td colspan="6" style="color:var(--text-3);font-style:italic;padding:12px 8px;">No debts entered — add balances in the Debt tab to see payoff details.</td></tr>';
   html+='</table>';
-  html+='<div style="font-size:10.5px;color:var(--text-2);padding:6px 8px;border-top:1px solid var(--border);">💡 Add debt balances in the <b>Debt</b> input tab — credit cards, car loans, and mortgages will appear here automatically.</div>';
+  html+='<div style="font-size:10.5px;color:var(--text-2);padding:6px 8px;border-top:1px solid var(--border);max-width:520px;white-space:normal;line-height:1.4;">💡 Add debt balances in the <b>Debt</b> input tab.</div>';
   html+='</div>';
   // Summary metrics panel on the right
   const totalConsumer=[['cc1'],['cc2'],['cc3'],['car1'],['car2'],['loan']].reduce((s,d)=>s+v(d[0]+'Bal'),0);
@@ -2235,19 +2525,20 @@ function buildCashGroup(){
 
 function renderCashFlow(){
   const c=window._cf,ctx=window._ctx,v=ctx.v;if(!c)return;
-  const {incomeParts,expensesMonthly,investMonthly,homeForYear,utilForYear,bahForYear,debtPaymentMonthly,myAge,wAge,locked}=c;
+  const {incomeParts,expensesMonthly,investMonthly,homeForYear,utilForYear,bahForYear,debtPaymentMonthly,healthcareMonthly,lifeInsMonthly,myAge,wAge,locked}=c;
   const townName=(document.getElementById('town'+c.selTownNum+'Name')||{}).value||('Town '+c.selTownNum);
   let h=`<p style="font-size:12px;color:var(--text-2);padding:8px 8px 0;"><em>Home auto-switches: PCS#1 (${c.jbBuy>0?c.jbBuy:'—'}) → ${townName} (${c.wakeBuy}+). ${showWife?'<b>WITH spouse income.</b>':'<b>WITHOUT spouse income.</b>'}</em></p>`;
-  h+='<table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Status</th><th>My Net/mo</th><th>Spouse/mo</th><th>Combined/mo</th><th>BAH/mo</th><th>SBP/mo</th><th>Home/mo</th><th>Utils/mo</th><th>Debt/mo</th><th>Exp/mo</th><th>Invest/mo</th><th>Surplus/mo</th><th>Annual</th><th>Projected Net Worth</th></tr>';
+  h+='<table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Status</th><th>My Net/mo</th><th>Spouse/mo</th><th>Combined/mo</th><th>Home/mo</th><th>Utils/mo</th><th>BAH/mo</th><th>Debt/mo</th><th>Exp/mo</th><th>Invest/mo</th><th>Health/mo</th><th>Life Ins/mo</th><th>SBP/mo</th><th>Surplus/mo</th><th>Annual</th><th>Projected Net Worth</th></tr>';
   let total=0;
   for(let y=Y0+1;y<=YEND;y++){
     const ip=incomeParts(y);const spouse=showWife?ip.spouse:0;const combined=ip.mine+spouse;
-    const bah=bahForYear(y);const home=homeForYear(y);const util=utilForYear(y);const debtPmt=debtPaymentMonthly(y);const exp=expensesMonthly(y,true);const inv=investMonthly(y);
-    const disc=combined+bah-home-util-debtPmt-exp-inv;total+=disc*12;
+    const bah=bahForYear(y);const home=homeForYear(y);const util=utilForYear(y);const debtPmt=debtPaymentMonthly(y);const expFull=expensesMonthly(y,true);const inv=investMonthly(y);
+    const hc=healthcareMonthly(y,true);const li=lifeInsMonthly(y,true);const expRest=Math.max(0,expFull-hc-li);
+    const disc=combined+bah-home-util-debtPmt-expFull-inv;total+=disc*12;
     const cls=disc<0?'warn':(disc<1000?'':'good');
     let rowcls=(y===c.jbSell)?'retire-row':(locked(y)?'locked':'');
     if(y===ctx.curYear)rowcls+=' current-year-row';
-    h+=`<tr class="${rowcls}"><td><b>${y}</b></td><td>${myAge(y)}</td><td>${wAge(y)}</td><td style="font-size:9.5px;color:var(--text-2);text-align:left">${ip.status}</td><td>${fmt(ip.mine)}</td><td>${fmt(spouse)}</td><td><b>${fmt(combined)}</b></td><td>${fmt(bah)}</td><td class="warn">${ip.sbpMo>0?fmt(ip.sbpMo):'—'}</td><td>${fmt(home)}</td><td>${fmt(util)}</td><td>${fmt(debtPmt)}</td><td>${fmt(exp)}</td><td>${fmt(inv)}</td><td class="${cls}">${fmt(disc)}</td><td>${fmt(disc*12)}</td><td><b>${fmt(c.nw(y).netWithMort)}</b></td></tr>`;
+    h+=`<tr class="${rowcls}"><td><b>${y}</b></td><td>${myAge(y)}</td><td>${wAge(y)}</td><td style="font-size:9.5px;color:var(--text-2);text-align:left">${ip.status}</td><td>${fmt(ip.mine)}</td><td>${fmt(spouse)}</td><td><b>${fmt(combined)}</b></td><td>${fmt(home)}</td><td>${fmt(util)}</td><td>${fmt(bah)}</td><td>${fmt(debtPmt)}</td><td>${fmt(expRest)}</td><td>${fmt(inv)}</td><td>${hc>0?fmt(hc):'—'}</td><td>${li>0?fmt(li):'—'}</td><td class="warn">${ip.sbpMo>0?fmt(ip.sbpMo):'—'}</td><td class="${cls}">${fmt(disc)}</td><td>${fmt(disc*12)}</td><td><b>${fmt(c.nw(y).netWithMort)}</b></td></tr>`;
   }
   h+='</table>';
   h+=`<div style="padding:10px 8px;"><div class="metric"><strong>${fmt(total)}</strong>Cumulative Surplus 2027–2060 (${showWife?'w/ spouse':'solo'})</div></div>`;
@@ -2685,6 +2976,30 @@ function applyCurrencyStyles(){
 /* =======================================================
    SIDEBAR NAV
    ======================================================= */
+function sideNavInvestments(from){
+  if(from==='input'){
+    sideNav('input','2');
+    if(typeof showGroup==='function')showGroup('inv');
+    document.getElementById('sl-inv')?.classList.add('active');
+  }else{
+    sideNav('result','inv');
+    if(typeof showTab==='function')showTab(2);
+    document.getElementById('sl-2')?.classList.add('active');
+  }
+}
+
+function sideNavEducation(from){
+  if(from==='input'){
+    sideNav('input','3');
+    if(typeof showGroup==='function')showGroup('edu');
+    document.getElementById('sl-edu')?.classList.add('active');
+  }else{
+    sideNav('result','edu');
+    if(typeof showTab==='function')showTab(3);
+    document.getElementById('sl-3')?.classList.add('active');
+  }
+}
+
 function sideNav(type,id){
   document.querySelectorAll('.sidebar-link').forEach(el=>el.classList.remove('active'));
   if(type==='input'){
@@ -2716,6 +3031,7 @@ window.onload=function(){
   fillYears();
   applyCurrencyStyles();
   autoLoad();
+  applyHousingVisibility();
   // Restore sidebar collapsed state
   if (localStorage.getItem('frp_sidebar') === '1') {
     const sb  = document.querySelector('.sidebar');
