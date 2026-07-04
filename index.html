@@ -16,10 +16,10 @@
   --red:         #c0392b;
   --purple:      #7a5cc8;
 
-  --bg:          #f0f2f5;
-  --surface:     #ffffff;
-  --surface-2:   #f8fafc;
-  --surface-3:   #eef3fb;
+  --bg:          #f5f1ea;
+  --surface:     #fdfbf7;
+  --surface-2:   #faf6ee;
+  --surface-3:   #f2ece0;
   --border:      #e2e8f0;
   --border-md:   #cbd5e0;
 
@@ -338,7 +338,7 @@ button.danger:hover { background: #922b21; color: #fff; }
 .tabpane { display: none; }
 .tabpane.active { display: block; }
 .secgroup { display: none; }
-.secgroup.active { display: block; }
+.secgroup.active { display: block; min-height: calc(100vh - 120px); }
 
 /* =====================================================
    DASHBOARD CARDS
@@ -654,8 +654,8 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
 
   <div class="sidebar-divider"></div>
   <div class="sidebar-label">Core Inputs</div>
-  <a class="sidebar-link" id="sl-1" onclick="sideNav('input','1')" title="Main Data">📋<span class="sb-link-text"> Main Data</span></a>
-  <a class="sidebar-link" id="sl-H" onclick="sideNav('input','H')" title="Housing &amp; Real Estate">🏡<span class="sb-link-text"> Housing &amp; Real Estate</span></a>
+  <a class="sidebar-link" id="sl-1" onclick="sideNavMainData('input')" title="Main Data">📋<span class="sb-link-text"> Main Data</span></a>
+  <a class="sidebar-link" id="sl-H" onclick="sideNavHousing('input')" title="Housing &amp; Real Estate">🏡<span class="sb-link-text"> Housing &amp; Real Estate</span></a>
   <a class="sidebar-link" id="sl-2" onclick="sideNavInvestments('input')" title="Investments">📈<span class="sb-link-text"> Investments</span></a>
   <a class="sidebar-link" id="sl-3" onclick="sideNavEducation('input')" title="Education">🎓<span class="sb-link-text"> Education</span></a>
   <a class="sidebar-link" id="sl-5" onclick="sideNav('input','5')" title="Debt">💳<span class="sb-link-text"> Debt</span></a>
@@ -663,7 +663,8 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
 
   <div class="sidebar-divider"></div>
   <div class="sidebar-label">Results</div>
-  <a class="sidebar-link" id="sl-cash" onclick="sideNav('result','cash')" title="Cash Flow">💵<span class="sb-link-text"> Cash Flow</span></a>
+  <a class="sidebar-link" id="sl-cash" onclick="sideNavMainData('result')" title="Cash Flow">💵<span class="sb-link-text"> Cash Flow</span></a>
+  <a class="sidebar-link" id="sl-re"   onclick="sideNavHousing('result')" title="Real Estate">🏘️<span class="sb-link-text"> Real Estate</span></a>
   <a class="sidebar-link" id="sl-inv"  onclick="sideNavInvestments('result')" title="Investments">📊<span class="sb-link-text"> Investments</span></a>
   <a class="sidebar-link" id="sl-edu"  onclick="sideNavEducation('result')" title="Education">🎓<span class="sb-link-text"> Education</span></a>
 
@@ -745,6 +746,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <button onclick="toggleAllDetails('pane1',false)">▲ Collapse All</button>
     </div>
     <div class="grid4">
+      <div style="display:flex;flex-direction:column;gap:16px;">
       <details class="schoolblock inline-summary" open id="det_main_people" style="border-left:4px solid var(--blue);">
         <summary><h3>👥 People &amp; Timeline</h3></summary>
         <label>Your Current Age</label><input type="number" id="age" value="45">
@@ -755,15 +757,35 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>Projection Start Year</label><input type="number" id="projStartYear" value="2026" onchange="rebuildYearRange()">
         <label>Projection End Year</label><input type="number" id="projEndYear" value="2060" onchange="rebuildYearRange()">
       </details>
+      <details class="schoolblock inline-summary" open id="det_main_ss" style="border-left:4px solid var(--purple);">
+        <summary><h3>🏛️ Social Security <span style="font-size:11px;color:var(--text-2);font-weight:normal;">(Retire Income)</span></h3></summary>
+        <label>YOUR SS Monthly Benefit</label><input type="number" id="ssMe" value="">
+        <label>YOUR SS Start Year</label><input type="number" id="ssMeYear" value="">
+        <label>SPOUSE SS Monthly Benefit</label><input type="number" id="ssWife" value="">
+        <label>SPOUSE SS Start Year</label><input type="number" id="ssWifeYear" value="">
+      </details>
+      </div>
       <details class="schoolblock inline-summary" open id="det_main_income" style="border-left:4px solid var(--green);">
         <summary><h3>💰 Income &amp; Pay</h3></summary>
-        <label>Net Monthly Pay</label><input type="number" id="netPay" value="">
+        <label>Service Component</label>
+        <select id="svcComp" onchange="toggleSvcCompFields();runModel();autoSave();">
+          <option value="ad">Active Duty</option>
+          <option value="agr">AGR (Active Guard/Reserve)</option>
+          <option value="res">Reservist</option>
+          <option value="ng">National Guard</option>
+        </select>
+        <div id="drillDaysWrap">
+          <label>Drill Days / Year <span style="color:var(--text-2);font-size:11px;">(typical: 39)</span></label>
+          <input type="number" id="drillDays" value="">
+        </div>
+        <label>Net Monthly Pay <span id="netPayHint" style="color:var(--text-2);font-size:11px;"></span></label>
+        <input type="number" id="netPay" value="">
         <label>Annual Pay Raise %</label><input type="number" id="payRaise" value="2.3" step="0.1">
         <div class="subsection-divider"></div>
         <label>Future Promotion #1 Net Increase /mo</label><input type="number" id="promo1Bump" value="">
-        <label>Promo #1 Start Month</label><input type="number" id="promo1Month" value="10">
-        <label>Promo #1 Start Year</label><input type="number" id="promo1Start" value="2030">
-        <label>Promo #1 End Year</label><input type="number" id="promo1End" value="2033">
+        <label>Promo #1 Start Month</label><input type="number" id="promo1Month" value="">
+        <label>Promo #1 Start Year</label><input type="number" id="promo1Start" value="">
+        <label>Promo #1 End Year</label><input type="number" id="promo1End" value="">
         <div class="subsection-divider"></div>
         <label>Future Promotion #2 Net Increase /mo</label><input type="number" id="promo2Bump" value="">
         <label>Promo #2 Start Month</label><input type="number" id="promo2Month" value="1">
@@ -782,6 +804,12 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>+ Months (0–11)</label><input type="number" id="yosMonths" value="" min="0" max="11" onchange="runModel()">
         <label>Avg Monthly Base Pay (High-3 estimate) <a href="https://militarypay.defense.gov/Pay/Retirement/" target="_blank" style="font-size:10px;color:var(--blue);">militarypay.defense.gov</a></label><input type="number" id="high3Pay" value="" onchange="runModel()">
         <label>Retirement GROSS Annual <span style="font-size:10px;color:var(--text-3);">(auto-calculated if YOS &amp; Base Pay are filled in)</span></label><input type="number" id="retGross" value="">
+        <div id="reserveRetWrap">
+          <div class="subsection-divider"></div>
+          <b style="font-size:12px;color:var(--text);">Reserve / Guard Only</b>
+          <label>Total Retirement Points <span style="font-size:10px;color:var(--text-3);">(from annual point statement — 360 pts = 1 good year)</span></label><input type="number" id="retPoints" value="" onchange="runModel()">
+          <label>Retirement Pay Start Age <span style="font-size:10px;color:var(--text-3);">(default 60; earlier w/ post-2008 mobilization credit — 3 mo per 90 days activated, floor age 50)</span></label><input type="number" id="retPayStartAge" value="60" onchange="runModel()">
+        </div>
         <label>VA Disability Monthly (tax-free)</label><input type="number" id="vaDisability" value="">
         <label>Other Post-Ret Net Monthly</label><input type="number" id="myWorkManual" value="">
         <label>Pension COLA % /yr <span style="font-size:10px;color:var(--text-3);">(separate from pay raise)</span></label><input type="number" id="pensionCOLA" value="2.3" step="0.1">
@@ -798,19 +826,13 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>GS Annual Salary (Gross)</label><input type="number" id="gsGross" value="">
         <label>Federal Tax % on GS Income</label><input type="number" id="gsFedTax" value="22" step="0.5">
         <label>State Tax % on GS Income</label><input type="number" id="gsStateTax" value="5" step="0.5">
-        <label>GS Job Start Year</label><input type="number" id="gsIncomeStart" value="2034">
-        <label>GS Job End Year</label><input type="number" id="gsIncomeEnd" value="2041">
+        <label>GS Job Start Year</label><input type="number" id="gsIncomeStart" value="">
+        <label>GS Job End Year</label><input type="number" id="gsIncomeEnd" value="">
         <div class="subsection-divider"></div>
         <b style="font-size:12px;color:var(--text);">Spouse</b>
         <label>Spouse Net Monthly Income (After Tax)</label><input type="number" id="wifeManual" value="">
-        <label>Spouse Income START Year</label><input type="number" id="wifeStartYear" value="2034">
-        <label>Spouse Income END Year</label><input type="number" id="wifeEndYear" value="2055">
-        <div class="subsection-divider"></div>
-        <b style="font-size:12px;color:var(--text);">🏛️ Social Security</b>
-        <label>YOUR SS Monthly Benefit</label><input type="number" id="ssMe" value="">
-        <label>YOUR SS Start Year</label><input type="number" id="ssMeYear" value="2048">
-        <label>SPOUSE SS Monthly Benefit</label><input type="number" id="ssWife" value="">
-        <label>SPOUSE SS Start Year</label><input type="number" id="ssWifeYear" value="2057">
+        <label>Spouse Income START Year</label><input type="number" id="wifeStartYear" value="">
+        <label>Spouse Income END Year</label><input type="number" id="wifeEndYear" value="">
       </details>
     </div>
 
@@ -819,8 +841,8 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <summary><h3>Monthly Expenses #1</h3></summary>
         <label>Bills Total /mo</label><input type="number" id="exp1Bills" value="">
         <label>Discretionary Total /mo</label><input type="number" id="exp1Disc" value="">
-        <label>Start Year</label><input type="number" id="exp1Start" value="2026">
-        <label>End Year</label><input type="number" id="exp1End" value="2040">
+        <label>Start Year</label><input type="number" id="exp1Start" value="">
+        <label>End Year</label><input type="number" id="exp1End" value="">
         <div class="subsection-divider"></div>
         <label>Expected Inflation to Expenses % <span style="font-size:10px;color:var(--text-3);">(applies to all expenses in this period)</span></label><input type="number" id="exp1Inflation" value="2.5" step="0.1">
       </details>
@@ -828,8 +850,8 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <summary><h3>Monthly Expenses #2</h3></summary>
         <label>Bills Total /mo</label><input type="number" id="exp2Bills" value="">
         <label>Discretionary Total /mo</label><input type="number" id="exp2Disc" value="">
-        <label>Start Year</label><input type="number" id="exp2Start" value="2041">
-        <label>End Year</label><input type="number" id="exp2End" value="2060">
+        <label>Start Year</label><input type="number" id="exp2Start" value="">
+        <label>End Year</label><input type="number" id="exp2End" value="">
         <div class="subsection-divider"></div>
         <label>Expected Inflation to Expenses % <span style="font-size:10px;color:var(--text-3);">(applies to all expenses in this period)</span></label><input type="number" id="exp2Inflation" value="2.5" step="0.1">
       </details>
@@ -896,17 +918,17 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <div id="jbPurchaseBlock">
             <div class="subsection-divider"></div>
             <b style="color:var(--text);font-size:11px;">Purchase Details</b>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
-              <div><label>Purchase Year (0 = never)</label><input type="number" id="jbBuyYear" value="2027"></div>
-              <div><label>Purchase Month (1-12)</label><input type="number" id="jbBuyMonth" value="7"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 10px;">
+              <div><label>Purchase Year</label><input type="number" id="jbBuyYear" value="2027" placeholder="0 = never"></div>
+              <div><label>Purchase Month</label><input type="number" id="jbBuyMonth" value="7" placeholder="1-12"></div>
               <div><label>Sale Year</label><input type="number" id="jbSellYear" value="2033"></div>
-              <div><label>Home Cost (total)</label><input type="number" id="homeCost" value=""></div>
+              <div><label>Home Cost</label><input type="number" id="homeCost" value="" placeholder="total"></div>
               <div><label>Down Payment %</label><input type="number" id="downPct" value="5" step="0.5"></div>
               <div><label>Loan Rate %</label><input type="number" id="rate" value="6.25" step="0.01"></div>
               <div><label>Loan Term (yrs)</label><input type="number" id="term" value="30"></div>
-              <div><label>Property Tax (annual)</label><input type="number" id="propTax" value=""></div>
-              <div><label>Insurance (annual)</label><input type="number" id="jbIns" value=""></div>
-              <div><label>VA Funding Fee % (if VA)</label><input type="number" id="vaFee" value="1.65" step="0.05"></div>
+              <div><label>Property Tax /yr</label><input type="number" id="propTax" value=""></div>
+              <div><label>Insurance /yr</label><input type="number" id="jbIns" value=""></div>
+              <div><label>VA Funding Fee %</label><input type="number" id="vaFee" value="1.65" step="0.05"></div>
             </div>
           </div>
         </div>
@@ -957,17 +979,17 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <div id="pcs2PurchaseBlock">
             <div class="subsection-divider"></div>
             <b style="color:var(--text);font-size:11px;">Purchase Details</b>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
-              <div><label>Purchase Year (0 = never)</label><input type="number" id="pcs2BuyYear" value=""></div>
-              <div><label>Purchase Month (1-12)</label><input type="number" id="pcs2BuyMonth" value="1"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 10px;">
+              <div><label>Purchase Year</label><input type="number" id="pcs2BuyYear" value="" placeholder="0 = never"></div>
+              <div><label>Purchase Month</label><input type="number" id="pcs2BuyMonth" value="1" placeholder="1-12"></div>
               <div><label>Sale Year</label><input type="number" id="pcs2SellYear" value=""></div>
-              <div><label>Home Cost (total)</label><input type="number" id="pcs2Cost" value=""></div>
+              <div><label>Home Cost</label><input type="number" id="pcs2Cost" value="" placeholder="total"></div>
               <div><label>Down Payment %</label><input type="number" id="pcs2DownPct" value="5" step="0.5"></div>
               <div><label>Loan Rate %</label><input type="number" id="pcs2Rate" value="6.0" step="0.01"></div>
               <div><label>Loan Term (yrs)</label><input type="number" id="pcs2Term" value="30"></div>
-              <div><label>Property Tax (annual)</label><input type="number" id="pcs2PropTax" value=""></div>
-              <div><label>Insurance (annual)</label><input type="number" id="pcs2Ins" value=""></div>
-              <div><label>VA Funding Fee % (if VA)</label><input type="number" id="pcs2VaFee" value="1.65" step="0.05"></div>
+              <div><label>Property Tax /yr</label><input type="number" id="pcs2PropTax" value=""></div>
+              <div><label>Insurance /yr</label><input type="number" id="pcs2Ins" value=""></div>
+              <div><label>VA Funding Fee %</label><input type="number" id="pcs2VaFee" value="1.65" step="0.05"></div>
             </div>
           </div>
         </div>
@@ -1078,7 +1100,6 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       </div>
     </details>
 
-    <div class="panel" id="pcs-compare-panel" style="margin-top:14px;"></div>
   </div>
 
   <!-- TAB 2: INVESTMENTS -->
@@ -1099,13 +1120,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>SPOUSE Roth IRA Monthly</label><input type="number" id="rothWife" value="">
           <label>SPOUSE Roth STOP Year</label><input type="number" id="rothWifeStop" value="2048">
         </details>
-        <details class="schoolblock inline-summary" open id="det_inv_gs" style="border-left:4px solid var(--green);">
-          <summary><h3>🏛️ GS Job TSP</h3></summary>
-          <label>GS Monthly TSP Contribution</label><input type="number" id="gsTsp" value="">
-          <label>GS TSP Start Year</label><input type="number" id="gsTspStart" value="2034">
-          <label>GS TSP End Year</label><input type="number" id="gsTspEnd" value="2040">
-        </details>
-      <details class="schoolblock inline-summary" open id="det_inv_tsp" style="border-left:4px solid var(--purple);">
+        <details class="schoolblock inline-summary" open id="det_inv_tsp" style="border-left:4px solid var(--purple);">
           <summary><h3>💵 TSP &amp; Roth Projections</h3></summary>
           <label>Current TSP Balance (Roth/Traditional/401K)</label><input type="number" id="tspBal" value="">
           <label>TSP Avg Annual Return %</label><input type="number" id="tspRet" value="7.5" step="0.1">
@@ -1114,6 +1129,12 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>YOUR Current Roth Balance</label><input type="number" id="rothBalMe" value="">
           <label>SPOUSE Current Roth Balance</label><input type="number" id="rothBalWife" value="">
           <label>Roth Avg Annual Return %</label><input type="number" id="rothRet" value="7.5" step="0.1">
+        </details>
+        <details class="schoolblock inline-summary" open id="det_inv_gs" style="border-left:4px solid var(--green);">
+          <summary><h3>🏛️ GS Job TSP</h3></summary>
+          <label>GS Monthly TSP Contribution</label><input type="number" id="gsTsp" value="">
+          <label>GS TSP Start Year</label><input type="number" id="gsTspStart" value="2034">
+          <label>GS TSP End Year</label><input type="number" id="gsTspEnd" value="2040">
         </details>
         <details class="schoolblock inline-summary" open id="det_inv_wd" style="border-left:4px solid var(--red);">
           <summary><h3>📤 Retirement Withdrawals</h3></summary>
@@ -1491,6 +1512,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
 
 <div id="results">
   <div class="secgroup active" id="grp_cash"></div>
+  <div class="secgroup"        id="grp_re"></div>
   <div class="secgroup"        id="grp_inv"></div>
   <div class="secgroup"        id="grp_edu"></div>
 </div>
@@ -1588,7 +1610,7 @@ const RMD_DIVISORS = {
   97:7.8,98:7.3,99:6.8,100:6.4
 };
 
-const ALL_IDS=['currentYear','projStartYear','projEndYear','showTodaysDollars','inflationRate','age','wifeAge','retireYear','retireMonth','netPay','payRaise','promoBump','promo1Bump','promo1Month','promo1Start','promo1End','promo2Bump','promo2Month','promo2Start','promo2End','bah1','bah1Month','bah1Start','bah1End','bah2','bah2Month','bah2Start','bah2End','bahRaise','bah1Raise','bah2Raise','retSystem','yos','yosMonths','high3Pay','retGross','pensionCOLA','fedTaxPct','optSBP','optLifeIns','lifeInsType','lifeInsPremium','lifeInsFace','lifeInsStart','lifeInsEnd','jbHousingType','jbRent','jbRentStart','jbRentEnd','pcs2HousingType','pcs2Rent','pcs2RentStart','pcs2RentEnd','myWorkManual','gsGross','gsFedTax','gsStateTax','gsIncomeStart','gsIncomeEnd','wifeManual','wifeStartYear','wifeEndYear','vaDisability','ssMe','ssMeYear','ssWife','ssWifeYear','exp1Bills','exp1Disc','exp1Start','exp1End','exp2Bills','exp2Disc','exp2Start','exp2End','exp1Inflation','exp2Inflation','tricareMo','tricareStart','tricareEnd','medInsMo','medInsStart','medInsEnd','denInsMo','denInsStart','denInsEnd','jbBuyYear','jbBuyMonth','jbSellYear','homeCost','downPct','rate','term','propTax','jbIns','jbHOA','vaFee','pcs2BuyYear','pcs2BuyMonth','pcs2SellYear','pcs2Cost','pcs2DownPct','pcs2Rate','pcs2Term','pcs2PropTax','pcs2Ins','pcs2VaFee','wakeBuyYear','wakeBuyMonth','townSel','town1Name','town1Price','town1Tax','town1Ins','town1HOA','town1School','town2Name','town2Price','town2Tax','town2Ins','town2HOA','town2School','town3Name','town3Price','town3Tax','town3Ins','town3HOA','town3School','town4Name','town4Price','town4Tax','town4Ins','town4HOA','town4School','townRate','equity2033','pcs2EquityRoll','util1Loc','util1WS','util1Gas','util1Elec','util1HOA','util1Maint','util1Start','util1End','util3Loc','util3WS','util3Gas','util3Elec','util3HOA','util3Maint','util3Start','util3End','util2Loc','util2WS','util2Gas','util2Elec','util2HOA','util2Maint','util2Start','util2End','tspContribAD','tspStopYear','rothMe','rothMeStop','rothWife','rothWifeStop','gsTsp','gsTspStart','gsTspEnd','savBal','savMonthly','savAPY','savWithdraw','savWdYear','savWdEnd','savWithdraw2','savWdYear2','savWdEnd2','tspBal','tspRet','tspRoll','rothBalMe','rothBalWife','rothRet','tspWithdraw','tspWdYear','rothWithdraw','rothWdYear','rothWifeWithdraw','rothWifeWdYear','taxBal','taxMonthly','taxStart','taxStop','taxRet','taxWithdraw','taxWdYear','taxCapGains','cryptoBal','cryptoMonthly','cryptoStart','cryptoStop','cryptoRet','cryptoWithdraw','cryptoWdYear','cryptoCapGains','goldBal','goldMonthly','goldStart','goldStop','goldRet','goldWithdraw','goldWdYear','goldCapGains','useActuals','ret529','c1GibMonths','c1GiTuition','c2GibMonths','c2GiTuition','c3GibMonths','c3GiTuition','cc1Name','cc1Bal','cc1Pmt','cc1Rate','cc1Month','cc1Start','cc1End','cc2Name','cc2Bal','cc2Pmt','cc2Rate','cc2Month','cc2Start','cc2End','cc3Name','cc3Bal','cc3Pmt','cc3Rate','cc3Month','cc3Start','cc3End','car1Name','car1Bal','car1Pmt','car1Rate','car1Month','car1Start','car1End','car2Name','car2Bal','car2Pmt','car2Rate','car2Month','car2Start','car2End','loanName','loanBal','loanPmt','loanRate','loanMonth','loanStart','loanEnd'];
+const ALL_IDS=['currentYear','projStartYear','projEndYear','showTodaysDollars','inflationRate','age','wifeAge','retireYear','retireMonth','svcComp','drillDays','netPay','payRaise','promoBump','promo1Bump','promo1Month','promo1Start','promo1End','promo2Bump','promo2Month','promo2Start','promo2End','bah1','bah1Month','bah1Start','bah1End','bah2','bah2Month','bah2Start','bah2End','bahRaise','bah1Raise','bah2Raise','retSystem','yos','yosMonths','high3Pay','retGross','retPoints','retPayStartAge','pensionCOLA','fedTaxPct','optSBP','optLifeIns','lifeInsType','lifeInsPremium','lifeInsFace','lifeInsStart','lifeInsEnd','jbHousingType','jbRent','jbRentStart','jbRentEnd','pcs2HousingType','pcs2Rent','pcs2RentStart','pcs2RentEnd','myWorkManual','gsGross','gsFedTax','gsStateTax','gsIncomeStart','gsIncomeEnd','wifeManual','wifeStartYear','wifeEndYear','vaDisability','ssMe','ssMeYear','ssWife','ssWifeYear','exp1Bills','exp1Disc','exp1Start','exp1End','exp2Bills','exp2Disc','exp2Start','exp2End','exp1Inflation','exp2Inflation','tricareMo','tricareStart','tricareEnd','medInsMo','medInsStart','medInsEnd','denInsMo','denInsStart','denInsEnd','jbBuyYear','jbBuyMonth','jbSellYear','homeCost','downPct','rate','term','propTax','jbIns','jbHOA','vaFee','pcs2BuyYear','pcs2BuyMonth','pcs2SellYear','pcs2Cost','pcs2DownPct','pcs2Rate','pcs2Term','pcs2PropTax','pcs2Ins','pcs2VaFee','wakeBuyYear','wakeBuyMonth','townSel','town1Name','town1Price','town1Tax','town1Ins','town1HOA','town1School','town2Name','town2Price','town2Tax','town2Ins','town2HOA','town2School','town3Name','town3Price','town3Tax','town3Ins','town3HOA','town3School','town4Name','town4Price','town4Tax','town4Ins','town4HOA','town4School','townRate','equity2033','pcs2EquityRoll','util1Loc','util1WS','util1Gas','util1Elec','util1HOA','util1Maint','util1Start','util1End','util3Loc','util3WS','util3Gas','util3Elec','util3HOA','util3Maint','util3Start','util3End','util2Loc','util2WS','util2Gas','util2Elec','util2HOA','util2Maint','util2Start','util2End','tspContribAD','tspStopYear','rothMe','rothMeStop','rothWife','rothWifeStop','gsTsp','gsTspStart','gsTspEnd','savBal','savMonthly','savAPY','savWithdraw','savWdYear','savWdEnd','savWithdraw2','savWdYear2','savWdEnd2','tspBal','tspRet','tspRoll','rothBalMe','rothBalWife','rothRet','tspWithdraw','tspWdYear','rothWithdraw','rothWdYear','rothWifeWithdraw','rothWifeWdYear','taxBal','taxMonthly','taxStart','taxStop','taxRet','taxWithdraw','taxWdYear','taxCapGains','cryptoBal','cryptoMonthly','cryptoStart','cryptoStop','cryptoRet','cryptoWithdraw','cryptoWdYear','cryptoCapGains','goldBal','goldMonthly','goldStart','goldStop','goldRet','goldWithdraw','goldWdYear','goldCapGains','useActuals','ret529','c1GibMonths','c1GiTuition','c2GibMonths','c2GiTuition','c3GibMonths','c3GiTuition','cc1Name','cc1Bal','cc1Pmt','cc1Rate','cc1Month','cc1Start','cc1End','cc2Name','cc2Bal','cc2Pmt','cc2Rate','cc2Month','cc2Start','cc2End','cc3Name','cc3Bal','cc3Pmt','cc3Rate','cc3Month','cc3Start','cc3End','car1Name','car1Bal','car1Pmt','car1Rate','car1Month','car1Start','car1End','car2Name','car2Bal','car2Pmt','car2Rate','car2Month','car2Start','car2End','loanName','loanBal','loanPmt','loanRate','loanMonth','loanStart','loanEnd'];
 ['c1','c2','c3'].forEach(c=>['privStart','privEnd','privTuition','privFees','bal','mo','stop','ugStart','ugEnd','ugTuition','ugRB','rbStart','rbEnd','scholUG','gStart','gEnd','gTuition','gRB','grbStart','grbEnd','scholGrad'].forEach(s=>ALL_IDS.push(c+s)));
 
 /* =======================================================
@@ -1627,10 +1649,10 @@ function showTab(n){
   [1,'H',2,3,'P',5].forEach(i=>{const s=document.getElementById('sl-'+i);if(s)s.classList.toggle('active',i===n);});
 }
 function showGroup(g){
-  ['cash','inv','edu'].forEach(x=>{const el=document.getElementById('grp_'+x);if(el)el.classList.toggle('active',x===g);});
+  ['cash','re','inv','edu'].forEach(x=>{const el=document.getElementById('grp_'+x);if(el)el.classList.toggle('active',x===g);});
   const nc=document.getElementById('navCash'),ni=document.getElementById('navInv'),ne=document.getElementById('navEdu');
   if(nc)nc.classList.toggle('active',g==='cash');if(ni)ni.classList.toggle('active',g==='inv');if(ne)ne.classList.toggle('active',g==='edu');
-  ['cash','inv','edu'].forEach(x=>{const s=document.getElementById('sl-'+x);if(s)s.classList.toggle('active',x===g);});
+  ['cash','re','inv','edu'].forEach(x=>{const s=document.getElementById('sl-'+x);if(s)s.classList.toggle('active',x===g);});
 }
 function toggleWife(state){showWife=state;renderCashFlow();document.getElementById('btnWith').classList.toggle('active',state);document.getElementById('btnNo').classList.toggle('active',!state);}
 function fillYears(){
@@ -1889,6 +1911,13 @@ function autoSave(){
   data.__details=detStates;
   try{localStorage.setItem('frp_v80',JSON.stringify(data));const t=document.getElementById('savedTag');if(t){t.textContent='✓ Saved '+new Date().toLocaleTimeString();}}catch(e){}
 }
+function toggleSvcCompFields(){
+  const c=document.getElementById('svcComp');if(!c)return;
+  const isRG=c.value==='res'||c.value==='ng';
+  const dd=document.getElementById('drillDaysWrap');if(dd)dd.style.display=isRG?'':'none';
+  const rr=document.getElementById('reserveRetWrap');if(rr)rr.style.display=isRG?'':'none';
+  const hint=document.getElementById('netPayHint');if(hint)hint.textContent=isRG?'(full-time equivalent — scaled by drill days/365)':'';
+}
 function autoLoad(){
   const raw=localStorage.getItem('frp_v80')||localStorage.getItem('frp_v78')||localStorage.getItem('frp_v77')||localStorage.getItem('frp_v76');if(!raw)return false;
   try{
@@ -1962,14 +1991,20 @@ function runModel(){
   const age0=v('age'),wifeAge0=v('wifeAge');
   const netPay0=v('netPay'),payRaise=v('payRaise')/100;
   const bah1Raise=v('bah1Raise')/100,bah2Raise=v('bah2Raise')/100;
+  const svcComp=txt('svcComp')||'ad';
   const yos=v('yos'),yosMonths=v('yosMonths'),high3Pay=v('high3Pay'),retSystem=txt('retSystem');
-  if(yos>0&&high3Pay>0){
+  const retPoints=v('retPoints'),retPayStartAge=v('retPayStartAge')||60;
+  const isReserve=svcComp==='res'||svcComp==='ng';
+  if(isReserve&&high3Pay>0&&retPoints>0){
+    document.getElementById('retGross').value=Math.round(high3Pay*12*0.025*(retPoints/360));
+  } else if(yos>0&&high3Pay>0){
     const yosTotal=yos+yosMonths/12;
     const retMult=retSystem==='high3'?0.025:0.02;
     document.getElementById('retGross').value=Math.round(high3Pay*12*retMult*yosTotal);
   }
   const retGross=v('retGross'),fedTax=v('fedTaxPct')/100;
   const retireYr=v('retireYear'),retireMonth=v('retireMonth')||11;
+  const pensionStartYr=isReserve?(A+(retPayStartAge-age0)):retireYr;
   const wifeIncome=v('wifeManual'),wifeStart=v('wifeStartYear'),wifeEnd=v('wifeEndYear');
   const myWork=v('myWorkManual'),vaDis=v('vaDisability');
   const ssMe=v('ssMe'),ssMeYear=v('ssMeYear'),ssWife=v('ssWife'),ssWifeYear=v('ssWifeYear');
@@ -2098,11 +2133,14 @@ function runModel(){
     if(v('goldStart')>0&&year>=v('goldStart')&&year<=v('goldStop'))c+=v('goldMonthly');
     return c;
   }
+  const drillDays=v('drillDays');
+  const dutyFactor=(svcComp==='res'||svcComp==='ng')?(drillDays>0?drillDays/365:0):1;
+  const svcLabel={ad:'Active Duty',agr:'AGR',res:'Reservist',ng:'National Guard'}[svcComp]||'Active Duty';
   function adNet(y){
     let base=netPay0*Math.pow(1+payRaise,y-A);
     if(v('promo1Start')>0&&y>=v('promo1Start')&&(v('promo1End')===0||y<=v('promo1End'))){if(y===v('promo1Start'))base+=v('promo1Bump')*((12-v('promo1Month')+1)/12)*Math.pow(1+payRaise,y-v('promo1Start'));else base+=v('promo1Bump')*Math.pow(1+payRaise,y-v('promo1Start'));}
     if(v('promo2Start')>0&&y>=v('promo2Start')&&(v('promo2End')===0||y<=v('promo2End'))){if(y===v('promo2Start'))base+=v('promo2Bump')*((12-v('promo2Month')+1)/12)*Math.pow(1+payRaise,y-v('promo2Start'));else base+=v('promo2Bump')*Math.pow(1+payRaise,y-v('promo2Start'));}
-    return base;
+    return base*dutyFactor;
   }
 
   const optSBP=txt('optSBP')==='yes';
@@ -2164,16 +2202,17 @@ function runModel(){
 
   function incomeParts(y){
     let mine=0,spouse=0,bits=[],sbpMo=0;
-    if(y<retireYr){mine=adNet(y);bits.push('Active Duty');}
-    else if(y===retireYr){const a=adNet(y);let aM=Math.max(0,retireMonth-1);let pM=12-aM;mine=(a*aM+retNetBase*pM)/12;bits.push('Transition Year');if(optSBP)sbpMo=(sbpAnnual/12);}
-    else{mine=retNetBase*Math.pow(1+pensionCOLA,y-retireYr);mine+=vaDis;bits.push('Mil. Pension');if(optSBP)sbpMo=(sbpAnnual/12)*Math.pow(1+pensionCOLA,y-retireYr);if(y>=ssMeYear){mine+=ssMe;bits.push('My SS');}if(myWork>0){mine+=myWork;bits.push('Other Income');}if(projWd[y]&&projWd[y].Tsp>0){mine+=projWd[y].Tsp*0.85;bits.push('TSP Draw');}if(projWd[y]&&projWd[y].RothMe>0){mine+=projWd[y].RothMe;bits.push('Roth Draw');}if(projWd[y]&&projWd[y].RothWife>0){spouse+=projWd[y].RothWife;bits.push('Sp. Roth');}}
+    if(y<retireYr){mine=adNet(y);bits.push(svcLabel);}
+    else if(!isReserve&&y===retireYr){const a=adNet(y);let aM=Math.max(0,retireMonth-1);let pM=12-aM;mine=(a*aM+retNetBase*pM)/12;bits.push('Transition Year');if(optSBP)sbpMo=(sbpAnnual/12);}
+    else if(isReserve&&y<pensionStartYr){bits.push('Reserve Gray Area');vaDis>0&&(mine+=vaDis);if(ssMe>0&&ssMeYear>0&&y>=ssMeYear){mine+=ssMe;bits.push('My SS');}if(myWork>0){mine+=myWork;bits.push('Other Income');}if(projWd[y]&&projWd[y].Tsp>0){mine+=projWd[y].Tsp*0.85;bits.push('TSP Draw');}if(projWd[y]&&projWd[y].RothMe>0){mine+=projWd[y].RothMe;bits.push('Roth Draw');}if(projWd[y]&&projWd[y].RothWife>0){spouse+=projWd[y].RothWife;bits.push('Sp. Roth');}}
+    else{const anchor=isReserve?pensionStartYr:retireYr;mine=retNetBase*Math.pow(1+pensionCOLA,y-anchor);mine+=vaDis;bits.push(isReserve?'Reserve Retirement':'Mil. Pension');if(optSBP)sbpMo=(sbpAnnual/12)*Math.pow(1+pensionCOLA,y-anchor);if(ssMe>0&&ssMeYear>0&&y>=ssMeYear){mine+=ssMe;bits.push('My SS');}if(myWork>0){mine+=myWork;bits.push('Other Income');}if(projWd[y]&&projWd[y].Tsp>0){mine+=projWd[y].Tsp*0.85;bits.push('TSP Draw');}if(projWd[y]&&projWd[y].RothMe>0){mine+=projWd[y].RothMe;bits.push('Roth Draw');}if(projWd[y]&&projWd[y].RothWife>0){spouse+=projWd[y].RothWife;bits.push('Sp. Roth');}}
     if(gsGross>0&&gsIncomeStart>0&&y>=gsIncomeStart&&y<=gsIncomeEnd){const gsNet=(gsGross/12)*(1-gsFedTax-gsStateTax);mine+=gsNet;bits.push('GS Income');}
     if(projWd[y]&&projWd[y].Sav>0){mine+=projWd[y].Sav;bits.push('Savings');}
     if(projWd[y]&&projWd[y].Tax>0){mine+=projWd[y].Tax*(1-v('taxCapGains')/100);bits.push('Stocks Draw');}
     if(projWd[y]&&projWd[y].Crypto>0){mine+=projWd[y].Crypto*(1-v('cryptoCapGains')/100);bits.push('Crypto');}
     if(projWd[y]&&projWd[y].Gold>0){mine+=projWd[y].Gold*(1-v('goldCapGains')/100);bits.push('Gold');}
     if(y>=wifeStart&&y<=wifeEnd){spouse+=wifeIncome;bits.push('Spouse Working');}
-    if(y>=ssWifeYear){spouse+=ssWife;bits.push('Spouse SS');}
+    if(ssWife>0&&ssWifeYear>0&&y>=ssWifeYear){spouse+=ssWife;bits.push('Spouse SS');}
     return {mine,spouse,status:bits.join(' · '),sbpMo};
   }
 
@@ -2288,10 +2327,10 @@ function getOpen(id){return (window._detailStates&&window._detailStates[id]!==fa
 /* =======================================================
    SECTION GROUPS
    ======================================================= */
-function buildSectionGroups(){buildCashGroup();buildInvGroup();buildEduGroup();renderPcsCompare();renderCharts();}
+function buildSectionGroups(){buildCashGroup();buildReGroup();buildInvGroup();buildEduGroup();renderPcsCompare();renderCharts();}
 
 function gotoTownCompare(){
-  if(typeof sideNav==='function')sideNav('result','cash');
+  if(typeof sideNavHousing==='function')sideNavHousing('result');
   setTimeout(()=>{const el=document.getElementById('det_towns');if(el){el.open=true;el.scrollIntoView({behavior:'smooth',block:'start'});}},50);
 }
 
@@ -2495,6 +2534,13 @@ function buildCashGroup(){
   html+='</div>';
   html+='</div></details></div>';
 
+  document.getElementById('grp_cash').innerHTML=html;
+  renderCashFlow();
+  renderDebtChart();
+}
+
+function buildReGroup(){
+  const c=window._cf,ctx=window._ctx,v=ctx.v;
   const retGross=c.retGross,payRaise=c.payRaise,pensionCOLA=c.pensionCOLA,fedTax=c.fedTax,vaDis=c.vaDis,myWork=c.myWork;
   const gsGrossC=c.gsGross,gsFedTaxC=c.gsFedTax,gsStateTaxC=c.gsStateTax,gsIncomeStartC=c.gsIncomeStart,gsIncomeEndC=c.gsIncomeEnd;
   const wifeStart=c.wifeStart,wifeEnd=c.wifeEnd,wifeIncome=c.wifeIncome,wakeBuy2=c.wakeBuy,totalDown=c.totalDown;
@@ -2503,7 +2549,10 @@ function buildCashGroup(){
   const retNet=((retGross-sbpAnnComp)/12)*Math.pow(1+pensionCOLA,1)*(1-fedTax)+vaDis+myWork+gsNetComp;
   const baseOut=c.expensesMonthly(wakeBuy2,true)+c.investMonthly(wakeBuy2)+c.debtPaymentMonthly(wakeBuy2)+c.utilForYear(wakeBuy2);
 
-  html+=`<div class="panel"><details id="det_towns" ${getOpen('det_towns')}><summary><h2>3. Town Comparison</h2></summary>`;
+  let html='';
+  html+='<div class="collapse-row"><button onclick="toggleAllDetails(\'grp_re\',true)">▼ Expand All</button><button onclick="toggleAllDetails(\'grp_re\',false)">▲ Collapse All</button></div>';
+  html+='<div class="panel" id="pcs-compare-panel"></div>';
+  html+=`<div class="panel"><details id="det_towns" ${getOpen('det_towns')}><summary><h2>🏘️ Town Comparison</h2></summary>`;
   html+=`<p style="font-size:12.5px;color:var(--text-2);"><em>Down payment = FB equity + net TSP roll = <b>${fmt(totalDown)}</b>. "Total Housing/mo" = P+I + Home Expenses. "Monthly Surplus" = income − housing − utilities − all expenses/contributions/debt. Selected town (for mortgage) is highlighted.</em></p>`;
   html+='<div class="table-wrapper"><table><tr><th>Town</th><th>School</th><th>Price</th><th>Loan</th><th>P+I /mo</th><th>Home Exp /mo</th><th>Total Housing /mo</th><th>Surplus (w/ Spouse)</th><th>Surplus (Solo)</th><th>Verdict</th></tr>';
   const tl=[1,2,3,4].map(n=>{const nameEl=document.getElementById('town'+n+'Name');return {key:String(n),name:(nameEl?nameEl.value:'')||'',price:v('town'+n+'Price'),taxAnnual:v('town'+n+'Tax'),ins:v('town'+n+'Ins'),hoa:v('town'+n+'HOA'),school:v('town'+n+'School')};}).filter(t=>t.name||t.price>0);
@@ -2518,9 +2567,7 @@ function buildCashGroup(){
     html+=`<tr class="${t.key===c.selTownNum?'best':''}"><td><b>${t.name||'(unnamed)'}</b></td><td>${schoolDisp}</td><td>${fmt(t.price)}</td><td>${fmt(L)}</td><td>${fmt(P)}</td><td>${fmt(homeExp)}</td><td>${fmt(H)}</td><td class="${dW<0?'warn':'good'}">${fmt(dW)}</td><td class="${dN<0?'warn':''}">${fmt(dN)}</td><td class="${vc}">${vd}</td></tr>`;
   });
   html+='</table></div></details></div>';
-  document.getElementById('grp_cash').innerHTML=html;
-  renderCashFlow();
-  renderDebtChart();
+  document.getElementById('grp_re').innerHTML=html;
 }
 
 function renderCashFlow(){
@@ -2966,7 +3013,7 @@ function buildEduGroup(){
    ======================================================= */
 function applyCurrencyStyles(){
   document.querySelectorAll('input[type="number"]').forEach(el=>{
-    const skip=['age','year','month','pct','raise','ret','growth','inflation','rate','term','gibmonths','start','end','cola','fedtax','statetax','vafee','tsproll','apy','yos','school','townsel','capgains'];
+    const skip=['age','year','month','pct','raise','ret','growth','inflation','rate','term','gibmonths','start','end','cola','fedtax','statetax','vafee','tsproll','apy','yos','school','townsel','capgains','drilldays','svccomp','retpoints','retpaystartage'];
     if(skip.some(s=>el.id.toLowerCase().includes(s)))return;
     if(el.parentNode.classList.contains('curr-wrap'))return;
     const w=document.createElement('span');w.className='curr-wrap';el.parentNode.insertBefore(w,el);w.appendChild(el);
@@ -2976,6 +3023,30 @@ function applyCurrencyStyles(){
 /* =======================================================
    SIDEBAR NAV
    ======================================================= */
+function sideNavHousing(from){
+  if(from==='input'){
+    sideNav('input','H');
+    if(typeof showGroup==='function')showGroup('re');
+    document.getElementById('sl-re')?.classList.add('active');
+  }else{
+    sideNav('result','re');
+    if(typeof showTab==='function')showTab('H');
+    document.getElementById('sl-H')?.classList.add('active');
+  }
+}
+
+function sideNavMainData(from){
+  if(from==='input'){
+    sideNav('input','1');
+    if(typeof showGroup==='function')showGroup('cash');
+    document.getElementById('sl-cash')?.classList.add('active');
+  }else{
+    sideNav('result','cash');
+    if(typeof showTab==='function')showTab(1);
+    document.getElementById('sl-1')?.classList.add('active');
+  }
+}
+
 function sideNavInvestments(from){
   if(from==='input'){
     sideNav('input','2');
@@ -3002,16 +3073,15 @@ function sideNavEducation(from){
 
 function sideNav(type,id){
   document.querySelectorAll('.sidebar-link').forEach(el=>el.classList.remove('active'));
+  const scrollToEl=(el)=>{if(!el)return;const bar=document.querySelector('.stickybar');const off=bar?bar.offsetHeight+10:60;window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-off,behavior:'smooth'});};
   if(type==='input'){
     const el=document.getElementById('sl-'+id);if(el)el.classList.add('active');
     showTab(isNaN(id)?id:parseInt(id));
-    const inp=document.getElementById('det_core');
-    if(inp){const bar=document.querySelector('.stickybar');const off=bar?bar.offsetHeight+10:60;window.scrollTo({top:inp.getBoundingClientRect().top+window.scrollY-off,behavior:'smooth'});}
+    setTimeout(()=>scrollToEl(document.getElementById('pane'+id)),30);
   }else if(type==='result'){
     const el=document.getElementById('sl-'+id);if(el)el.classList.add('active');
     showGroup(id);
-    const res=document.getElementById('results');
-    if(res){const bar=document.querySelector('.stickybar');const off=bar?bar.offsetHeight+10:60;window.scrollTo({top:res.getBoundingClientRect().top+window.scrollY-off,behavior:'smooth'});}
+    setTimeout(()=>scrollToEl(document.getElementById('grp_'+id)),30);
   }else if(type==='dash'){
     const el=document.getElementById('sl-dash');if(el)el.classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
@@ -3031,6 +3101,7 @@ window.onload=function(){
   fillYears();
   applyCurrencyStyles();
   autoLoad();
+  toggleSvcCompFields();
   applyHousingVisibility();
   // Restore sidebar collapsed state
   if (localStorage.getItem('frp_sidebar') === '1') {
