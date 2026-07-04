@@ -705,8 +705,13 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
   <div class="chart-wrap" id="nw-chart-wrap" style="display:none"><canvas id="chart-nw"></canvas></div>
   <div id="nw-account-legend" style="display:none;padding:8px 12px;margin-top:6px;"></div>
   <details style="margin-top:10px;">
-    <summary style="font-size:12px;color:var(--blue);cursor:pointer;font-weight:600;">💡 How are these numbers calculated?</summary>
-    <div class="note" style="margin-top:6px;">💡 <b>Liquid Cash</b> = Savings + Taxable Brokerage + Gold/Silver + <b>Accumulated Cash Flow (AccCF)</b>. AccCF is the running total of all annual surpluses/deficits since 2027 — positive means extra undeployed cash; negative means you've spent more than earned. Net Worth excludes Retirement accounts (early-withdrawal penalties) in the "Excl. Home" figure.</div>
+    <summary style="font-size:12px;color:var(--blue);cursor:pointer;font-weight:600;">How are these numbers calculated?</summary>
+    <div class="note" style="margin-top:6px;line-height:1.6;">
+      <b>Liquid Cash</b> — Your Savings + Taxable Brokerage + Gold/Silver balances, plus any cash that has built up from yearly income exceeding expenses (or minus any shortfall if expenses exceed income). This represents money you can access without penalties.<br><br>
+      <b>Net Worth (Incl. Home)</b> — Liquid Cash + Retirement accounts (TSP, Roth IRA) + projected home equity. Your total picture including everything you own.<br><br>
+      <b>Net Worth (Excl. Home)</b> — Liquid Cash + Retirement accounts only, no home equity. Use this to gauge financial position independent of real estate.<br><br>
+      <b>Excl. Home &amp; Retirement</b> — Liquid Cash only. The most conservative view — what you could access today without selling your home or triggering early-withdrawal penalties on retirement accounts.
+    </div>
   </details>
 </div>
 
@@ -776,7 +781,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>GS Job Start Year</label><input type="number" id="gsIncomeStart" value="2034">
         <label>GS Job End Year</label><input type="number" id="gsIncomeEnd" value="2041">
         <div class="subsection-divider"></div>
-        <b style="font-size:12px;color:var(--text);">👩 Spouse</b>
+        <b style="font-size:12px;color:var(--text);">Spouse</b>
         <label>Spouse Net Monthly Income (After Tax)</label><input type="number" id="wifeManual" value="">
         <label>Spouse Income START Year</label><input type="number" id="wifeStartYear" value="2034">
         <label>Spouse Income END Year</label><input type="number" id="wifeEndYear" value="2055">
