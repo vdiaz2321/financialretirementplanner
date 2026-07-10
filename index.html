@@ -730,6 +730,10 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <button id="dashBtnWith" class="view-btn active" onclick="toggleWife(true)">👫 WITH Spouse</button>
       <button id="dashBtnNo"   class="view-btn"        onclick="toggleWife(false)">🚶 WITHOUT Spouse</button>
     </div>
+    <div id="dashPrivToggleWrap" style="display:none;">
+      <button id="dashBtnPrivOn"  class="view-btn active" onclick="togglePrivate(true)">🎒 Private School ON</button>
+      <button id="dashBtnPrivOff" class="view-btn"        onclick="togglePrivate(false)">🚫 Private School OFF</button>
+    </div>
     <div style="display:flex;flex-direction:column;gap:4px;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;">
       <div style="display:flex;align-items:center;gap:8px;">
         <label style="font-size:11px;margin:0;cursor:pointer;display:flex;align-items:center;gap:6px;">
@@ -1626,6 +1630,7 @@ function rebuildYearRange(){
   runModel();
 }
 let showWife=true;
+let showPrivate=true;
 const ACCTS=['Tsp','RothMe','RothWife','Tax','Sav','Crypto','Gold'];
 
 const RMD_DIVISORS = {
@@ -1680,6 +1685,7 @@ function showGroup(g){
   ['cash','re','inv','edu'].forEach(x=>{const s=document.getElementById('sl-'+x);if(s)s.classList.toggle('active',x===g);});
 }
 function toggleWife(state){showWife=state;const wrap=document.getElementById('cash-chart-wrap');const wasChart=wrap&&wrap.style.display==='block';runModel();['btnWith','dashBtnWith'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',state);});['btnNo','dashBtnNo'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',!state);});if(wasChart&&typeof showCashView==='function')showCashView('chart');}
+function togglePrivate(state){showPrivate=state;const wrap=document.getElementById('cash-chart-wrap');const wasChart=wrap&&wrap.style.display==='block';runModel();['btnPrivOn','dashBtnPrivOn'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',state);});['btnPrivOff','dashBtnPrivOff'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',!state);});if(wasChart&&typeof showCashView==='function')showCashView('chart');}
 function fillYears(){
   const ps=document.getElementById('projStartYear'),pe=document.getElementById('projEndYear');
   if(ps)Y0=parseInt(ps.value)||2026;
@@ -2129,9 +2135,11 @@ function runModel(){
     let e=0;
     if(year>=v('exp1Start')&&year<=v('exp1End')){e+=v('exp1Bills')+v('exp1Disc')+v('exp1Vac');}
     if(year>=v('exp2Start')&&year<=v('exp2End')){e+=v('exp2Bills')+v('exp2Disc')+v('exp2Vac');}
-    let privSchMo=0;
-    ['c1','c2','c3'].forEach(c=>{let start=v(c+'privStart'),end=v(c+'privEnd');if(start>0&&year>=start&&year<=end)privSchMo+=(v(c+'privTuition')+v(c+'privFees'))/12;});
-    e+=privSchMo;
+    if(showPrivate){
+      let privSchMo=0;
+      ['c1','c2','c3'].forEach(c=>{let start=v(c+'privStart'),end=v(c+'privEnd');if(start>0&&year>=start&&year<=end)privSchMo+=(v(c+'privTuition')+v(c+'privFees'))/12;});
+      e+=privSchMo;
+    }
     if(v('tricareStart')>0&&year>=v('tricareStart')&&(v('tricareEnd')===0||year<=v('tricareEnd')))e+=v('tricareMo');
     if(v('medInsStart')>0&&year>=v('medInsStart')&&(v('medInsEnd')===0||year<=v('medInsEnd')))e+=v('medInsMo');
     if(v('denInsStart')>0&&year>=v('denInsStart')&&(v('denInsEnd')===0||year<=v('denInsEnd')))e+=v('denInsMo');
@@ -2326,7 +2334,14 @@ function runModel(){
     if(forProjection){const inf1=v('exp1Inflation')/100,inf2=v('exp2Inflation')/100;const inf=(year>=v('exp2Start')&&year<=v('exp2End'))?inf2:inf1;const yrs=Math.max(0,year-curYear);l*=Math.pow(1+inf,yrs);}
     return l;
   }
-  window._cf={incomeParts,expensesMonthly,investMonthly,homeForYear,homeExpenseForYear,homePIForYear,utilForYear,bahForYear,debtPaymentMonthly,healthcareMonthly,lifeInsMonthly,myAge,wAge,locked,jbHomeMonthly,pcs2HomeMonthly,townHomeMonthly,selTownNum,jbBuy,jbSell,wakeBuy,retireYr,util1Loc:txt('util1Loc'),util2Loc:txt('util2Loc'),util3Loc:txt('util3Loc'),totalDown,townPI,townRate,wifeStart,wifeEnd,wifeIncome,retGross,payRaise,pensionCOLA,fedTax,vaDis,myWork,gsGross,gsFedTax,gsStateTax,gsIncomeStart,gsIncomeEnd,townExpenses,netTspForDown,optSBP,sbpAnnual,nw};
+  function privSchMonthly(year,forProjection){
+    let m=0;
+    ['c1','c2','c3'].forEach(c=>{let s=v(c+'privStart'),e=v(c+'privEnd');if(s>0&&year>=s&&year<=e)m+=(v(c+'privTuition')+v(c+'privFees'))/12;});
+    if(forProjection){const inf1=v('exp1Inflation')/100,inf2=v('exp2Inflation')/100;const inf=(year>=v('exp2Start')&&year<=v('exp2End'))?inf2:inf1;const yrs=Math.max(0,year-curYear);m*=Math.pow(1+inf,yrs);}
+    return m;
+  }
+  function hasPrivSchoolData(){return ['c1','c2','c3'].some(c=>v(c+'privStart')>0&&v(c+'privEnd')>0&&(v(c+'privTuition')+v(c+'privFees'))>0);}
+  window._cf={incomeParts,expensesMonthly,investMonthly,homeForYear,homeExpenseForYear,homePIForYear,utilForYear,bahForYear,debtPaymentMonthly,healthcareMonthly,lifeInsMonthly,privSchMonthly,hasPrivSchoolData,myAge,wAge,locked,jbHomeMonthly,pcs2HomeMonthly,townHomeMonthly,selTownNum,jbBuy,jbSell,wakeBuy,retireYr,util1Loc:txt('util1Loc'),util2Loc:txt('util2Loc'),util3Loc:txt('util3Loc'),totalDown,townPI,townRate,wifeStart,wifeEnd,wifeIncome,retGross,payRaise,pensionCOLA,fedTax,vaDis,myWork,gsGross,gsFedTax,gsStateTax,gsIncomeStart,gsIncomeEnd,townExpenses,netTspForDown,optSBP,sbpAnnual,nw};
   window._ctx={v,curYear,myAge,wAge,jbSell,proj,actual,actPct,capPaid,projWd,locked,projRet,useActuals,hasActual,retireYr,accCashFlow};
 
   (function(){
@@ -2354,7 +2369,7 @@ function getOpen(id){return (window._detailStates&&window._detailStates[id]!==fa
 /* =======================================================
    SECTION GROUPS
    ======================================================= */
-function buildSectionGroups(){buildCashGroup();buildReGroup();buildInvGroup();buildEduGroup();renderPcsCompare();renderCharts();}
+function buildSectionGroups(){buildCashGroup();buildReGroup();buildInvGroup();buildEduGroup();renderPcsCompare();renderCharts();const dp=document.getElementById('dashPrivToggleWrap');if(dp){const has=window._cf&&window._cf.hasPrivSchoolData&&window._cf.hasPrivSchoolData();dp.style.display=has?'':'none';['dashBtnPrivOn'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',showPrivate);});['dashBtnPrivOff'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',!showPrivate);});}}
 
 function gotoTownCompare(){
   if(typeof sideNavHousing==='function')sideNavHousing('result');
@@ -2516,6 +2531,10 @@ function buildCashGroup(){
   html+='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">';
   html+='<button id="btnWith" class="toggle-btn active" onclick="toggleWife(true)">WITH Spouse Income</button>';
   html+='<button id="btnNo" class="toggle-btn" onclick="toggleWife(false)">WITHOUT Spouse Income</button>';
+  if(c.hasPrivSchoolData&&c.hasPrivSchoolData()){
+    html+=`<button id="btnPrivOn"  class="view-btn ${showPrivate?'active':''}" onclick="togglePrivate(true)">🎒 Private School ON</button>`;
+    html+=`<button id="btnPrivOff" class="view-btn ${!showPrivate?'active':''}" onclick="togglePrivate(false)">🚫 Private School OFF</button>`;
+  }
   html+='<span style="margin-left:auto;display:flex;gap:6px;"><button class="view-btn active" onclick="showCashView(\'table\')">📋 Table</button><button class="view-btn" onclick="showCashView(\'chart\')">📊 Chart</button></span>';
   html+='</div>';
   html+='<div class="chart-wrap" id="cash-chart-wrap" style="display:none"><canvas id="chart-cash"></canvas></div>';
@@ -2599,20 +2618,21 @@ function buildReGroup(){
 
 function renderCashFlow(){
   const c=window._cf,ctx=window._ctx,v=ctx.v;if(!c)return;
-  const {incomeParts,expensesMonthly,investMonthly,homeForYear,utilForYear,bahForYear,debtPaymentMonthly,healthcareMonthly,lifeInsMonthly,myAge,wAge,locked}=c;
+  const {incomeParts,expensesMonthly,investMonthly,homeForYear,utilForYear,bahForYear,debtPaymentMonthly,healthcareMonthly,lifeInsMonthly,privSchMonthly,hasPrivSchoolData,myAge,wAge,locked}=c;
+  const hasPriv=hasPrivSchoolData&&hasPrivSchoolData();
   const townName=(document.getElementById('town'+c.selTownNum+'Name')||{}).value||('Town '+c.selTownNum);
   let h=`<p style="font-size:12px;color:var(--text-2);padding:8px 8px 0;"><em>Home auto-switches: PCS#1 (${c.jbBuy>0?c.jbBuy:'—'}) → ${townName} (${c.wakeBuy}+). ${showWife?'<b>WITH spouse income.</b>':'<b>WITHOUT spouse income.</b>'}</em></p>`;
-  h+='<table><tr><th class="stk-1">Year</th><th class="stk-2">Age</th><th class="stk-3">Sp Age</th><th>My Net/mo</th><th>Spouse/mo</th><th>Combined/mo</th><th>Surplus/mo</th><th>Surplus/yr</th><th>Proj NW</th><th>Home/mo</th><th>Utils/mo</th><th>BAH/mo</th><th>Debt/mo</th><th>Exp/mo</th><th>Invest/mo</th><th>Health/mo</th><th>Life Ins/mo</th><th>SBP/mo</th><th style="text-align:left">Status</th></tr>';
+  h+=`<table><tr><th class="stk-1">Year</th><th class="stk-2">Age</th><th class="stk-3">Sp Age</th><th>My Net/mo</th><th>Spouse/mo</th><th>Combined/mo</th><th>Surplus/mo</th><th>Surplus/yr</th><th>Proj NW</th><th>Home/mo</th><th>Utils/mo</th><th>BAH/mo</th><th>Debt/mo</th><th>Exp/mo</th><th>Invest/mo</th><th>Health/mo</th><th>Life Ins/mo</th>${hasPriv?'<th>PrivSch/mo</th>':''}<th>SBP/mo</th><th style="text-align:left">Status</th></tr>`;
   let total=0;
   for(let y=Y0+1;y<=YEND;y++){
     const ip=incomeParts(y);const spouse=showWife?ip.spouse:0;const combined=ip.mine+spouse;
     const bah=bahForYear(y);const home=homeForYear(y);const util=utilForYear(y);const debtPmt=debtPaymentMonthly(y);const expFull=expensesMonthly(y,true);const inv=investMonthly(y);
-    const hc=healthcareMonthly(y,true);const li=lifeInsMonthly(y,true);const expRest=Math.max(0,expFull-hc-li);
+    const hc=healthcareMonthly(y,true);const li=lifeInsMonthly(y,true);const ps=showPrivate?privSchMonthly(y,true):0;const expRest=Math.max(0,expFull-hc-li-ps);
     const disc=combined+bah-home-util-debtPmt-expFull-inv;total+=disc*12;
     const cls=disc<0?'warn':(disc<1000?'':'good');
     let rowcls=(y===c.jbSell)?'retire-row':(locked(y)?'locked':'');
     if(y===ctx.curYear)rowcls+=' current-year-row';
-    h+=`<tr class="${rowcls}"><td class="stk-1"><b>${y}</b></td><td class="stk-2">${myAge(y)}</td><td class="stk-3">${wAge(y)}</td><td>${fmt(ip.mine)}</td><td>${fmt(spouse)}</td><td><b>${fmt(combined)}</b></td><td class="${cls}">${fmt(disc)}</td><td>${fmt(disc*12)}</td><td><b>${fmt(c.nw(y).netWithMort)}</b></td><td>${fmt(home)}</td><td>${fmt(util)}</td><td>${fmt(bah)}</td><td>${fmt(debtPmt)}</td><td>${fmt(expRest)}</td><td>${fmt(inv)}</td><td>${hc>0?fmt(hc):'—'}</td><td>${li>0?fmt(li):'—'}</td><td class="warn">${ip.sbpMo>0?fmt(ip.sbpMo):'—'}</td><td style="font-size:9.5px;color:var(--text-2);text-align:left">${ip.status}</td></tr>`;
+    h+=`<tr class="${rowcls}"><td class="stk-1"><b>${y}</b></td><td class="stk-2">${myAge(y)}</td><td class="stk-3">${wAge(y)}</td><td>${fmt(ip.mine)}</td><td>${fmt(spouse)}</td><td><b>${fmt(combined)}</b></td><td class="${cls}">${fmt(disc)}</td><td>${fmt(disc*12)}</td><td><b>${fmt(c.nw(y).netWithMort)}</b></td><td>${fmt(home)}</td><td>${fmt(util)}</td><td>${fmt(bah)}</td><td>${fmt(debtPmt)}</td><td>${fmt(expRest)}</td><td>${fmt(inv)}</td><td>${hc>0?fmt(hc):'—'}</td><td>${li>0?fmt(li):'—'}</td>${hasPriv?`<td${ps>0?' class="warn"':''}>${ps>0?fmt(ps):'—'}</td>`:''}<td${ip.sbpMo>0?' class="warn"':''}>${ip.sbpMo>0?fmt(ip.sbpMo):'—'}</td><td style="font-size:9.5px;color:var(--text-2);text-align:left">${ip.status}</td></tr>`;
   }
   h+='</table>';
   h+=`<div style="padding:10px 8px;"><div class="metric"><strong>${fmt(total)}</strong>Cumulative Surplus 2027–2060 (${showWife?'w/ spouse':'solo'})</div></div>`;
