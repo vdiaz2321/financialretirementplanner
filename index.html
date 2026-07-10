@@ -783,13 +783,6 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>Projection Start Year</label><input type="number" id="projStartYear" value="2026" onchange="rebuildYearRange()">
         <label>Projection End Year</label><input type="number" id="projEndYear" value="2060" onchange="rebuildYearRange()">
       </details>
-      <details class="schoolblock inline-summary" open id="det_main_ss" style="border-left:4px solid var(--purple);">
-        <summary><h3>🏛️ Social Security <span style="font-size:11px;color:var(--text-2);font-weight:normal;">(Retire Income)</span></h3></summary>
-        <label>YOUR SS Monthly Benefit</label><input type="number" id="ssMe" value="">
-        <label>YOUR SS Start Year</label><input type="number" id="ssMeYear" value="">
-        <label>SPOUSE SS Monthly Benefit</label><input type="number" id="ssWife" value="">
-        <label>SPOUSE SS Start Year</label><input type="number" id="ssWifeYear" value="">
-      </details>
       </div>
       <details class="schoolblock inline-summary" open id="det_main_income" style="border-left:4px solid var(--green);">
         <summary><h3>💰 Income &amp; Pay</h3></summary>
@@ -864,7 +857,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
 
     <div class="grid4" style="margin-top:14px;">
       <details class="schoolblock inline-summary" open id="det_main_exp1" style="border-left:4px solid var(--purple);">
-        <summary><h3>Monthly Expenses #1</h3></summary>
+        <summary><h3>Monthly Expenses</h3></summary>
         <label>Bills Total /mo</label><input type="number" id="exp1Bills" value="">
         <label>Discretionary Total /mo</label><input type="number" id="exp1Disc" value="">
         <label>Vacation/Entertainment /mo</label><input type="number" id="exp1Vac" value="">
@@ -872,16 +865,16 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>End Year</label><input type="number" id="exp1End" value="">
         <div class="subsection-divider"></div>
         <label>Expected Inflation to Expenses % <span style="font-size:10px;color:var(--text-3);">(applies to all expenses in this period)</span></label><input type="number" id="exp1Inflation" value="2.5" step="0.1">
-      </details>
-      <details class="schoolblock inline-summary" open id="det_main_exp2" style="border-left:4px solid var(--gold);">
-        <summary><h3>Monthly Expenses #2</h3></summary>
-        <label>Bills Total /mo</label><input type="number" id="exp2Bills" value="">
-        <label>Discretionary Total /mo</label><input type="number" id="exp2Disc" value="">
-        <label>Vacation/Entertainment /mo</label><input type="number" id="exp2Vac" value="">
-        <label>Start Year</label><input type="number" id="exp2Start" value="">
-        <label>End Year</label><input type="number" id="exp2End" value="">
-        <div class="subsection-divider"></div>
-        <label>Expected Inflation to Expenses % <span style="font-size:10px;color:var(--text-3);">(applies to all expenses in this period)</span></label><input type="number" id="exp2Inflation" value="2.5" step="0.1">
+        <details class="schoolblock" id="det_main_exp2" style="margin-top:8px;">
+          <summary><b style="color:var(--text);">➕ Rate Change (optional)</b></summary>
+          <div style="font-size:10px;color:var(--text-3);margin-bottom:6px;">If expenses change later, end #1 the year before and start #2 at the new totals. Earlier years keep the original amounts.</div>
+          <label>Bills Total /mo #2</label><input type="number" id="exp2Bills" value="">
+          <label>Discretionary Total /mo #2</label><input type="number" id="exp2Disc" value="">
+          <label>Vacation/Entertainment /mo #2</label><input type="number" id="exp2Vac" value="">
+          <label>#2 Start Year</label><input type="number" id="exp2Start" value="">
+          <label>#2 End Year</label><input type="number" id="exp2End" value="">
+          <label>Expected Inflation to Expenses % #2</label><input type="number" id="exp2Inflation" value="2.5" step="0.1">
+        </details>
       </details>
       <details class="schoolblock inline-summary" open id="det_main_health" style="border-left:4px solid var(--gold);">
         <summary><h3>🏥 Healthcare</h3></summary>
@@ -931,6 +924,13 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Premium #2 START Year</label><input type="number" id="lifeInsStart2" value="">
           <label>Premium #2 END Year</label><input type="number" id="lifeInsEnd2" value="">
         </details>
+      </details>
+      <details class="schoolblock inline-summary" open id="det_main_ss" style="border-left:4px solid var(--purple);">
+        <summary><h3>🏛️ Social Security <span style="font-size:11px;color:var(--text-2);font-weight:normal;">(Retire Income)</span></h3></summary>
+        <label>YOUR SS Monthly Benefit</label><input type="number" id="ssMe" value="">
+        <label>YOUR SS Start Year</label><input type="number" id="ssMeYear" value="">
+        <label>SPOUSE SS Monthly Benefit</label><input type="number" id="ssWife" value="">
+        <label>SPOUSE SS Start Year</label><input type="number" id="ssWifeYear" value="">
       </details>
     </div>
   </div>
