@@ -556,6 +556,7 @@ body.sb-collapsed .main-content { margin-left: 54px; }
    COLLAPSE ROW
    ===================================================== */
 .collapse-row { display: flex; gap: 8px; margin-bottom: 12px; }
+#det_core .tabpane > .collapse-row { padding-left: 130px; }
 .collapse-row button {
   font-size: 11.5px; padding: 5px 12px; font-weight: 600;
   background: var(--surface-3); color: var(--blue);
@@ -763,10 +764,8 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
 </div>
 
 <!-- ===== INPUTS PANEL ===== -->
-<div class="panel" id="det_core">
-  <div style="display:flex;justify-content:flex-end;padding:0 0 8px 0;">
-    <button id="btnHideInputs" class="view-btn" onclick="toggleCoreInputs()" title="Hide all input sections to jump to the results tables below">👁️ Hide Inputs</button>
-  </div>
+<div class="panel" id="det_core" style="position:relative;">
+  <button id="btnHideInputs" class="view-btn" onclick="toggleCoreInputs()" title="Hide all input sections to jump to the results tables below" style="position:absolute;top:8px;left:8px;z-index:2;">👁️ Hide Inputs</button>
   <div id="det_core_body">
 
   <!-- TAB 1: MAIN DATA -->
@@ -3173,8 +3172,8 @@ function sideNav(type,id){
 }
 
 function toggleAllDetails(paneId,open){document.querySelectorAll('#'+paneId+' details').forEach(d=>{d.open=open;});}
-function toggleCoreInputs(){const body=document.getElementById('det_core_body'),btn=document.getElementById('btnHideInputs');if(!body||!btn)return;const hidden=body.style.display==='none';body.style.display=hidden?'':'none';btn.textContent=hidden?'👁️ Hide Inputs':'👁️ Show Inputs';try{localStorage.setItem('frp_hideInputs',hidden?'0':'1');}catch(e){}}
-(function(){try{if(localStorage.getItem('frp_hideInputs')==='1'){document.addEventListener('DOMContentLoaded',()=>{const body=document.getElementById('det_core_body'),btn=document.getElementById('btnHideInputs');if(body&&btn){body.style.display='none';btn.textContent='👁️ Show Inputs';}});}}catch(e){}})();
+function toggleCoreInputs(){const body=document.getElementById('det_core_body'),btn=document.getElementById('btnHideInputs');if(!body||!btn)return;const hidden=body.style.display==='none';body.style.display=hidden?'':'none';btn.textContent=hidden?'👁️ Hide Inputs':'👁️ Show Inputs';}
+try{localStorage.removeItem('frp_hideInputs');}catch(e){}
 
 /* =======================================================
    INIT
