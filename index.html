@@ -673,7 +673,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
   <a class="sidebar-link active" id="sl-dash" onclick="sideNav('dash','')" title="Dashboard">📊<span class="sb-link-text"> Dashboard</span></a>
 
   <div class="sidebar-divider"></div>
-  <div class="sidebar-label">Core Inputs</div>
+  <div class="sidebar-label" style="cursor:pointer;" onclick="sideNavCoreInputs()">Core Inputs</div>
   <a class="sidebar-link" id="sl-1" onclick="sideNavMainData('input')" title="Main Data">📋<span class="sb-link-text"> Main Data</span></a>
   <a class="sidebar-link" id="sl-H" onclick="sideNavHousing('input')" title="Housing &amp; Real Estate">🏡<span class="sb-link-text"> Housing &amp; Real Estate</span></a>
   <a class="sidebar-link" id="sl-2" onclick="sideNavInvestments('input')" title="Investments">📈<span class="sb-link-text"> Investments</span></a>
@@ -3154,6 +3154,15 @@ function sideNavEducation(from){
   }
 }
 
+function sideNavCoreInputs(){
+  document.querySelectorAll('.sidebar-link').forEach(el=>el.classList.remove('active'));
+  document.getElementById('sl-1')?.classList.add('active');
+  showTab(1);
+  if(typeof showGroup==='function')showGroup('cash');
+  document.getElementById('sl-cash')?.classList.add('active');
+  const paneEl=document.getElementById('pane1');
+  if(paneEl){const bar=document.querySelector('.stickybar');const off=bar?bar.offsetHeight+10:60;setTimeout(()=>window.scrollTo({top:paneEl.getBoundingClientRect().top+window.scrollY-off,behavior:'smooth'}),50);}
+}
 function sideNav(type,id){
   document.querySelectorAll('.sidebar-link').forEach(el=>el.classList.remove('active'));
   const scrollToEl=(el)=>{if(!el)return;const bar=document.querySelector('.stickybar');const off=bar?bar.offsetHeight+10:60;window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-off,behavior:'smooth'});};
