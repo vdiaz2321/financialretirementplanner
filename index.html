@@ -885,17 +885,27 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       </details>
       <details class="schoolblock inline-summary" open id="det_main_health" style="border-left:4px solid var(--gold);">
         <summary><h3>🏥 Healthcare</h3></summary>
+        <div style="font-size:10px;color:var(--text-3);margin-bottom:6px;">Use the Rate #2 fields when a premium changes later (e.g. #1 ends 2029, #2 starts 2030 at the new rate) — like Monthly Expenses #1/#2.</div>
         <label>Tricare Premium /mo</label><input type="number" id="tricareMo" value="">
         <label>Tricare Start Year</label><input type="number" id="tricareStart" value="2033">
         <label>Tricare End Year</label><input type="number" id="tricareEnd" value="2060">
+        <label>Tricare Premium #2 /mo</label><input type="number" id="tricareMo2" value="">
+        <label>Tricare #2 Start Year</label><input type="number" id="tricareStart2" value="">
+        <label>Tricare #2 End Year</label><input type="number" id="tricareEnd2" value="">
         <div class="subsection-divider"></div>
         <label>Medical Ins Premium /mo</label><input type="number" id="medInsMo" value="">
         <label>Medical Ins Start Year</label><input type="number" id="medInsStart" value="">
         <label>Medical Ins End Year</label><input type="number" id="medInsEnd" value="">
+        <label>Medical Ins Premium #2 /mo</label><input type="number" id="medInsMo2" value="">
+        <label>Medical Ins #2 Start Year</label><input type="number" id="medInsStart2" value="">
+        <label>Medical Ins #2 End Year</label><input type="number" id="medInsEnd2" value="">
         <div class="subsection-divider"></div>
         <label>Dental Ins Premium /mo</label><input type="number" id="denInsMo" value="">
         <label>Dental Ins Start Year</label><input type="number" id="denInsStart" value="">
         <label>Dental Ins End Year</label><input type="number" id="denInsEnd" value="">
+        <label>Dental Ins Premium #2 /mo</label><input type="number" id="denInsMo2" value="">
+        <label>Dental Ins #2 Start Year</label><input type="number" id="denInsStart2" value="">
+        <label>Dental Ins #2 End Year</label><input type="number" id="denInsEnd2" value="">
       </details>
       <details class="schoolblock inline-summary" open id="det_main_lifeins" style="border-left:4px solid var(--gold);">
         <summary><h3>🛡️ Life Insurance</h3></summary>
@@ -909,6 +919,10 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>Monthly Premium</label><input type="number" id="lifeInsPremium" value="">
         <label>Premium START Year</label><input type="number" id="lifeInsStart" value="">
         <label>Premium END Year</label><input type="number" id="lifeInsEnd" value="">
+        <div class="subsection-divider"></div>
+        <label>Monthly Premium #2</label><input type="number" id="lifeInsPremium2" value="">
+        <label>Premium #2 START Year</label><input type="number" id="lifeInsStart2" value="">
+        <label>Premium #2 END Year</label><input type="number" id="lifeInsEnd2" value="">
       </details>
     </div>
   </div>
@@ -1634,7 +1648,7 @@ const RMD_DIVISORS = {
   97:7.8,98:7.3,99:6.8,100:6.4
 };
 
-const ALL_IDS=['currentYear','projStartYear','projEndYear','showTodaysDollars','inflationRate','age','wifeAge','retireYear','retireMonth','svcComp','drillDays','netPay','payRaise','promo1Bump','promo1Month','promo1Start','promo1End','promo2Bump','promo2Month','promo2Start','promo2End','bah1','bah1Month','bah1Start','bah1End','bah2','bah2Month','bah2Start','bah2End','bah1Raise','bah2Raise','retSystem','yos','yosMonths','high3Pay','retGross','retPoints','retPayStartAge','pensionCOLA','fedTaxPct','optSBP','lifeInsType','lifeInsPremium','lifeInsStart','lifeInsEnd','jbHousingType','jbRent','jbRentStart','jbRentEnd','pcs2HousingType','pcs2Rent','pcs2RentStart','pcs2RentEnd','myWorkManual','gsGross','gsFedTax','gsStateTax','gsIncomeStart','gsIncomeEnd','wifeManual','wifeStartYear','wifeEndYear','vaDisability','ssMe','ssMeYear','ssWife','ssWifeYear','exp1Bills','exp1Disc','exp1Vac','exp1Start','exp1End','exp2Bills','exp2Disc','exp2Vac','exp2Start','exp2End','exp1Inflation','exp2Inflation','tricareMo','tricareStart','tricareEnd','medInsMo','medInsStart','medInsEnd','denInsMo','denInsStart','denInsEnd','jbBuyYear','jbBuyMonth','jbSellYear','homeCost','downPct','rate','term','propTax','jbIns','vaFee','pcs2BuyYear','pcs2BuyMonth','pcs2SellYear','pcs2Cost','pcs2DownPct','pcs2Rate','pcs2Term','pcs2PropTax','pcs2Ins','pcs2VaFee','wakeBuyYear','wakeBuyMonth','town1Name','town1Price','town1Tax','town1Ins','town1HOA','town1School','town2Name','town2Price','town2Tax','town2Ins','town2HOA','town2School','town3Name','town3Price','town3Tax','town3Ins','town3HOA','town3School','town4Name','town4Price','town4Tax','town4Ins','town4HOA','town4School','townRate','equity2033','pcs2EquityRoll','util1Loc','util1WS','util1Gas','util1Elec','util1HOA','util1Maint','util1Start','util1End','util3Loc','util3WS','util3Gas','util3Elec','util3HOA','util3Maint','util3Start','util3End','util2Loc','util2WS','util2Gas','util2Elec','util2HOA','util2Maint','util2Start','util2End','tspContribAD','tspStopYear','rothMe','rothMeStop','rothWife','rothWifeStop','gsTsp','gsTspStart','gsTspEnd','savBal','savMonthly','savAPY','savWithdraw','savWdYear','savWdEnd','savWithdraw2','savWdYear2','savWdEnd2','tspBal','tspRet','tspRoll','rothBalMe','rothBalWife','rothRet','tspWithdraw','tspWdYear','rothWithdraw','rothWdYear','rothWifeWithdraw','rothWifeWdYear','taxBal','taxMonthly','taxStart','taxStop','taxRet','taxWithdraw','taxWdYear','taxCapGains','cryptoBal','cryptoMonthly','cryptoStart','cryptoStop','cryptoRet','cryptoWithdraw','cryptoWdYear','cryptoCapGains','goldBal','goldMonthly','goldStart','goldStop','goldRet','goldWithdraw','goldWdYear','goldCapGains','useActuals','ret529','c1GibMonths','c1GiTuition','c2GibMonths','c2GiTuition','c3GibMonths','c3GiTuition','cc1Name','cc1Bal','cc1Pmt','cc1Rate','cc1Month','cc1Start','cc1End','cc2Name','cc2Bal','cc2Pmt','cc2Rate','cc2Month','cc2Start','cc2End','cc3Name','cc3Bal','cc3Pmt','cc3Rate','cc3Month','cc3Start','cc3End','car1Name','car1Bal','car1Pmt','car1Rate','car1Month','car1Start','car1End','car2Name','car2Bal','car2Pmt','car2Rate','car2Month','car2Start','car2End','loanName','loanBal','loanPmt','loanRate','loanMonth','loanStart','loanEnd'];
+const ALL_IDS=['currentYear','projStartYear','projEndYear','showTodaysDollars','inflationRate','age','wifeAge','retireYear','retireMonth','svcComp','drillDays','netPay','payRaise','promo1Bump','promo1Month','promo1Start','promo1End','promo2Bump','promo2Month','promo2Start','promo2End','bah1','bah1Month','bah1Start','bah1End','bah2','bah2Month','bah2Start','bah2End','bah1Raise','bah2Raise','retSystem','yos','yosMonths','high3Pay','retGross','retPoints','retPayStartAge','pensionCOLA','fedTaxPct','optSBP','lifeInsType','lifeInsPremium','lifeInsStart','lifeInsEnd','lifeInsPremium2','lifeInsStart2','lifeInsEnd2','jbHousingType','jbRent','jbRentStart','jbRentEnd','pcs2HousingType','pcs2Rent','pcs2RentStart','pcs2RentEnd','myWorkManual','gsGross','gsFedTax','gsStateTax','gsIncomeStart','gsIncomeEnd','wifeManual','wifeStartYear','wifeEndYear','vaDisability','ssMe','ssMeYear','ssWife','ssWifeYear','exp1Bills','exp1Disc','exp1Vac','exp1Start','exp1End','exp2Bills','exp2Disc','exp2Vac','exp2Start','exp2End','exp1Inflation','exp2Inflation','tricareMo','tricareStart','tricareEnd','tricareMo2','tricareStart2','tricareEnd2','medInsMo','medInsStart','medInsEnd','medInsMo2','medInsStart2','medInsEnd2','denInsMo','denInsStart','denInsEnd','denInsMo2','denInsStart2','denInsEnd2','jbBuyYear','jbBuyMonth','jbSellYear','homeCost','downPct','rate','term','propTax','jbIns','vaFee','pcs2BuyYear','pcs2BuyMonth','pcs2SellYear','pcs2Cost','pcs2DownPct','pcs2Rate','pcs2Term','pcs2PropTax','pcs2Ins','pcs2VaFee','wakeBuyYear','wakeBuyMonth','town1Name','town1Price','town1Tax','town1Ins','town1HOA','town1School','town2Name','town2Price','town2Tax','town2Ins','town2HOA','town2School','town3Name','town3Price','town3Tax','town3Ins','town3HOA','town3School','town4Name','town4Price','town4Tax','town4Ins','town4HOA','town4School','townRate','equity2033','pcs2EquityRoll','util1Loc','util1WS','util1Gas','util1Elec','util1HOA','util1Maint','util1Start','util1End','util3Loc','util3WS','util3Gas','util3Elec','util3HOA','util3Maint','util3Start','util3End','util2Loc','util2WS','util2Gas','util2Elec','util2HOA','util2Maint','util2Start','util2End','tspContribAD','tspStopYear','rothMe','rothMeStop','rothWife','rothWifeStop','gsTsp','gsTspStart','gsTspEnd','savBal','savMonthly','savAPY','savWithdraw','savWdYear','savWdEnd','savWithdraw2','savWdYear2','savWdEnd2','tspBal','tspRet','tspRoll','rothBalMe','rothBalWife','rothRet','tspWithdraw','tspWdYear','rothWithdraw','rothWdYear','rothWifeWithdraw','rothWifeWdYear','taxBal','taxMonthly','taxStart','taxStop','taxRet','taxWithdraw','taxWdYear','taxCapGains','cryptoBal','cryptoMonthly','cryptoStart','cryptoStop','cryptoRet','cryptoWithdraw','cryptoWdYear','cryptoCapGains','goldBal','goldMonthly','goldStart','goldStop','goldRet','goldWithdraw','goldWdYear','goldCapGains','useActuals','ret529','c1GibMonths','c1GiTuition','c2GibMonths','c2GiTuition','c3GibMonths','c3GiTuition','cc1Name','cc1Bal','cc1Pmt','cc1Rate','cc1Month','cc1Start','cc1End','cc2Name','cc2Bal','cc2Pmt','cc2Rate','cc2Month','cc2Start','cc2End','cc3Name','cc3Bal','cc3Pmt','cc3Rate','cc3Month','cc3Start','cc3End','car1Name','car1Bal','car1Pmt','car1Rate','car1Month','car1Start','car1End','car2Name','car2Bal','car2Pmt','car2Rate','car2Month','car2Start','car2End','loanName','loanBal','loanPmt','loanRate','loanMonth','loanStart','loanEnd'];
 ['c1','c2','c3'].forEach(c=>['privStart','privEnd','privTuition','privFees','bal','mo','stop','ugStart','ugEnd','ugTuition','ugRB','rbStart','rbEnd','scholUG','gStart','gEnd','gTuition','gRB','grbStart','grbEnd','scholGrad'].forEach(s=>ALL_IDS.push(c+s)));
 
 /* =======================================================
@@ -2137,14 +2151,14 @@ function runModel(){
       ['c1','c2','c3'].forEach(c=>{let start=v(c+'privStart'),end=v(c+'privEnd');if(start>0&&year>=start&&year<=end)privSchMo+=(v(c+'privTuition')+v(c+'privFees'))/12;});
       e+=privSchMo;
     }
-    if(v('tricareStart')>0&&year>=v('tricareStart')&&(v('tricareEnd')===0||year<=v('tricareEnd')))e+=v('tricareMo');
-    if(v('medInsStart')>0&&year>=v('medInsStart')&&(v('medInsEnd')===0||year<=v('medInsEnd')))e+=v('medInsMo');
-    if(v('denInsStart')>0&&year>=v('denInsStart')&&(v('denInsEnd')===0||year<=v('denInsEnd')))e+=v('denInsMo');
+    [['tricareMo','tricareStart','tricareEnd'],['tricareMo2','tricareStart2','tricareEnd2'],['medInsMo','medInsStart','medInsEnd'],['medInsMo2','medInsStart2','medInsEnd2'],['denInsMo','denInsStart','denInsEnd'],['denInsMo2','denInsStart2','denInsEnd2']].forEach(([m,s,en])=>{if(v(s)>0&&year>=v(s)&&(v(en)===0||year<=v(en)))e+=v(m);});
     let liLevel=0;
-    if(v('lifeInsStart')>0&&v('lifeInsPremium')>0&&year>=v('lifeInsStart')&&(v('lifeInsEnd')===0||year<=v('lifeInsEnd'))){
-      if(txt('lifeInsType')==='vgli')e+=v('lifeInsPremium');
-      else liLevel+=v('lifeInsPremium');
-    }
+    [['lifeInsPremium','lifeInsStart','lifeInsEnd'],['lifeInsPremium2','lifeInsStart2','lifeInsEnd2']].forEach(([p,s,en])=>{
+      if(v(s)>0&&v(p)>0&&year>=v(s)&&(v(en)===0||year<=v(en))){
+        if(txt('lifeInsType')==='vgli')e+=v(p);
+        else liLevel+=v(p);
+      }
+    });
     if(forProjection){
       const inf1=v('exp1Inflation')/100;
       const inf2=v('exp2Inflation')/100;
@@ -2327,16 +2341,14 @@ function runModel(){
 
   function healthcareMonthly(year,forProjection){
     let h=0;
-    if(v('tricareStart')>0&&year>=v('tricareStart')&&(v('tricareEnd')===0||year<=v('tricareEnd')))h+=v('tricareMo');
-    if(v('medInsStart')>0&&year>=v('medInsStart')&&(v('medInsEnd')===0||year<=v('medInsEnd')))h+=v('medInsMo');
-    if(v('denInsStart')>0&&year>=v('denInsStart')&&(v('denInsEnd')===0||year<=v('denInsEnd')))h+=v('denInsMo');
+    [['tricareMo','tricareStart','tricareEnd'],['tricareMo2','tricareStart2','tricareEnd2'],['medInsMo','medInsStart','medInsEnd'],['medInsMo2','medInsStart2','medInsEnd2'],['denInsMo','denInsStart','denInsEnd'],['denInsMo2','denInsStart2','denInsEnd2']].forEach(([m,s,en])=>{if(v(s)>0&&year>=v(s)&&(v(en)===0||year<=v(en)))h+=v(m);});
     if(forProjection){const inf1=v('exp1Inflation')/100,inf2=v('exp2Inflation')/100;const inf=(year>=v('exp2Start')&&year<=v('exp2End'))?inf2:inf1;const yrs=Math.max(0,year-curYear);h*=Math.pow(1+inf,yrs);}
     return h;
   }
   function lifeInsMonthly(year,forProjection){
-    if(!(v('lifeInsStart')>0&&v('lifeInsPremium')>0&&year>=v('lifeInsStart')&&(v('lifeInsEnd')===0||year<=v('lifeInsEnd'))))return 0;
-    let l=v('lifeInsPremium');
-    if(forProjection&&txt('lifeInsType')==='vgli'){const inf1=v('exp1Inflation')/100,inf2=v('exp2Inflation')/100;const inf=(year>=v('exp2Start')&&year<=v('exp2End'))?inf2:inf1;const yrs=Math.max(0,year-curYear);l*=Math.pow(1+inf,yrs);}
+    let l=0;
+    [['lifeInsPremium','lifeInsStart','lifeInsEnd'],['lifeInsPremium2','lifeInsStart2','lifeInsEnd2']].forEach(([p,s,en])=>{if(v(s)>0&&v(p)>0&&year>=v(s)&&(v(en)===0||year<=v(en)))l+=v(p);});
+    if(l>0&&forProjection&&txt('lifeInsType')==='vgli'){const inf1=v('exp1Inflation')/100,inf2=v('exp2Inflation')/100;const inf=(year>=v('exp2Start')&&year<=v('exp2End'))?inf2:inf1;const yrs=Math.max(0,year-curYear);l*=Math.pow(1+inf,yrs);}
     return l;
   }
   function privSchMonthly(year,forProjection){
