@@ -676,16 +676,16 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
   <div class="sidebar-label" style="cursor:pointer;" onclick="sideNavCoreInputs()">Core Inputs</div>
   <a class="sidebar-link" id="sl-1" onclick="sideNavMainData('input')" title="Main Data">📋<span class="sb-link-text"> Main Data</span></a>
   <a class="sidebar-link" id="sl-H" onclick="sideNavHousing('input')" title="Housing &amp; Real Estate">🏡<span class="sb-link-text"> Housing &amp; Real Estate</span></a>
-  <a class="sidebar-link" id="sl-2" onclick="sideNavInvestments('input')" title="Investments">📈<span class="sb-link-text"> Investments</span></a>
+  <a class="sidebar-link" id="sl-P" onclick="sideNav('input','P')" title="Probate Log">📒<span class="sb-link-text"> Probate Log</span></a>
+  <a class="sidebar-link" id="sl-2" onclick="sideNavInvestments('input')" title="Investments / Savings">📈<span class="sb-link-text"> Investments/Savings</span></a>
   <a class="sidebar-link" id="sl-3" onclick="sideNavEducation('input')" title="Education">🎓<span class="sb-link-text"> Education</span></a>
   <a class="sidebar-link" id="sl-5" onclick="sideNavDebt('input')" title="Debt">💳<span class="sb-link-text"> Debt</span></a>
-  <a class="sidebar-link" id="sl-P" onclick="sideNav('input','P')" title="Probate Log">📒<span class="sb-link-text"> Probate Log</span></a>
 
   <div class="sidebar-divider"></div>
   <div class="sidebar-label">Results</div>
   <a class="sidebar-link" id="sl-cash" onclick="sideNavMainData('result')" title="Cash Flow">💵<span class="sb-link-text"> Cash Flow</span></a>
   <a class="sidebar-link" id="sl-re"   onclick="sideNavHousing('result')" title="Real Estate">🏘️<span class="sb-link-text"> Real Estate</span></a>
-  <a class="sidebar-link" id="sl-inv"  onclick="sideNavInvestments('result')" title="Investments">📊<span class="sb-link-text"> Investments</span></a>
+  <a class="sidebar-link" id="sl-inv"  onclick="sideNavInvestments('result')" title="Investments / Savings">📊<span class="sb-link-text"> Investments/Savings</span></a>
   <a class="sidebar-link" id="sl-edu"  onclick="sideNavEducation('result')" title="Education">🎓<span class="sb-link-text"> Education</span></a>
 
   <div class="sidebar-divider"></div>
@@ -789,6 +789,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>Projection End Year</label><input type="number" id="projEndYear" value="2060" onchange="rebuildYearRange()">
       </details>
       </div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
       <details class="schoolblock inline-summary" open id="det_main_income" style="border-left:4px solid var(--green);">
         <summary><h3>💰 Income &amp; Pay</h3></summary>
         <label>Service Component</label>
@@ -805,17 +806,26 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>Net Monthly Pay <span id="netPayHint" style="color:var(--text-2);font-size:11px;"></span></label>
         <input type="number" id="netPay" value="">
         <label>Annual Pay Raise %</label><input type="number" id="payRaise" value="2.3" step="0.1">
-        <div class="subsection-divider"></div>
-        <label>Future Promotion #1 Net Increase /mo</label><input type="number" id="promo1Bump" value="">
-        <label>Promo #1 Start Month</label><input type="number" id="promo1Month" value="">
-        <label>Promo #1 Start Year</label><input type="number" id="promo1Start" value="">
-        <label>Promo #1 End Year</label><input type="number" id="promo1End" value="">
-        <div class="subsection-divider"></div>
-        <label>Future Promotion #2 Net Increase /mo</label><input type="number" id="promo2Bump" value="">
-        <label>Promo #2 Start Month</label><input type="number" id="promo2Month" value="1">
-        <label>Promo #2 Start Year</label><input type="number" id="promo2Start" value="">
-        <label>Promo #2 End Year</label><input type="number" id="promo2End" value="">
+        <details id="det_income_promos" style="margin-top:10px;border:1px dashed var(--border);border-radius:6px;padding:6px 10px;">
+          <summary style="cursor:pointer;font-weight:600;font-size:12px;">📈 Future Promotions</summary>
+          <label>Future Promotion #1 Net Increase /mo</label><input type="number" id="promo1Bump" value="">
+          <label>Promo #1 Start Month</label><input type="number" id="promo1Month" value="">
+          <label>Promo #1 Start Year</label><input type="number" id="promo1Start" value="">
+          <label>Promo #1 End Year</label><input type="number" id="promo1End" value="">
+          <div class="subsection-divider"></div>
+          <label>Future Promotion #2 Net Increase /mo</label><input type="number" id="promo2Bump" value="">
+          <label>Promo #2 Start Month</label><input type="number" id="promo2Month" value="1">
+          <label>Promo #2 Start Year</label><input type="number" id="promo2Start" value="">
+          <label>Promo #2 End Year</label><input type="number" id="promo2End" value="">
+        </details>
       </details>
+      <details class="schoolblock inline-summary" open id="det_main_spouse" style="border-left:4px solid var(--purple);">
+        <summary><h3>👥 Spouse Income</h3></summary>
+        <label>Spouse Net Monthly Income (After Tax)</label><input type="number" id="wifeManual" value="">
+        <label>Spouse Income START Year</label><input type="number" id="wifeStartYear" value="">
+        <label>Spouse Income END Year</label><input type="number" id="wifeEndYear" value="">
+      </details>
+      </div>
       <details class="schoolblock inline-summary" open id="det_main_mil" style="border-left:4px solid var(--red);">
         <summary><h3>🪖 Military Retirement</h3></summary>
         <label>Retirement System</label>
@@ -834,8 +844,11 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Total Retirement Points <span style="font-size:10px;color:var(--text-3);">(from annual point statement — 360 pts = 1 good year)</span></label><input type="number" id="retPoints" value="" onchange="runModel()">
           <label>Retirement Pay Start Age <span style="font-size:10px;color:var(--text-3);">(default 60; earlier w/ post-2008 mobilization credit — 3 mo per 90 days activated, floor age 50)</span></label><input type="number" id="retPayStartAge" value="60" onchange="runModel()">
         </div>
-        <label>VA Disability Monthly (tax-free)</label><input type="number" id="vaDisability" value="">
-        <label>Other Post-Ret Net Monthly</label><input type="number" id="myWorkManual" value="">
+        <details id="det_mil_other" style="margin-top:10px;border:1px dashed var(--border);border-radius:6px;padding:6px 10px;">
+          <summary style="cursor:pointer;font-weight:600;font-size:12px;">➕ VA Disability &amp; Other Income</summary>
+          <label>VA Disability Monthly (tax-free)</label><input type="number" id="vaDisability" value="">
+          <label>Other Net Monthly</label><input type="number" id="myWorkManual" value="">
+        </details>
         <label>Pension COLA % /yr <span style="font-size:10px;color:var(--text-3);">(separate from pay raise)</span></label><input type="number" id="pensionCOLA" value="2.3" step="0.1">
         <label>Federal Tax % on Pension (no FICA)</label><input type="number" id="fedTaxPct" value="12" step="0.5">
         <label>Opt into SBP? (6.5% of gross)</label>
@@ -845,18 +858,12 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         </select>
       </details>
       <details class="schoolblock inline-summary" open id="det_main_post" style="border-left:4px solid #b87333;">
-        <summary><h3>💼 Retirement Income</h3></summary>
-        <b style="font-size:12px;color:var(--text);">🏛️ GS / Federal Civilian Job</b>
+        <summary><h3>🏛️ GS / Federal Civilian Job</h3></summary>
         <label>GS Annual Salary (Gross)</label><input type="number" id="gsGross" value="">
         <label>Federal Tax % on GS Income</label><input type="number" id="gsFedTax" value="22" step="0.5">
         <label>State Tax % on GS Income</label><input type="number" id="gsStateTax" value="5" step="0.5">
         <label>GS Job Start Year</label><input type="number" id="gsIncomeStart" value="">
         <label>GS Job End Year</label><input type="number" id="gsIncomeEnd" value="">
-        <div class="subsection-divider"></div>
-        <b style="font-size:12px;color:var(--text);">Spouse</b>
-        <label>Spouse Net Monthly Income (After Tax)</label><input type="number" id="wifeManual" value="">
-        <label>Spouse Income START Year</label><input type="number" id="wifeStartYear" value="">
-        <label>Spouse Income END Year</label><input type="number" id="wifeEndYear" value="">
       </details>
     </div>
 
@@ -871,7 +878,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <div class="subsection-divider"></div>
         <label>Expected Inflation to Expenses % <span style="font-size:10px;color:var(--text-3);">(applies to all expenses in this period)</span></label><input type="number" id="exp1Inflation" value="2.5" step="0.1">
         <details class="schoolblock" id="det_main_exp2" style="margin-top:8px;">
-          <summary><b style="color:var(--text);">➕ Rate Change (optional)</b></summary>
+          <summary><b style="color:var(--text);">➕ Rate Change</b></summary>
           <div style="font-size:10px;color:var(--text-3);margin-bottom:6px;">If expenses change later, end #1 the year before and start #2 at the new totals. Earlier years keep the original amounts.</div>
           <label>Bills Total /mo #2</label><input type="number" id="exp2Bills" value="">
           <label>Discretionary Total /mo #2</label><input type="number" id="exp2Disc" value="">
@@ -883,31 +890,44 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       </details>
       <details class="schoolblock inline-summary" open id="det_main_health" style="border-left:4px solid var(--gold);">
         <summary><h3>🏥 Healthcare</h3></summary>
-        <label>Tricare Premium /mo</label><input type="number" id="tricareMo" value="">
-        <label>Tricare Start Year</label><input type="number" id="tricareStart" value="2033">
-        <label>Tricare End Year</label><input type="number" id="tricareEnd" value="2060">
-        <div class="subsection-divider"></div>
-        <label>Medical Ins Premium /mo</label><input type="number" id="medInsMo" value="">
-        <label>Medical Ins Start Year</label><input type="number" id="medInsStart" value="">
-        <label>Medical Ins End Year</label><input type="number" id="medInsEnd" value="">
-        <div class="subsection-divider"></div>
-        <label>Dental Ins Premium /mo</label><input type="number" id="denInsMo" value="">
-        <label>Dental Ins Start Year</label><input type="number" id="denInsStart" value="">
-        <label>Dental Ins End Year</label><input type="number" id="denInsEnd" value="">
-        <details class="schoolblock" id="det_health_rate2" style="margin-top:8px;">
-          <summary><b style="color:var(--text);">➕ Rate Change (optional)</b></summary>
-          <div style="font-size:10px;color:var(--text-3);margin-bottom:6px;">If a premium changes later, end #1 the year before and start #2 at the new rate (e.g. #1 ends 2029, #2 starts 2030). Earlier years keep the old rate.</div>
-          <label>Tricare Premium #2 /mo</label><input type="number" id="tricareMo2" value="">
-          <label>Tricare #2 Start Year</label><input type="number" id="tricareStart2" value="">
-          <label>Tricare #2 End Year</label><input type="number" id="tricareEnd2" value="">
-          <div class="subsection-divider"></div>
-          <label>Medical Ins Premium #2 /mo</label><input type="number" id="medInsMo2" value="">
-          <label>Medical Ins #2 Start Year</label><input type="number" id="medInsStart2" value="">
-          <label>Medical Ins #2 End Year</label><input type="number" id="medInsEnd2" value="">
-          <div class="subsection-divider"></div>
-          <label>Dental Ins Premium #2 /mo</label><input type="number" id="denInsMo2" value="">
-          <label>Dental Ins #2 Start Year</label><input type="number" id="denInsStart2" value="">
-          <label>Dental Ins #2 End Year</label><input type="number" id="denInsEnd2" value="">
+        <details id="det_health_tricare" style="margin-top:8px;border:1px dashed var(--border);border-radius:6px;padding:6px 10px;">
+          <summary style="cursor:pointer;font-weight:600;font-size:12px;">🎖️ Tricare</summary>
+          <label>Tricare Premium /mo</label><input type="number" id="tricareMo" value="">
+          <label>Tricare Start Year</label><input type="number" id="tricareStart" value="2033">
+          <label>Tricare End Year</label><input type="number" id="tricareEnd" value="2060">
+          <details id="det_health_tricare2" style="margin-top:6px;border:1px dashed var(--border);border-radius:6px;padding:6px 10px;">
+            <summary style="cursor:pointer;font-weight:600;font-size:11px;">➕ Rate Change</summary>
+            <div style="font-size:10px;color:var(--text-3);margin:4px 0 6px;">End #1 the year before #2 starts. Earlier years keep the old rate.</div>
+            <label>Tricare Premium #2 /mo</label><input type="number" id="tricareMo2" value="">
+            <label>Tricare #2 Start Year</label><input type="number" id="tricareStart2" value="">
+            <label>Tricare #2 End Year</label><input type="number" id="tricareEnd2" value="">
+          </details>
+        </details>
+        <details id="det_health_med" style="margin-top:8px;border:1px dashed var(--border);border-radius:6px;padding:6px 10px;">
+          <summary style="cursor:pointer;font-weight:600;font-size:12px;">🩺 Medical Insurance</summary>
+          <label>Medical Ins Premium /mo</label><input type="number" id="medInsMo" value="">
+          <label>Medical Ins Start Year</label><input type="number" id="medInsStart" value="">
+          <label>Medical Ins End Year</label><input type="number" id="medInsEnd" value="">
+          <details id="det_health_med2" style="margin-top:6px;border:1px dashed var(--border);border-radius:6px;padding:6px 10px;">
+            <summary style="cursor:pointer;font-weight:600;font-size:11px;">➕ Rate Change</summary>
+            <div style="font-size:10px;color:var(--text-3);margin:4px 0 6px;">End #1 the year before #2 starts. Earlier years keep the old rate.</div>
+            <label>Medical Ins Premium #2 /mo</label><input type="number" id="medInsMo2" value="">
+            <label>Medical Ins #2 Start Year</label><input type="number" id="medInsStart2" value="">
+            <label>Medical Ins #2 End Year</label><input type="number" id="medInsEnd2" value="">
+          </details>
+        </details>
+        <details id="det_health_dental" style="margin-top:8px;border:1px dashed var(--border);border-radius:6px;padding:6px 10px;">
+          <summary style="cursor:pointer;font-weight:600;font-size:12px;">🦷 Dental Insurance</summary>
+          <label>Dental Ins Premium /mo</label><input type="number" id="denInsMo" value="">
+          <label>Dental Ins Start Year</label><input type="number" id="denInsStart" value="">
+          <label>Dental Ins End Year</label><input type="number" id="denInsEnd" value="">
+          <details id="det_health_dental2" style="margin-top:6px;border:1px dashed var(--border);border-radius:6px;padding:6px 10px;">
+            <summary style="cursor:pointer;font-weight:600;font-size:11px;">➕ Rate Change</summary>
+            <div style="font-size:10px;color:var(--text-3);margin:4px 0 6px;">End #1 the year before #2 starts. Earlier years keep the old rate.</div>
+            <label>Dental Ins Premium #2 /mo</label><input type="number" id="denInsMo2" value="">
+            <label>Dental Ins #2 Start Year</label><input type="number" id="denInsStart2" value="">
+            <label>Dental Ins #2 End Year</label><input type="number" id="denInsEnd2" value="">
+          </details>
         </details>
       </details>
       <details class="schoolblock inline-summary" open id="det_main_lifeins" style="border-left:4px solid var(--gold);">
@@ -923,7 +943,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <label>Premium START Year</label><input type="number" id="lifeInsStart" value="">
         <label>Premium END Year</label><input type="number" id="lifeInsEnd" value="">
         <details class="schoolblock" id="det_lifeins_rate2" style="margin-top:8px;">
-          <summary><b style="color:var(--text);">➕ Rate Change (optional)</b></summary>
+          <summary><b style="color:var(--text);">➕ Rate Change</b></summary>
           <div style="font-size:10px;color:var(--text-3);margin-bottom:6px;">If the premium changes later, end #1 the year before and start #2 at the new rate. Earlier years keep the old rate.</div>
           <label>Monthly Premium #2</label><input type="number" id="lifeInsPremium2" value="">
           <label>Premium #2 START Year</label><input type="number" id="lifeInsStart2" value="">
@@ -1157,9 +1177,6 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <button onclick="toggleAllDetails('pane2',true)">▼ Expand All</button>
       <button onclick="toggleAllDetails('pane2',false)">▲ Collapse All</button>
     </div>
-    <div style="background:var(--note-bg);border-left:4px solid var(--blue);padding:10px 14px;margin:8px 0 14px;border-radius:4px;font-size:12px;line-height:1.5;">
-      💡 <b>Tip:</b> To enter or update your account balances (Savings, Taxable, TSP, Roth, Crypto, Gold), use the <a href="javascript:void(0)" onclick="sideNav('input','P')" style="color:var(--blue);font-weight:600;text-decoration:underline;">📒 Probate Log</a>. Balances with a gray background here are auto-populated from that tab.
-    </div>
     <div class="grid4">
       <details class="schoolblock inline-summary" open id="det_inv_retcon" style="border-left:4px solid var(--blue);">
           <summary><h3>📥 Retirement Contributions<br><a href="https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-401k-and-profit-sharing-plan-contribution-limits" target="_blank" style="font-size:10px;color:var(--blue);font-weight:400;">IRS Contribution Limits</a></h3></summary>
@@ -1174,12 +1191,12 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         </details>
         <details class="schoolblock inline-summary" open id="det_inv_tsp" style="border-left:4px solid var(--purple);">
           <summary><h3>💵 TSP &amp; Roth Projections</h3></summary>
-          <label>Current TSP Balance (Roth/Traditional/401K)</label><input type="number" id="tspBal" value="">
+          <label>Current TSP Balance (Roth/Traditional/401K)</label><input type="number" id="tspBal" value="" readonly data-locked-tip="Add balances under Probate Log Section" style="background:var(--surface-2);cursor:not-allowed;">
           <label>TSP Avg Annual Return %</label><input type="number" id="tspRet" value="7.5" step="0.1">
           <label>Roll % of TSP into Down Payment</label><input type="number" id="tspRoll" value="0" step="1">
           <div class="subsection-divider"></div>
-          <label>YOUR Current Roth Balance</label><input type="number" id="rothBalMe" value="">
-          <label>SPOUSE Current Roth Balance</label><input type="number" id="rothBalWife" value="">
+          <label>YOUR Current Roth Balance</label><input type="number" id="rothBalMe" value="" readonly data-locked-tip="Add balances under Probate Log Section" style="background:var(--surface-2);cursor:not-allowed;">
+          <label>SPOUSE Current Roth Balance</label><input type="number" id="rothBalWife" value="" readonly data-locked-tip="Add balances under Probate Log Section" style="background:var(--surface-2);cursor:not-allowed;">
           <label>Roth Avg Annual Return %</label><input type="number" id="rothRet" value="7.5" step="0.1">
         </details>
         <details class="schoolblock inline-summary" open id="det_inv_gs" style="border-left:4px solid var(--green);">
@@ -1202,9 +1219,12 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>SPOUSE Roth Monthly Withdrawal</label><input type="number" id="rothWifeWithdraw" value="">
           <label>SPOUSE Roth Withdrawal Start Year</label><input type="number" id="rothWifeWdYear" value="2049">
         </details>
+      <div style="grid-column:1/-1;background:var(--note-bg);border-left:4px solid var(--blue);padding:10px 14px;margin:6px 0 8px;border-radius:4px;font-size:12px;line-height:1.5;">
+        💡 <b>Tip:</b> To enter or update your account balances (Savings, Taxable, TSP, Roth, Crypto, Gold), use the <a href="javascript:void(0)" onclick="sideNav('input','P')" style="color:var(--blue);font-weight:600;text-decoration:underline;">📒 Probate Log</a>. Balances below with a gray background are locked and auto-populated from that tab.
+      </div>
       <details class="schoolblock inline-summary" open id="det_in_tax" style="border-left:4px solid var(--green);">
           <summary><h3>📈 Taxable Stock</h3></summary>
-          <label>Current Amount Invested</label><input type="number" id="taxBal" value="">
+          <label>Current Amount Invested</label><input type="number" id="taxBal" value="" readonly data-locked-tip="Add balances under Probate Log Section" style="background:var(--surface-2);cursor:not-allowed;">
           <label>Monthly Contribution</label><input type="number" id="taxMonthly" value="">
           <label>Contribution START Year</label><input type="number" id="taxStart" value="2026">
           <label>Contribution STOP Year</label><input type="number" id="taxStop" value="2040">
@@ -1216,7 +1236,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         </details>
         <details class="schoolblock inline-summary" open id="det_inv_sav" style="border-left:4px solid var(--gold);">
           <summary><h3>💰 Savings / Cash</h3></summary>
-          <label>Current Savings Balance</label><input type="number" id="savBal" value="">
+          <label>Current Savings Balance</label><input type="number" id="savBal" value="" readonly data-locked-tip="Add balances under Probate Log Section" style="background:var(--surface-2);cursor:not-allowed;">
           <label>Monthly Savings Contribution</label><input type="number" id="savMonthly" value="">
           <label>Savings APY %</label><input type="number" id="savAPY" value="4.0" step="0.1">
           <div class="subsection-divider"></div>
@@ -1232,7 +1252,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         </details>
       <details class="schoolblock inline-summary" open id="det_in_cryp" style="border-left:4px solid var(--purple);">
           <summary><h3><span style="color:var(--gold);">₿</span> Crypto</h3></summary>
-          <label>Current Crypto Balance</label><input type="number" id="cryptoBal" value="">
+          <label>Current Crypto Balance</label><input type="number" id="cryptoBal" value="" readonly data-locked-tip="Add balances under Probate Log Section" style="background:var(--surface-2);cursor:not-allowed;">
           <label>Monthly Contribution</label><input type="number" id="cryptoMonthly" value="">
           <label>Contribution START Year</label><input type="number" id="cryptoStart" value="2026">
           <label>Contribution STOP Year</label><input type="number" id="cryptoStop" value="2035">
@@ -1244,7 +1264,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         </details>
         <details class="schoolblock inline-summary" open id="det_in_gold" style="border-left:4px solid #b87333;">
           <summary><h3>🪙 Gold / Silver</h3></summary>
-          <label>Current Asset Value</label><input type="number" id="goldBal" value="">
+          <label>Current Asset Value</label><input type="number" id="goldBal" value="" readonly data-locked-tip="Add balances under Probate Log Section" style="background:var(--surface-2);cursor:not-allowed;">
           <label>Monthly Contribution</label><input type="number" id="goldMonthly" value="">
           <label>Contribution START Year</label><input type="number" id="goldStart" value="2026">
           <label>Contribution STOP Year</label><input type="number" id="goldStop" value="2035">
@@ -1395,17 +1415,31 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <button onclick="toggleAllDetails('paneP',true)">▼ Expand All</button>
       <button onclick="toggleAllDetails('paneP',false)">▲ Collapse All</button>
     </div>
-    <div style="background:var(--note-bg);border-left:4px solid var(--gold);padding:12px 16px;margin:8px 0 14px;border-radius:4px;font-size:12.5px;line-height:1.55;">
-      <div style="font-weight:700;margin-bottom:6px;">📒 How the Probate Log works</div>
-      <div>Enter every account here <b>once</b>. Balances automatically flow into the <b>Investments</b> tab so you don't have to type them twice.</div>
-      <ul style="margin:6px 0 0;padding-left:22px;">
-        <li><b>🏦 Bank Accounts</b> — all rows sum into <b>Current Savings Balance</b></li>
-        <li><b>📈 Personal Investments</b> — grouped by type: Taxable → <b>Taxable Brokerage</b>, Crypto → <b>Crypto</b>, Gold/Silver → <b>Gold/Silver</b>, Savings/Cash → <b>Savings</b></li>
-        <li><b>🏛️ Pension Plans</b> — TSP/401(k)/Traditional IRA → <b>TSP Balance</b>; Roth (Me) → <b>Roth (Me)</b>; Roth (Spouse) → <b>Roth (Spouse)</b></li>
-        <li>Set an <b>Account Closed</b> date to exclude a row from the total without deleting it</li>
-        <li>Fields on the Investments tab with a gray background are <i>Managed by Probate Log</i> — edit them here, not there</li>
+    <details style="background:var(--note-bg);border-left:4px solid var(--gold);padding:12px 16px;margin:8px 0 14px;border-radius:4px;font-size:12.5px;line-height:1.55;">
+      <summary style="font-weight:700;cursor:pointer;list-style:revert;">📒 How the Probate Log works</summary>
+      <div style="margin-top:8px;">Enter every account <b>once</b> below — each section's balances flow automatically into the <b>Investments/Savings</b> tab:</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;">
+        <div style="flex:1;min-width:220px;background:#fff;border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:6px;padding:10px 12px;">
+          <div style="font-weight:700;margin-bottom:4px;">🏦 Bank Accounts</div>
+          <div style="color:var(--text-2);font-size:12px;">⬇ flows into</div>
+          <div style="margin-top:4px;"><b>💰 Savings / Cash</b></div>
+        </div>
+        <div style="flex:1;min-width:220px;background:#fff;border:1px solid var(--border);border-left:4px solid var(--green);border-radius:6px;padding:10px 12px;">
+          <div style="font-weight:700;margin-bottom:4px;">📈 Personal Investments</div>
+          <div style="color:var(--text-2);font-size:12px;">⬇ flows into (by account type)</div>
+          <div style="margin-top:4px;"><b>📈 Taxable Stock</b> · <b>₿ Crypto</b><br><b>🪙 Gold / Silver</b> · <b>💰 Savings / Cash</b></div>
+        </div>
+        <div style="flex:1;min-width:220px;background:#fff;border:1px solid var(--border);border-left:4px solid var(--purple);border-radius:6px;padding:10px 12px;">
+          <div style="font-weight:700;margin-bottom:4px;">🏛️ Pension Plans</div>
+          <div style="color:var(--text-2);font-size:12px;">⬇ flows into</div>
+          <div style="margin-top:4px;"><b>💵 TSP &amp; Roth Projections</b><br><span style="font-size:12px;">(TSP/401k/IRA, Roth Me, Roth Spouse)</span></div>
+        </div>
+      </div>
+      <ul style="margin:10px 0 0;padding-left:22px;">
+        <li>Set an <b>Account Closed</b> date to exclude a row from the total without deleting it.</li>
+        <li>The matching balance fields on the Investments tab are <span style="background:var(--surface-2);padding:1px 6px;border:1px solid var(--border);border-radius:3px;">gray and locked</span> — they're <i>Managed by Probate Log</i>. Edit them here, not there.</li>
       </ul>
-    </div>
+    </details>
 
     <!-- BANK ACCOUNTS -->
     <details class="schoolblock inline-summary" open id="det_pb_bank" style="border-left:4px solid var(--blue);">
@@ -1619,6 +1653,22 @@ function toggleSidebar() {
     el.addEventListener('mouseenter', showTip);
     el.addEventListener('mouseleave', hideTip);
     el.addEventListener('click', hideTip);
+  });
+  function showLockedTip(e) {
+    const label = this.getAttribute('data-locked-tip');
+    if (!label) return;
+    tip.textContent = label;
+    tip.style.display = 'block';
+    const rect = this.getBoundingClientRect();
+    tip.style.top = (rect.bottom + 6) + 'px';
+    tip.style.left = rect.left + 'px';
+  }
+  document.querySelectorAll('input[readonly][data-locked-tip]').forEach(el => {
+    el.addEventListener('mouseenter', showLockedTip);
+    el.addEventListener('mouseleave', hideTip);
+    el.addEventListener('click', showLockedTip);
+    el.addEventListener('focus', showLockedTip);
+    el.addEventListener('blur', hideTip);
   });
 }());
 function applyTheme(theme) {
@@ -1863,7 +1913,7 @@ function syncProbateBalances(){
   if(hasAnyRows){
     Object.keys(sums).forEach(fieldId=>{
       const el=document.getElementById(fieldId);
-      if(el){el.value=Math.round(sums[fieldId]);el.title='Managed by Probate Log';el.style.background='var(--surface-2)';}
+      if(el){el.value=Math.round(sums[fieldId]);el.setAttribute('data-locked-tip','Add balances under Probate Log Section');el.style.background='var(--surface-2)';}
     });
   }
 }
