@@ -17,15 +17,16 @@ There is no build/test/lint tooling. Development loop:
 
 ## Deployment
 
-Three targets, each serving the same `index.html` from a different branch:
+Two targets, each serving the same `index.html` from a different branch:
 
 | Service | Branch | Purpose |
 |---|---|---|
-| Cloudflare Worker (`financialretirementplanner.vdiaz24.workers.dev`) | `main` | Auto-deploys on every push to `main` — used for previewing live changes |
-| Netlify | `main` | Auto-deploy is **paused** — only deploys when manually triggered from the Netlify dashboard ("Trigger deploy" → "Deploy site"), used for production |
+| Cloudflare Worker (`financialretirementplanner.vdiaz24.workers.dev`) | `main` | Auto-deploys on every push to `main` — production |
 | GitHub Pages (`vdiaz2321.github.io/financialretirementplanner`) | `preview` | Free review URL for sanity-checking changes before they're considered final |
 
-Workflow: commit locally → push to both `main` and `preview` (`git push origin main && git push origin main:preview`) → review on the Cloudflare or GitHub Pages URL → manually trigger Netlify deploy once satisfied. Do not push without being asked — confirm with the user first, since pushing affects the live Cloudflare Worker immediately.
+Workflow: commit locally → push to both `main` and `preview` (`git push origin main && git push origin main:preview`) → review on the Cloudflare or GitHub Pages URL. Do not push without being asked — confirm with the user first, since pushing affects the live Cloudflare Worker immediately.
+
+Netlify is no longer part of the deployment pipeline (Cloudflare Worker covers production). If a `netlify.toml` or similar config still exists in the repo, it's inert — do not maintain or reference it.
 
 `wrangler.jsonc` configures the Cloudflare Worker to serve static assets from `.` (the repo root) with `nodejs_compat` enabled — there's no actual Worker script, it's pure static asset serving.
 
