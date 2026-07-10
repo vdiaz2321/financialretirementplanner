@@ -731,7 +731,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <button id="dashBtnNo"   class="view-btn"        onclick="toggleWife(false)">🚶 WITHOUT Spouse</button>
     </div>
     <div id="dashPrivToggleWrap" style="display:none;">
-      <button id="dashBtnPriv" class="view-btn active" onclick="togglePrivate(!showPrivate)">🎒 Private School: ON</button>
+      <button id="dashBtnPriv" class="view-btn active" onclick="togglePrivateDash(!showPrivateDash)">🎒 Private School: ON</button>
     </div>
     <div style="display:flex;flex-direction:column;gap:4px;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;">
       <div style="display:flex;align-items:center;gap:8px;">
@@ -1624,6 +1624,7 @@ function rebuildYearRange(){
 }
 let showWife=true;
 let showPrivate=true;
+let showPrivateDash=true;
 const ACCTS=['Tsp','RothMe','RothWife','Tax','Sav','Crypto','Gold'];
 
 const RMD_DIVISORS = {
@@ -1681,6 +1682,7 @@ function _snapScroll(){const ca=document.getElementById('cashflowArea');return {
 function _restoreScroll(s){window.scrollTo(0,s.winY);const ca=document.getElementById('cashflowArea');if(ca){ca.scrollLeft=s.cfLeft;ca.scrollTop=s.cfTop;}}
 function toggleWife(state){const s=_snapScroll();showWife=state;const wrap=document.getElementById('cash-chart-wrap');const wasChart=wrap&&wrap.style.display==='block';runModel();['btnWith','dashBtnWith'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',state);});['btnNo','dashBtnNo'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',!state);});if(wasChart&&typeof showCashView==='function')showCashView('chart');_restoreScroll(s);}
 function togglePrivate(state){const s=_snapScroll();showPrivate=state;const wrap=document.getElementById('cash-chart-wrap');const wasChart=wrap&&wrap.style.display==='block';runModel();if(wasChart&&typeof showCashView==='function')showCashView('chart');_restoreScroll(s);}
+function togglePrivateDash(state){const s=_snapScroll();showPrivateDash=state;const wrap=document.getElementById('cash-chart-wrap');const wasChart=wrap&&wrap.style.display==='block';runModel();if(wasChart&&typeof showCashView==='function')showCashView('chart');_restoreScroll(s);}
 function fillYears(){
   const ps=document.getElementById('projStartYear'),pe=document.getElementById('projEndYear');
   if(ps)Y0=parseInt(ps.value)||2026;
@@ -2261,24 +2263,27 @@ function runModel(){
   function debtRemaining(y){let t=0;[['cc1'],['cc2'],['cc3'],['car1'],['car2'],['loan']].forEach(d=>{const id=d[0];t+=amort(v(id+'Bal'),v(id+'Pmt'),v(id+'Rate'),v(id+'Start'),y);});return t;}
   function mortgageRemaining(y){let t=0;const jbT=txt('jbHousingType')||'purchase',pcs2T=txt('pcs2HousingType')||'purchase';if(jbT==='purchase'&&jbBuy>0&&y>=jbBuy&&(jbSell===0||y<=jbSell))t+=amort(jbLoan,jbPI,v('rate'),jbBuy,y);if(pcs2T==='purchase'&&pcs2Buy>0&&y>=pcs2Buy&&(pcs2Sell===0||y<=pcs2Sell))t+=amort(pcs2Loan,pcs2PI,v('pcs2Rate'),pcs2Buy,y);if(y>=wakeBuy)t+=amort(townLoan,townPI,townRate,wakeBuy,y);return t;}
 
-  const accCashFlow={};
-  let runningCF=0;
+  const accCashFlow={},accPrivCost={};
+  let runningCF=0,runningPriv=0;
   for(let y=Y0;y<=YEND;y++){
-    if(y<2027){accCashFlow[y]=0;continue;}
+    if(y<2027){accCashFlow[y]=0;accPrivCost[y]=0;continue;}
     const ip=incomeParts(y);const spouse=showWife?ip.spouse:0;const combined=ip.mine+spouse;
     const bah=bahForYear(y);const home=homeForYear(y);const util=utilForYear(y);const debtPmt=debtPaymentMonthly(y);const exp=expensesMonthly(y,true);const inv=investMonthly(y);
     const disc=combined+bah-home-util-debtPmt-exp-inv;
     runningCF+=(disc*12);accCashFlow[y]=runningCF;
+    runningPriv+=privSchMonthly(y,true)*12;accPrivCost[y]=runningPriv;
   }
 
   /* ---------- DASHBOARD ---------- */
-  function nw(y){
+  function nw(y,privOn){
+    if(privOn===undefined)privOn=showPrivate;
     const s=(useActuals&&y<=curYear)?(actual[y]||{}):(proj[y]||{});
     const retire=(s.Tsp||0)+(s.RothMe||0)+(s.RothWife||0);
     const tax=s.Tax||0,sav=s.Sav||0,crypto=s.Crypto||0,gold=s.Gold||0;
     const eq=homeEquity(y);
     const consDebt=debtRemaining(y);const mortDebt=mortgageRemaining(y);const totalDebt=consDebt+mortDebt;
-    const accCF=accCashFlow[y]||0;
+    let accCF=accCashFlow[y]||0;
+    if(privOn!==showPrivate)accCF+=(privOn?-1:1)*(accPrivCost[y]||0);
     const liquid=sav+tax+gold+accCF;
     const netNoMort=liquid+crypto+retire-consDebt;
     const netWithMort=netNoMort+eq-mortDebt;
@@ -2302,12 +2307,12 @@ function runModel(){
   }
   const midYr=Math.round((Y0+YEND)/2);
   document.getElementById('dashboard').innerHTML=
-    card('Current ('+curYear+')',nw(curYear),curYear)+
-    card('Age '+myAge(midYr)+' ('+midYr+')',nw(midYr),midYr)+
-    card('Age '+myAge(YEND)+' ('+YEND+')',nw(YEND),YEND);
+    card('Current ('+curYear+')',nw(curYear,showPrivateDash),curYear)+
+    card('Age '+myAge(midYr)+' ('+midYr+')',nw(midYr,showPrivateDash),midYr)+
+    card('Age '+myAge(YEND)+' ('+YEND+')',nw(YEND,showPrivateDash),YEND);
 
   (function(){
-    const n=nw(curYear);
+    const n=nw(curYear,showPrivateDash);
     const items=[
       {label:'Liquid Cash',value:n.liquid,color:'var(--green)'},
       {label:'Crypto',value:n.crypto,color:'#e8a838'},
@@ -2349,7 +2354,7 @@ function runModel(){
     for(let y=Y0;y<=YEND;y++){
       const p=proj[y];if(!p)continue;
       cd.years.push(y);cd.tsp.push(p.Tsp||0);cd.rothMe.push(p.RothMe||0);cd.rothWife.push(p.RothWife||0);cd.tax.push(p.Tax||0);cd.sav.push(p.Sav||0);cd.crypto.push(p.Crypto||0);cd.gold.push(p.Gold||0);
-      const n=nw(y);cd.netWorth.push(n.netWithMort);cd.liquid.push(n.liquid);cd.retire.push(n.retire);
+      const n=nw(y,showPrivateDash);cd.netWorth.push(n.netWithMort);cd.liquid.push(n.liquid);cd.retire.push(n.retire);
     }
     for(let y=Y0+1;y<=YEND;y++){
       const ip=incomeParts(y);
@@ -2369,7 +2374,7 @@ function getOpen(id){return (window._detailStates&&window._detailStates[id]!==fa
 /* =======================================================
    SECTION GROUPS
    ======================================================= */
-function buildSectionGroups(){buildCashGroup();buildReGroup();buildInvGroup();buildEduGroup();renderPcsCompare();renderCharts();const dp=document.getElementById('dashPrivToggleWrap');if(dp){const has=window._cf&&window._cf.hasPrivSchoolData&&window._cf.hasPrivSchoolData();dp.style.display=has?'':'none';const db=document.getElementById('dashBtnPriv');if(db){db.classList.toggle('active',showPrivate);db.textContent=showPrivate?'🎒 Private School: ON':'🚫 Private School: OFF';}}}
+function buildSectionGroups(){buildCashGroup();buildReGroup();buildInvGroup();buildEduGroup();renderPcsCompare();renderCharts();const dp=document.getElementById('dashPrivToggleWrap');if(dp){const has=window._cf&&window._cf.hasPrivSchoolData&&window._cf.hasPrivSchoolData();dp.style.display=has?'':'none';const db=document.getElementById('dashBtnPriv');if(db){db.classList.toggle('active',showPrivateDash);db.textContent=showPrivateDash?'🎒 Private School: ON':'🚫 Private School: OFF';}}}
 
 function gotoTownCompare(){
   if(typeof sideNavHousing==='function')sideNavHousing('result');
