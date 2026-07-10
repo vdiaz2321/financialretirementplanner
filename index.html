@@ -2530,8 +2530,8 @@ function buildCashGroup(){
   html+='<div class="collapse-row"><button onclick="toggleAllDetails(\'grp_cash\',true)">▼ Expand All</button><button onclick="toggleAllDetails(\'grp_cash\',false)">▲ Collapse All</button></div>';
   html+=`<div class="panel"><details id="det_cashflow" ${getOpen('det_cashflow')}><summary><h2>2. Year-by-Year Cash Flow</h2></summary>`;
   html+='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">';
-  html+='<button id="btnWith" class="toggle-btn active" onclick="toggleWife(true)">WITH Spouse Income</button>';
-  html+='<button id="btnNo" class="toggle-btn" onclick="toggleWife(false)">WITHOUT Spouse Income</button>';
+  html+=`<button id="btnWith" class="toggle-btn ${showWife?'active':''}" onclick="toggleWife(true)">WITH Spouse Income</button>`;
+  html+=`<button id="btnNo" class="toggle-btn ${!showWife?'active':''}" onclick="toggleWife(false)">WITHOUT Spouse Income</button>`;
   if(c.hasPrivSchoolData&&c.hasPrivSchoolData()){
     html+=`<button id="btnPriv" class="view-btn ${showPrivate?'active':''}" onclick="togglePrivate(!showPrivate)">🎒 Private School: ${showPrivate?'ON':'OFF'}</button>`;
   }
