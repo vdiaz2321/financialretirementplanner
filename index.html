@@ -3,8 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Financial and retirement planner for military and civilian families — model pensions, TSP, real estate, education, and year-by-year cash flow.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
 <title>Financial and Retirement Planner</title>
 <style>
+/* Self-hosted Inter (variable, latin subset) — no third-party font requests */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('fonts/inter-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 /* =====================================================
    CSS CUSTOM PROPERTIES — Light & Dark themes
    ===================================================== */
@@ -139,10 +150,11 @@
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+  font-family: 'Inter', -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
   margin: 0; padding: 0;
   background: var(--bg); color: var(--text);
   font-size: 14px; line-height: 1.5;
+  font-variant-numeric: tabular-nums;
   transition: background .25s, color .25s;
 }
 h1 { color: var(--blue); border-bottom: 3px solid var(--gold); padding-bottom: 8px; font-size: 22px; }
@@ -221,14 +233,20 @@ table { width: auto; border-collapse: separate; border-spacing: 0; font-size: 11
 th {
   position: sticky; top: 0; z-index: 2;
   background: var(--th-bg); color: var(--th-text);
-  padding: 6px 5px; text-align: left;
+  padding: 6px 5px; text-align: center;
   border-bottom: 2px solid var(--gold);
   border-right: 1px solid rgba(255,255,255,.45);
   font-size: 10.5px; letter-spacing: .04em; white-space: nowrap; min-width: 0;
 }
 th:last-child { border-right: none; }
-#cashflowArea td:nth-child(4) { white-space: nowrap; }
-td { padding: 3px 5px; border-bottom: 1px solid var(--td-border); border-right: 1px solid var(--td-border); color: var(--text); white-space: nowrap; }
+#cashflowArea td:last-child { white-space: nowrap; }
+.table-wrapper th.stk-1, .table-wrapper td.stk-1 { position: sticky; left: 0; z-index: 3; min-width: 46px; }
+.table-wrapper th.stk-2, .table-wrapper td.stk-2 { position: sticky; left: 46px; z-index: 3; min-width: 50px; }
+.table-wrapper th.stk-3, .table-wrapper td.stk-3 { position: sticky; left: 96px; z-index: 3; min-width: 60px; border-right: 2px solid var(--gold); }
+.table-wrapper th.stk-1, .table-wrapper th.stk-2, .table-wrapper th.stk-3 { z-index: 6; background: var(--th-bg); }
+.table-wrapper td.stk-1, .table-wrapper td.stk-2, .table-wrapper td.stk-3 { background: var(--surface); }
+.table-wrapper tr:nth-child(even) td.stk-1, .table-wrapper tr:nth-child(even) td.stk-2, .table-wrapper tr:nth-child(even) td.stk-3 { background: var(--td-stripe); }
+td { padding: 3px 5px; border-bottom: 1px solid var(--td-border); border-right: 1px solid var(--td-border); color: var(--text); white-space: nowrap; text-align: center; }
 td:last-child { border-right: none; }
 tr:nth-child(even) td { background: var(--td-stripe); }
 
@@ -356,10 +374,11 @@ button.danger:hover { background: #922b21; color: #fff; }
 }
 .dashrow {
   display: flex; justify-content: space-between; align-items: center;
-  font-size: 12px; padding: 5px 0;
+  font-size: 13px; padding: 5px 0;
   border-bottom: 1px solid rgba(255,255,255,.08);
   gap: 8px;
 }
+.dashrow span:last-child { font-weight: 600; }
 .dashrow span:first-child { color: rgba(255,255,255,.9); }
 .dashtotal { font-size: 19px; font-weight: 700; margin-top: 14px; color: var(--gold); }
 .dashtotal-sub { font-size: 12.5px; color: rgba(255,255,255,.8); margin-top: 10px; margin-bottom: 2px; }
@@ -707,6 +726,10 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <button class="view-btn active" onclick="showDashView('cards')">🃏 Cards</button>
       <button class="view-btn"        onclick="showDashView('chart')">📊 Chart</button>
     </div>
+    <div>
+      <button id="dashBtnWith" class="view-btn active" onclick="toggleWife(true)">👫 WITH Spouse</button>
+      <button id="dashBtnNo"   class="view-btn"        onclick="toggleWife(false)">🚶 WITHOUT Spouse</button>
+    </div>
     <div style="display:flex;flex-direction:column;gap:4px;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;">
       <div style="display:flex;align-items:center;gap:8px;">
         <label style="font-size:11px;margin:0;cursor:pointer;display:flex;align-items:center;gap:6px;">
@@ -841,6 +864,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <summary><h3>Monthly Expenses #1</h3></summary>
         <label>Bills Total /mo</label><input type="number" id="exp1Bills" value="">
         <label>Discretionary Total /mo</label><input type="number" id="exp1Disc" value="">
+        <label>Vacation/Entertainment /mo</label><input type="number" id="exp1Vac" value="">
         <label>Start Year</label><input type="number" id="exp1Start" value="">
         <label>End Year</label><input type="number" id="exp1End" value="">
         <div class="subsection-divider"></div>
@@ -850,6 +874,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <summary><h3>Monthly Expenses #2</h3></summary>
         <label>Bills Total /mo</label><input type="number" id="exp2Bills" value="">
         <label>Discretionary Total /mo</label><input type="number" id="exp2Disc" value="">
+        <label>Vacation/Entertainment /mo</label><input type="number" id="exp2Vac" value="">
         <label>Start Year</label><input type="number" id="exp2Start" value="">
         <label>End Year</label><input type="number" id="exp2End" value="">
         <div class="subsection-divider"></div>
@@ -1058,7 +1083,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
 
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
           <div style="padding:10px;border:1px solid var(--border);border-radius:6px;">
-            <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel1" value="1" checked onchange="runModel()" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel1" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 1 — Use for mortgage</label></div>
+            <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel1" value="1" checked onchange="runModel();autoSave();" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel1" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 1 — Use for mortgage</label></div>
             <label>Town/City Name</label><input type="text" id="town1Name" value="" placeholder="e.g. Holly Springs, NC" onchange="runModel()">
             <label>Home Price</label><input type="number" id="town1Price" value="" onchange="runModel()">
             <label>Property Tax /yr</label><input type="number" id="town1Tax" value="" onchange="runModel()">
@@ -1068,7 +1093,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           </div>
 
           <div style="padding:10px;border:1px solid var(--border);border-radius:6px;">
-            <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel2" value="2" onchange="runModel()" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel2" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 2 — Use for mortgage</label></div>
+            <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel2" value="2" onchange="runModel();autoSave();" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel2" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 2 — Use for mortgage</label></div>
             <label>Town/City Name</label><input type="text" id="town2Name" value="" placeholder="e.g. Apex, NC" onchange="runModel()">
             <label>Home Price</label><input type="number" id="town2Price" value="" onchange="runModel()">
             <label>Property Tax /yr</label><input type="number" id="town2Tax" value="" onchange="runModel()">
@@ -1078,7 +1103,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           </div>
 
           <div style="padding:10px;border:1px solid var(--border);border-radius:6px;">
-            <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel3" value="3" onchange="runModel()" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel3" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 3 — Use for mortgage</label></div>
+            <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel3" value="3" onchange="runModel();autoSave();" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel3" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 3 — Use for mortgage</label></div>
             <label>Town/City Name</label><input type="text" id="town3Name" value="" placeholder="e.g. Cary, NC" onchange="runModel()">
             <label>Home Price</label><input type="number" id="town3Price" value="" onchange="runModel()">
             <label>Property Tax /yr</label><input type="number" id="town3Tax" value="" onchange="runModel()">
@@ -1088,7 +1113,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           </div>
 
           <div style="padding:10px;border:1px solid var(--border);border-radius:6px;">
-            <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel4" value="4" onchange="runModel()" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel4" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 4 — Use for mortgage</label></div>
+            <div style="margin-bottom:6px;"><input type="radio" name="townSel" id="townSel4" value="4" onchange="runModel();autoSave();" style="vertical-align:middle;margin:0 6px 0 0;"><label for="townSel4" style="display:inline;width:auto;font-size:12px;color:var(--text-2);margin:0;font-weight:bold;vertical-align:middle;">Town 4 — Use for mortgage</label></div>
             <label>Town/City Name</label><input type="text" id="town4Name" value="" placeholder="e.g. Fuquay-Varina, NC" onchange="runModel()">
             <label>Home Price</label><input type="number" id="town4Price" value="" onchange="runModel()">
             <label>Property Tax /yr</label><input type="number" id="town4Tax" value="" onchange="runModel()">
@@ -1610,7 +1635,7 @@ const RMD_DIVISORS = {
   97:7.8,98:7.3,99:6.8,100:6.4
 };
 
-const ALL_IDS=['currentYear','projStartYear','projEndYear','showTodaysDollars','inflationRate','age','wifeAge','retireYear','retireMonth','svcComp','drillDays','netPay','payRaise','promoBump','promo1Bump','promo1Month','promo1Start','promo1End','promo2Bump','promo2Month','promo2Start','promo2End','bah1','bah1Month','bah1Start','bah1End','bah2','bah2Month','bah2Start','bah2End','bahRaise','bah1Raise','bah2Raise','retSystem','yos','yosMonths','high3Pay','retGross','retPoints','retPayStartAge','pensionCOLA','fedTaxPct','optSBP','optLifeIns','lifeInsType','lifeInsPremium','lifeInsFace','lifeInsStart','lifeInsEnd','jbHousingType','jbRent','jbRentStart','jbRentEnd','pcs2HousingType','pcs2Rent','pcs2RentStart','pcs2RentEnd','myWorkManual','gsGross','gsFedTax','gsStateTax','gsIncomeStart','gsIncomeEnd','wifeManual','wifeStartYear','wifeEndYear','vaDisability','ssMe','ssMeYear','ssWife','ssWifeYear','exp1Bills','exp1Disc','exp1Start','exp1End','exp2Bills','exp2Disc','exp2Start','exp2End','exp1Inflation','exp2Inflation','tricareMo','tricareStart','tricareEnd','medInsMo','medInsStart','medInsEnd','denInsMo','denInsStart','denInsEnd','jbBuyYear','jbBuyMonth','jbSellYear','homeCost','downPct','rate','term','propTax','jbIns','jbHOA','vaFee','pcs2BuyYear','pcs2BuyMonth','pcs2SellYear','pcs2Cost','pcs2DownPct','pcs2Rate','pcs2Term','pcs2PropTax','pcs2Ins','pcs2VaFee','wakeBuyYear','wakeBuyMonth','townSel','town1Name','town1Price','town1Tax','town1Ins','town1HOA','town1School','town2Name','town2Price','town2Tax','town2Ins','town2HOA','town2School','town3Name','town3Price','town3Tax','town3Ins','town3HOA','town3School','town4Name','town4Price','town4Tax','town4Ins','town4HOA','town4School','townRate','equity2033','pcs2EquityRoll','util1Loc','util1WS','util1Gas','util1Elec','util1HOA','util1Maint','util1Start','util1End','util3Loc','util3WS','util3Gas','util3Elec','util3HOA','util3Maint','util3Start','util3End','util2Loc','util2WS','util2Gas','util2Elec','util2HOA','util2Maint','util2Start','util2End','tspContribAD','tspStopYear','rothMe','rothMeStop','rothWife','rothWifeStop','gsTsp','gsTspStart','gsTspEnd','savBal','savMonthly','savAPY','savWithdraw','savWdYear','savWdEnd','savWithdraw2','savWdYear2','savWdEnd2','tspBal','tspRet','tspRoll','rothBalMe','rothBalWife','rothRet','tspWithdraw','tspWdYear','rothWithdraw','rothWdYear','rothWifeWithdraw','rothWifeWdYear','taxBal','taxMonthly','taxStart','taxStop','taxRet','taxWithdraw','taxWdYear','taxCapGains','cryptoBal','cryptoMonthly','cryptoStart','cryptoStop','cryptoRet','cryptoWithdraw','cryptoWdYear','cryptoCapGains','goldBal','goldMonthly','goldStart','goldStop','goldRet','goldWithdraw','goldWdYear','goldCapGains','useActuals','ret529','c1GibMonths','c1GiTuition','c2GibMonths','c2GiTuition','c3GibMonths','c3GiTuition','cc1Name','cc1Bal','cc1Pmt','cc1Rate','cc1Month','cc1Start','cc1End','cc2Name','cc2Bal','cc2Pmt','cc2Rate','cc2Month','cc2Start','cc2End','cc3Name','cc3Bal','cc3Pmt','cc3Rate','cc3Month','cc3Start','cc3End','car1Name','car1Bal','car1Pmt','car1Rate','car1Month','car1Start','car1End','car2Name','car2Bal','car2Pmt','car2Rate','car2Month','car2Start','car2End','loanName','loanBal','loanPmt','loanRate','loanMonth','loanStart','loanEnd'];
+const ALL_IDS=['currentYear','projStartYear','projEndYear','showTodaysDollars','inflationRate','age','wifeAge','retireYear','retireMonth','svcComp','drillDays','netPay','payRaise','promo1Bump','promo1Month','promo1Start','promo1End','promo2Bump','promo2Month','promo2Start','promo2End','bah1','bah1Month','bah1Start','bah1End','bah2','bah2Month','bah2Start','bah2End','bah1Raise','bah2Raise','retSystem','yos','yosMonths','high3Pay','retGross','retPoints','retPayStartAge','pensionCOLA','fedTaxPct','optSBP','optLifeIns','lifeInsType','lifeInsPremium','lifeInsFace','lifeInsStart','lifeInsEnd','jbHousingType','jbRent','jbRentStart','jbRentEnd','pcs2HousingType','pcs2Rent','pcs2RentStart','pcs2RentEnd','myWorkManual','gsGross','gsFedTax','gsStateTax','gsIncomeStart','gsIncomeEnd','wifeManual','wifeStartYear','wifeEndYear','vaDisability','ssMe','ssMeYear','ssWife','ssWifeYear','exp1Bills','exp1Disc','exp1Vac','exp1Start','exp1End','exp2Bills','exp2Disc','exp2Vac','exp2Start','exp2End','exp1Inflation','exp2Inflation','tricareMo','tricareStart','tricareEnd','medInsMo','medInsStart','medInsEnd','denInsMo','denInsStart','denInsEnd','jbBuyYear','jbBuyMonth','jbSellYear','homeCost','downPct','rate','term','propTax','jbIns','vaFee','pcs2BuyYear','pcs2BuyMonth','pcs2SellYear','pcs2Cost','pcs2DownPct','pcs2Rate','pcs2Term','pcs2PropTax','pcs2Ins','pcs2VaFee','wakeBuyYear','wakeBuyMonth','town1Name','town1Price','town1Tax','town1Ins','town1HOA','town1School','town2Name','town2Price','town2Tax','town2Ins','town2HOA','town2School','town3Name','town3Price','town3Tax','town3Ins','town3HOA','town3School','town4Name','town4Price','town4Tax','town4Ins','town4HOA','town4School','townRate','equity2033','pcs2EquityRoll','util1Loc','util1WS','util1Gas','util1Elec','util1HOA','util1Maint','util1Start','util1End','util3Loc','util3WS','util3Gas','util3Elec','util3HOA','util3Maint','util3Start','util3End','util2Loc','util2WS','util2Gas','util2Elec','util2HOA','util2Maint','util2Start','util2End','tspContribAD','tspStopYear','rothMe','rothMeStop','rothWife','rothWifeStop','gsTsp','gsTspStart','gsTspEnd','savBal','savMonthly','savAPY','savWithdraw','savWdYear','savWdEnd','savWithdraw2','savWdYear2','savWdEnd2','tspBal','tspRet','tspRoll','rothBalMe','rothBalWife','rothRet','tspWithdraw','tspWdYear','rothWithdraw','rothWdYear','rothWifeWithdraw','rothWifeWdYear','taxBal','taxMonthly','taxStart','taxStop','taxRet','taxWithdraw','taxWdYear','taxCapGains','cryptoBal','cryptoMonthly','cryptoStart','cryptoStop','cryptoRet','cryptoWithdraw','cryptoWdYear','cryptoCapGains','goldBal','goldMonthly','goldStart','goldStop','goldRet','goldWithdraw','goldWdYear','goldCapGains','useActuals','ret529','c1GibMonths','c1GiTuition','c2GibMonths','c2GiTuition','c3GibMonths','c3GiTuition','cc1Name','cc1Bal','cc1Pmt','cc1Rate','cc1Month','cc1Start','cc1End','cc2Name','cc2Bal','cc2Pmt','cc2Rate','cc2Month','cc2Start','cc2End','cc3Name','cc3Bal','cc3Pmt','cc3Rate','cc3Month','cc3Start','cc3End','car1Name','car1Bal','car1Pmt','car1Rate','car1Month','car1Start','car1End','car2Name','car2Bal','car2Pmt','car2Rate','car2Month','car2Start','car2End','loanName','loanBal','loanPmt','loanRate','loanMonth','loanStart','loanEnd'];
 ['c1','c2','c3'].forEach(c=>['privStart','privEnd','privTuition','privFees','bal','mo','stop','ugStart','ugEnd','ugTuition','ugRB','rbStart','rbEnd','scholUG','gStart','gEnd','gTuition','gRB','grbStart','grbEnd','scholGrad'].forEach(s=>ALL_IDS.push(c+s)));
 
 /* =======================================================
@@ -1654,7 +1679,7 @@ function showGroup(g){
   if(nc)nc.classList.toggle('active',g==='cash');if(ni)ni.classList.toggle('active',g==='inv');if(ne)ne.classList.toggle('active',g==='edu');
   ['cash','re','inv','edu'].forEach(x=>{const s=document.getElementById('sl-'+x);if(s)s.classList.toggle('active',x===g);});
 }
-function toggleWife(state){showWife=state;renderCashFlow();document.getElementById('btnWith').classList.toggle('active',state);document.getElementById('btnNo').classList.toggle('active',!state);}
+function toggleWife(state){showWife=state;const wrap=document.getElementById('cash-chart-wrap');const wasChart=wrap&&wrap.style.display==='block';runModel();['btnWith','dashBtnWith'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',state);});['btnNo','dashBtnNo'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',!state);});if(wasChart&&typeof showCashView==='function')showCashView('chart');}
 function fillYears(){
   const ps=document.getElementById('projStartYear'),pe=document.getElementById('projEndYear');
   if(ps)Y0=parseInt(ps.value)||2026;
@@ -1906,6 +1931,7 @@ function autoSave(){
   for(let y=Y0;y<=YEND;y++){ACCTS.forEach(a=>{['aBal'+a+'_'+y,'aCon'+a+'_'+y].forEach(k=>{const el=document.getElementById(k);if(el&&el.value!=='')act[k]=el.value;});});}
   data.__actuals=act;
   data.__probate=getProbateData();
+  const townR=document.querySelector('input[name="townSel"]:checked');if(townR)data.__townSel=townR.value;
   const detStates={};
   document.querySelectorAll('details').forEach(d=>{if(d.id)detStates[d.id]=d.open;});
   data.__details=detStates;
@@ -1925,6 +1951,7 @@ function autoLoad(){
     ALL_IDS.forEach(id=>{const el=document.getElementById(id);if(!el||data[id]===undefined)return;if(el.type==='checkbox')el.checked=data[id];else{if(data[id]==='0'&&el.defaultValue===''&&el.type==='number')el.value='';else el.value=data[id];}});
     if(data.__actuals)Object.keys(data.__actuals).forEach(k=>{const el=document.getElementById(k);if(el)el.value=data.__actuals[k];});
     if(data.__probate)loadProbateData(data.__probate);
+    if(data.__townSel){const tr=document.getElementById('townSel'+data.__townSel);if(tr)tr.checked=true;}
     if(data.__details){window._detailStates=data.__details;Object.keys(data.__details).forEach(k=>{if(k==='det_actuals')return;const el=document.getElementById(k);if(el)el.open=data.__details[k];});}
     return true;
   }catch(e){return false;}
@@ -2100,8 +2127,8 @@ function runModel(){
   }
   function expensesMonthly(year,forProjection){
     let e=0;
-    if(year>=v('exp1Start')&&year<=v('exp1End')){e+=v('exp1Bills')+v('exp1Disc');}
-    if(year>=v('exp2Start')&&year<=v('exp2End')){e+=v('exp2Bills')+v('exp2Disc');}
+    if(year>=v('exp1Start')&&year<=v('exp1End')){e+=v('exp1Bills')+v('exp1Disc')+v('exp1Vac');}
+    if(year>=v('exp2Start')&&year<=v('exp2End')){e+=v('exp2Bills')+v('exp2Disc')+v('exp2Vac');}
     let privSchMo=0;
     ['c1','c2','c3'].forEach(c=>{let start=v(c+'privStart'),end=v(c+'privEnd');if(start>0&&year>=start&&year<=end)privSchMo+=(v(c+'privTuition')+v(c+'privFees'))/12;});
     e+=privSchMo;
@@ -2575,7 +2602,7 @@ function renderCashFlow(){
   const {incomeParts,expensesMonthly,investMonthly,homeForYear,utilForYear,bahForYear,debtPaymentMonthly,healthcareMonthly,lifeInsMonthly,myAge,wAge,locked}=c;
   const townName=(document.getElementById('town'+c.selTownNum+'Name')||{}).value||('Town '+c.selTownNum);
   let h=`<p style="font-size:12px;color:var(--text-2);padding:8px 8px 0;"><em>Home auto-switches: PCS#1 (${c.jbBuy>0?c.jbBuy:'—'}) → ${townName} (${c.wakeBuy}+). ${showWife?'<b>WITH spouse income.</b>':'<b>WITHOUT spouse income.</b>'}</em></p>`;
-  h+='<table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Status</th><th>My Net/mo</th><th>Spouse/mo</th><th>Combined/mo</th><th>Home/mo</th><th>Utils/mo</th><th>BAH/mo</th><th>Debt/mo</th><th>Exp/mo</th><th>Invest/mo</th><th>Health/mo</th><th>Life Ins/mo</th><th>SBP/mo</th><th>Surplus/mo</th><th>Annual</th><th>Projected Net Worth</th></tr>';
+  h+='<table><tr><th class="stk-1">Year</th><th class="stk-2">Age</th><th class="stk-3">Sp Age</th><th>My Net/mo</th><th>Spouse/mo</th><th>Combined/mo</th><th>Surplus/mo</th><th>Surplus/yr</th><th>Proj NW</th><th>Home/mo</th><th>Utils/mo</th><th>BAH/mo</th><th>Debt/mo</th><th>Exp/mo</th><th>Invest/mo</th><th>Health/mo</th><th>Life Ins/mo</th><th>SBP/mo</th><th style="text-align:left">Status</th></tr>';
   let total=0;
   for(let y=Y0+1;y<=YEND;y++){
     const ip=incomeParts(y);const spouse=showWife?ip.spouse:0;const combined=ip.mine+spouse;
@@ -2585,7 +2612,7 @@ function renderCashFlow(){
     const cls=disc<0?'warn':(disc<1000?'':'good');
     let rowcls=(y===c.jbSell)?'retire-row':(locked(y)?'locked':'');
     if(y===ctx.curYear)rowcls+=' current-year-row';
-    h+=`<tr class="${rowcls}"><td><b>${y}</b></td><td>${myAge(y)}</td><td>${wAge(y)}</td><td style="font-size:9.5px;color:var(--text-2);text-align:left">${ip.status}</td><td>${fmt(ip.mine)}</td><td>${fmt(spouse)}</td><td><b>${fmt(combined)}</b></td><td>${fmt(home)}</td><td>${fmt(util)}</td><td>${fmt(bah)}</td><td>${fmt(debtPmt)}</td><td>${fmt(expRest)}</td><td>${fmt(inv)}</td><td>${hc>0?fmt(hc):'—'}</td><td>${li>0?fmt(li):'—'}</td><td class="warn">${ip.sbpMo>0?fmt(ip.sbpMo):'—'}</td><td class="${cls}">${fmt(disc)}</td><td>${fmt(disc*12)}</td><td><b>${fmt(c.nw(y).netWithMort)}</b></td></tr>`;
+    h+=`<tr class="${rowcls}"><td class="stk-1"><b>${y}</b></td><td class="stk-2">${myAge(y)}</td><td class="stk-3">${wAge(y)}</td><td>${fmt(ip.mine)}</td><td>${fmt(spouse)}</td><td><b>${fmt(combined)}</b></td><td class="${cls}">${fmt(disc)}</td><td>${fmt(disc*12)}</td><td><b>${fmt(c.nw(y).netWithMort)}</b></td><td>${fmt(home)}</td><td>${fmt(util)}</td><td>${fmt(bah)}</td><td>${fmt(debtPmt)}</td><td>${fmt(expRest)}</td><td>${fmt(inv)}</td><td>${hc>0?fmt(hc):'—'}</td><td>${li>0?fmt(li):'—'}</td><td class="warn">${ip.sbpMo>0?fmt(ip.sbpMo):'—'}</td><td style="font-size:9.5px;color:var(--text-2);text-align:left">${ip.status}</td></tr>`;
   }
   h+='</table>';
   h+=`<div style="padding:10px 8px;"><div class="metric"><strong>${fmt(total)}</strong>Cumulative Surplus 2027–2060 (${showWife?'w/ spouse':'solo'})</div></div>`;
@@ -2607,13 +2634,13 @@ function buildInvGroup(){
   html+='<div class="chart-wrap" id="inv-chart-wrap" style="display:none"><canvas id="chart-inv"></canvas></div>';
   html+='<div id="inv-account-legend" style="display:none;padding:8px 12px;margin-top:6px;"></div>';
   html+=`<div class="panel"><details id="det_tsp_roth" ${getOpen('det_tsp_roth')}><summary><h2>4. TSP & Roth IRA Year-by-Year Projection</h2></summary>`;
-  html+='<div style="display:flex;gap:16px;align-items:flex-start;"><div class="table-wrapper" style="flex:1 1 auto;min-width:0;"><table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Proj TSP</th><th>Actual TSP</th><th>Proj My Roth</th><th>Actual My Roth</th><th>Proj Spouse Roth</th><th>Actual Spouse Roth</th><th>TSP W/D</th><th>My Roth W/D</th><th>Spouse Roth W/D</th><th>Total W/D</th><th>Proj Combined</th><th>Actual Combined</th></tr>';
+  html+='<div style="display:flex;gap:16px;align-items:flex-start;"><div class="table-wrapper" style="flex:1 1 auto;min-width:0;"><table><tr><th class="stk-1">Year</th><th class="stk-2">Age</th><th class="stk-3">Sp Age</th><th>Proj TSP</th><th>Actual TSP</th><th>Proj My Roth</th><th>Actual My Roth</th><th>Proj Spouse Roth</th><th>Actual Spouse Roth</th><th>TSP W/D</th><th>My Roth W/D</th><th>Spouse Roth W/D</th><th>Total W/D</th><th>Proj Combined</th><th>Actual Combined</th></tr>';
   for(let y=Y0;y<=YEND;y++){
     const p=proj[y],a=actual[y],wd=projWd[y],ha=hasActual[y]||{};if(!p)continue;
     let tspWd=wd.Tsp*12,rothMeWd=wd.RothMe*12,rothWifeWd=wd.RothWife*12,totWd=tspWd+rothMeWd+rothWifeWd;
     let rc=(y===jbSell)?'retire-row':(locked(y)?'locked':'');if(y===ctx.curYear)rc+=' current-year-row';
     const hasComb=ha.Tsp||ha.RothMe||ha.RothWife;
-    html+=`<tr class="${rc}"><td><b>${y}</b></td><td>${myAge(y)}</td><td>${wAge(y)}</td><td>${fmt(p.Tsp)}</td>${actCell(a.Tsp,ha.Tsp)}<td>${fmt(p.RothMe)}</td>${actCell(a.RothMe,ha.RothMe)}<td>${fmt(p.RothWife)}</td>${actCell(a.RothWife,ha.RothWife)}<td>${fmt(tspWd)}</td><td>${fmt(rothMeWd)}</td><td>${fmt(rothWifeWd)}</td><td><b>${fmt(totWd)}</b></td><td><b>${fmt(p.Tsp+p.RothMe+p.RothWife)}</b></td>${actCell(a.Tsp+a.RothMe+a.RothWife,hasComb)}</tr>`;
+    html+=`<tr class="${rc}"><td class="stk-1"><b>${y}</b></td><td class="stk-2">${myAge(y)}</td><td class="stk-3">${wAge(y)}</td><td>${fmt(p.Tsp)}</td>${actCell(a.Tsp,ha.Tsp)}<td>${fmt(p.RothMe)}</td>${actCell(a.RothMe,ha.RothMe)}<td>${fmt(p.RothWife)}</td>${actCell(a.RothWife,ha.RothWife)}<td>${fmt(tspWd)}</td><td>${fmt(rothMeWd)}</td><td>${fmt(rothWifeWd)}</td><td><b>${fmt(totWd)}</b></td><td><b>${fmt(p.Tsp+p.RothMe+p.RothWife)}</b></td>${actCell(a.Tsp+a.RothMe+a.RothWife,hasComb)}</tr>`;
   }
   html+='</table></div>';
   const tspLegend=buildProbateLegendCards(['tspBal','rothBalMe','rothBalWife']);
@@ -2623,8 +2650,9 @@ function buildInvGroup(){
   function assetTable(label,detId,key,startId,stopId,monthlyId,wdId,pbTargets){
     const chartId='chart-'+detId;
     let h=`<div class="panel"><details id="${detId}" ${getOpen(detId)}><summary><h2>${label}</h2></summary>`;
-    h+=`<div class="chart-wrap" style="height:220px;margin-bottom:12px;"><canvas id="${chartId}"></canvas></div>`;
-    h+='<div style="display:flex;gap:16px;align-items:flex-start;"><div class="table-wrapper" style="flex:0 1 auto;min-width:0;"><table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Contrib/mo</th><th>W/D/mo</th><th>Cap-Gains Paid</th><th>Proj Balance</th><th>Actual Balance</th><th>Variance (A−P)</th><th>Proj YoY%</th><th>Act YoY%</th></tr>';
+    h+=`<div style="margin-bottom:8px;"><button class="view-btn" onclick="toggleAssetChart('${chartId}',this)">📊 Show Chart</button></div>`;
+    h+=`<div class="chart-wrap inv-asset-chart" id="wrap-${chartId}" style="height:220px;margin-bottom:12px;display:none;"><canvas id="${chartId}"></canvas></div>`;
+    h+='<div style="display:flex;gap:16px;align-items:flex-start;"><div class="table-wrapper" style="flex:0 1 auto;min-width:0;"><table><tr><th class="stk-1">Year</th><th class="stk-2">Age</th><th class="stk-3">Sp Age</th><th>Contrib/mo</th><th>W/D/mo</th><th>Cap-Gains Paid</th><th>Proj Balance</th><th>Actual Balance</th><th>Variance (A−P)</th><th>Proj YoY%</th><th>Act YoY%</th></tr>';
     const chartYears=[],chartContrib=[],chartBal=[];
     const cardDataKey='_cardData_'+detId;
     if(!window._assetCards)window._assetCards={};
@@ -2647,7 +2675,7 @@ function buildInvGroup(){
       const actPctCell=actPct===null?`<td class="locked">—</td>`:`<td class="${actPct>=0?'good':'warn'}">${actPct>=0?'+':''}${actPct.toFixed(1)}%</td>`;
       window._assetCards[detId][y]={con,proj:p[key]||0,act:showAct?aVal:null,diff,projPct,actPct,cumContrib};
       let rc=locked(y)?'locked':'';if(y===ctx.curYear)rc+=' current-year-row';
-      h+=`<tr class="${rc}" style="cursor:pointer;" onclick="updateAssetCards('${detId}',${y},this)"><td><b>${y}</b></td><td>${myAge(y)}</td><td>${wAge(y)}</td><td>${fmt(con)}</td><td>${fmt(wd[key])}</td><td class="warn">${fmt(cg)}</td><td>${fmt(p[key])}</td>${actCell(aVal,showAct)}${diffCell}${projPctCell}${actPctCell}</tr>`;
+      h+=`<tr class="${rc}" style="cursor:pointer;" onclick="updateAssetCards('${detId}',${y},this)"><td class="stk-1"><b>${y}</b></td><td class="stk-2">${myAge(y)}</td><td class="stk-3">${wAge(y)}</td><td>${fmt(con)}</td><td>${fmt(wd[key])}</td><td class="warn">${fmt(cg)}</td><td>${fmt(p[key])}</td>${actCell(aVal,showAct)}${diffCell}${projPctCell}${actPctCell}</tr>`;
     }
     h+='</table></div>';
     const cardsId='cards-'+detId;
@@ -2686,7 +2714,7 @@ function buildInvGroup(){
   html+=assetTable('4c. Gold / Silver Projection','det_gold','Gold','goldStart','goldStop','goldMonthly','goldWdYear',['goldBal']);
 
   html+=`<div class="panel"><details id="det_combined_inv" ${getOpen('det_combined_inv')}><summary><h2>4d. Combined Investments Overview</h2></summary>`;
-  html+='<div class="table-wrapper"><table><tr><th>Year</th><th>My Age</th><th>Spouse Age</th><th>Proj TSP</th><th>Proj My Roth</th><th>Proj Spouse Roth</th><th>Proj Taxable</th><th>Proj Crypto</th><th>Proj Gold</th><th>Proj Combined</th><th>Actual Combined</th><th>Variance (A−P)</th><th>Proj YoY%</th><th>Act YoY%</th></tr>';
+  html+='<div class="table-wrapper"><table><tr><th class="stk-1">Year</th><th class="stk-2">Age</th><th class="stk-3">Sp Age</th><th>Proj TSP</th><th>Proj My Roth</th><th>Proj Spouse Roth</th><th>Proj Taxable</th><th>Proj Crypto</th><th>Proj Gold</th><th>Proj Combined</th><th>Actual Combined</th><th>Variance (A−P)</th><th>Proj YoY%</th><th>Act YoY%</th></tr>';
   window._assetCards['det_combined_inv']={};
   for(let y=Y0;y<=YEND;y++){
     const p=proj[y];if(!p)continue;
@@ -2708,7 +2736,7 @@ function buildInvGroup(){
     const actPctCell=actPct===null?`<td class="locked">—</td>`:`<td class="${actPct>=0?'good':'warn'}">${actPct>=0?'+':''}${actPct.toFixed(1)}%</td>`;
     window._assetCards['det_combined_inv'][y]={proj:comb,act:showAct?actComb:null,diff,projPct,actPct};
     let rc=(y===jbSell)?'retire-row':(locked(y)?'locked':'');if(y===ctx.curYear)rc+=' current-year-row';
-    html+=`<tr class="${rc}" style="cursor:pointer;" onclick="updateCombinedCards(${y},this)"><td><b>${y}</b></td><td>${myAge(y)}</td><td>${wAge(y)}</td><td>${fmt(p.Tsp)}</td><td>${fmt(p.RothMe)}</td><td>${fmt(p.RothWife)}</td><td>${fmt(p.Tax)}</td><td>${fmt(p.Crypto)}</td><td>${fmt(p.Gold)}</td><td><b>${fmt(comb)}</b></td>${actCell(actComb,showAct)}${diffCell}${projPctCell}${actPctCell}</tr>`;
+    html+=`<tr class="${rc}" style="cursor:pointer;" onclick="updateCombinedCards(${y},this)"><td class="stk-1"><b>${y}</b></td><td class="stk-2">${myAge(y)}</td><td class="stk-3">${wAge(y)}</td><td>${fmt(p.Tsp)}</td><td>${fmt(p.RothMe)}</td><td>${fmt(p.RothWife)}</td><td>${fmt(p.Tax)}</td><td>${fmt(p.Crypto)}</td><td>${fmt(p.Gold)}</td><td><b>${fmt(comb)}</b></td>${actCell(actComb,showAct)}${diffCell}${projPctCell}${actPctCell}</tr>`;
   }
   html+='</table></div>';
   html+=buildProbateLegendCardsHorizontal(['tspBal','rothBalMe','rothBalWife','taxBal','savBal','cryptoBal','goldBal']);
@@ -2886,9 +2914,16 @@ function updateAssetCards(detId,year,row){
   const table=row.closest('table');if(table)table.querySelectorAll('tr').forEach(r=>r.style.outline='');
   row.style.outline='2px solid var(--blue)';row.style.outlineOffset='-1px';
 }
+function toggleAssetChart(chartId,btn){
+  const wrap=document.getElementById('wrap-'+chartId);if(!wrap)return;
+  const shown=wrap.style.display==='block';
+  wrap.style.display=shown?'none':'block';
+  if(btn)btn.textContent=shown?'📊 Show Chart':'📊 Hide Chart';
+}
 function showInvView(v){
   const wrap=document.getElementById('inv-chart-wrap');if(wrap)wrap.style.display=v==='chart'?'block':'none';
   const al=document.getElementById('inv-account-legend');if(al)al.style.display=v==='chart'?'block':'none';
+  document.querySelectorAll('#grp_inv .inv-asset-chart').forEach(el=>el.style.display=v==='chart'?'block':'none');
   document.querySelectorAll('#grp_inv .view-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&v==='table')||(i===1&&v==='chart')));
   if(v==='chart')renderInvChart();
 }
@@ -2903,7 +2938,7 @@ function showDashView(v){
   if(dash)dash.style.display=v==='chart'?'none':'';if(wrap)wrap.style.display=v==='chart'?'block':'none';
   const mc=document.getElementById('nw-mini-cards');if(mc)mc.style.display=v==='chart'?'flex':'none';
   const al=document.getElementById('nw-account-legend');if(al)al.style.display=v==='chart'?'block':'none';
-  document.querySelectorAll('.view-toggle .view-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&v==='cards')||(i===1&&v==='chart')));
+  document.querySelectorAll('.view-toggle > div:first-child .view-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&v==='cards')||(i===1&&v==='chart')));
   if(v==='chart')renderNWChart();
 }
 
