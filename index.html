@@ -678,7 +678,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
   <a class="sidebar-link" id="sl-H" onclick="sideNavHousing('input')" title="Housing &amp; Real Estate">🏡<span class="sb-link-text"> Housing &amp; Real Estate</span></a>
   <a class="sidebar-link" id="sl-2" onclick="sideNavInvestments('input')" title="Investments">📈<span class="sb-link-text"> Investments</span></a>
   <a class="sidebar-link" id="sl-3" onclick="sideNavEducation('input')" title="Education">🎓<span class="sb-link-text"> Education</span></a>
-  <a class="sidebar-link" id="sl-5" onclick="sideNav('input','5')" title="Debt">💳<span class="sb-link-text"> Debt</span></a>
+  <a class="sidebar-link" id="sl-5" onclick="sideNavDebt('input')" title="Debt">💳<span class="sb-link-text"> Debt</span></a>
   <a class="sidebar-link" id="sl-P" onclick="sideNav('input','P')" title="Probate Log">📒<span class="sb-link-text"> Probate Log</span></a>
 
   <div class="sidebar-divider"></div>
@@ -719,9 +719,10 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
 <!-- ===== DASHBOARD ===== -->
 <div class="panel">
   <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;">
-    <h2 style="margin-top:0;border-left:5px solid var(--gold);padding-left:12px;white-space:nowrap;">📊 Net Worth Dashboard</h2>
+    <h2 id="dashHeader" style="margin-top:0;border-left:5px solid var(--gold);padding-left:12px;white-space:nowrap;cursor:pointer;user-select:none;" onclick="toggleDashCollapse()" title="Click to collapse/expand"><span id="dashCollapseIcon">▼</span> 📊 Net Worth Dashboard</h2>
     <div id="nw-mini-cards" style="display:none;gap:8px;flex-wrap:wrap;flex:1;justify-content:flex-end;"></div>
   </div>
+  <div id="dashBody">
   <div class="view-toggle" style="margin-top:12px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
     <div>
       <button class="view-btn active" onclick="showDashView('cards')">🃏 Cards</button>
@@ -761,6 +762,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <b>Excl. Home &amp; Retirement</b> — Liquid Cash only. The most conservative view — what you could access today without selling your home or triggering early-withdrawal penalties on retirement accounts.
     </div>
   </details>
+  </div>
 </div>
 
 <!-- ===== INPUTS PANEL ===== -->
@@ -2981,6 +2983,12 @@ function showCashView(v){
   document.querySelectorAll('#grp_cash .view-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&v==='table')||(i===1&&v==='chart')));
   if(v==='chart')renderCashChart();
 }
+function toggleDashCollapse(){
+  const body=document.getElementById('dashBody');const icon=document.getElementById('dashCollapseIcon');
+  if(!body)return;const collapsed=body.style.display==='none';
+  body.style.display=collapsed?'':'none';
+  if(icon)icon.textContent=collapsed?'▼':'▶';
+}
 function showDashView(v){
   const dash=document.getElementById('dashboard');const wrap=document.getElementById('nw-chart-wrap');
   if(dash)dash.style.display=v==='chart'?'none':'';if(wrap)wrap.style.display=v==='chart'?'block':'none';
@@ -3154,6 +3162,20 @@ function sideNavEducation(from){
   }
 }
 
+function sideNavDebt(from){
+  if(from==='input'){
+    sideNav('input','5');
+    if(typeof showGroup==='function')showGroup('cash');
+    document.getElementById('sl-cash')?.classList.add('active');
+    const d=document.getElementById('det_debtpayoff');if(d)d.open=true;
+  }else{
+    sideNav('result','cash');
+    if(typeof showTab==='function')showTab(5);
+    document.getElementById('sl-5')?.classList.add('active');
+    const d=document.getElementById('det_debtpayoff');
+    if(d){d.open=true;setTimeout(()=>{const bar=document.querySelector('.stickybar');const off=bar?bar.offsetHeight+10:60;window.scrollTo({top:d.getBoundingClientRect().top+window.scrollY-off,behavior:'smooth'});},60);}
+  }
+}
 function sideNavCoreInputs(){
   document.querySelectorAll('.sidebar-link').forEach(el=>el.classList.remove('active'));
   document.getElementById('sl-1')?.classList.add('active');
