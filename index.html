@@ -3160,7 +3160,8 @@ function sideNav(type,id){
   if(type==='input'){
     const el=document.getElementById('sl-'+id);if(el)el.classList.add('active');
     showTab(isNaN(id)?id:parseInt(id));
-    setTimeout(()=>scrollToEl(document.getElementById('pane'+id)),30);
+    const paneEl=document.getElementById('pane'+id);
+    if(paneEl){const r=paneEl.getBoundingClientRect();const bar=document.querySelector('.stickybar');const off=bar?bar.offsetHeight+10:60;if(r.top<off||r.top>window.innerHeight)setTimeout(()=>scrollToEl(paneEl),30);}
   }else if(type==='result'){
     const el=document.getElementById('sl-'+id);if(el)el.classList.add('active');
     showGroup(id);
