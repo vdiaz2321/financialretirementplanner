@@ -764,6 +764,10 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
 
 <!-- ===== INPUTS PANEL ===== -->
 <div class="panel" id="det_core">
+  <div style="display:flex;justify-content:flex-end;padding:0 0 8px 0;">
+    <button id="btnHideInputs" class="view-btn" onclick="toggleCoreInputs()" title="Hide all input sections to jump to the results tables below">👁️ Hide Inputs</button>
+  </div>
+  <div id="det_core_body">
 
   <!-- TAB 1: MAIN DATA -->
   <div class="tabpane active" id="pane1">
@@ -1545,6 +1549,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       </div>
   </div>
 
+  </div><!-- /det_core_body -->
 </div><!-- /panel -->
 
 <!-- Hidden nav (sidebar replaces) -->
@@ -3168,6 +3173,8 @@ function sideNav(type,id){
 }
 
 function toggleAllDetails(paneId,open){document.querySelectorAll('#'+paneId+' details').forEach(d=>{d.open=open;});}
+function toggleCoreInputs(){const body=document.getElementById('det_core_body'),btn=document.getElementById('btnHideInputs');if(!body||!btn)return;const hidden=body.style.display==='none';body.style.display=hidden?'':'none';btn.textContent=hidden?'👁️ Hide Inputs':'👁️ Show Inputs';try{localStorage.setItem('frp_hideInputs',hidden?'0':'1');}catch(e){}}
+(function(){try{if(localStorage.getItem('frp_hideInputs')==='1'){document.addEventListener('DOMContentLoaded',()=>{const body=document.getElementById('det_core_body'),btn=document.getElementById('btnHideInputs');if(body&&btn){body.style.display='none';btn.textContent='👁️ Show Inputs';}});}}catch(e){}})();
 
 /* =======================================================
    INIT
