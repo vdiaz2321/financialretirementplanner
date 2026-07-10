@@ -731,8 +731,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <button id="dashBtnNo"   class="view-btn"        onclick="toggleWife(false)">🚶 WITHOUT Spouse</button>
     </div>
     <div id="dashPrivToggleWrap" style="display:none;">
-      <button id="dashBtnPrivOn"  class="view-btn active" onclick="togglePrivate(true)">🎒 Private School ON</button>
-      <button id="dashBtnPrivOff" class="view-btn"        onclick="togglePrivate(false)">🚫 Private School OFF</button>
+      <button id="dashBtnPriv" class="view-btn active" onclick="togglePrivate(!showPrivate)">🎒 Private School: ON</button>
     </div>
     <div style="display:flex;flex-direction:column;gap:4px;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;">
       <div style="display:flex;align-items:center;gap:8px;">
@@ -1684,8 +1683,10 @@ function showGroup(g){
   if(nc)nc.classList.toggle('active',g==='cash');if(ni)ni.classList.toggle('active',g==='inv');if(ne)ne.classList.toggle('active',g==='edu');
   ['cash','re','inv','edu'].forEach(x=>{const s=document.getElementById('sl-'+x);if(s)s.classList.toggle('active',x===g);});
 }
-function toggleWife(state){showWife=state;const wrap=document.getElementById('cash-chart-wrap');const wasChart=wrap&&wrap.style.display==='block';runModel();['btnWith','dashBtnWith'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',state);});['btnNo','dashBtnNo'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',!state);});if(wasChart&&typeof showCashView==='function')showCashView('chart');}
-function togglePrivate(state){showPrivate=state;const wrap=document.getElementById('cash-chart-wrap');const wasChart=wrap&&wrap.style.display==='block';runModel();['btnPrivOn','dashBtnPrivOn'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',state);});['btnPrivOff','dashBtnPrivOff'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',!state);});if(wasChart&&typeof showCashView==='function')showCashView('chart');}
+function _snapScroll(){const ca=document.getElementById('cashflowArea');return {winY:window.scrollY,cfLeft:ca?ca.scrollLeft:0,cfTop:ca?ca.scrollTop:0};}
+function _restoreScroll(s){window.scrollTo(0,s.winY);const ca=document.getElementById('cashflowArea');if(ca){ca.scrollLeft=s.cfLeft;ca.scrollTop=s.cfTop;}}
+function toggleWife(state){const s=_snapScroll();showWife=state;const wrap=document.getElementById('cash-chart-wrap');const wasChart=wrap&&wrap.style.display==='block';runModel();['btnWith','dashBtnWith'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',state);});['btnNo','dashBtnNo'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',!state);});if(wasChart&&typeof showCashView==='function')showCashView('chart');_restoreScroll(s);}
+function togglePrivate(state){const s=_snapScroll();showPrivate=state;const wrap=document.getElementById('cash-chart-wrap');const wasChart=wrap&&wrap.style.display==='block';runModel();if(wasChart&&typeof showCashView==='function')showCashView('chart');_restoreScroll(s);}
 function fillYears(){
   const ps=document.getElementById('projStartYear'),pe=document.getElementById('projEndYear');
   if(ps)Y0=parseInt(ps.value)||2026;
@@ -2369,7 +2370,7 @@ function getOpen(id){return (window._detailStates&&window._detailStates[id]!==fa
 /* =======================================================
    SECTION GROUPS
    ======================================================= */
-function buildSectionGroups(){buildCashGroup();buildReGroup();buildInvGroup();buildEduGroup();renderPcsCompare();renderCharts();const dp=document.getElementById('dashPrivToggleWrap');if(dp){const has=window._cf&&window._cf.hasPrivSchoolData&&window._cf.hasPrivSchoolData();dp.style.display=has?'':'none';['dashBtnPrivOn'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',showPrivate);});['dashBtnPrivOff'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',!showPrivate);});}}
+function buildSectionGroups(){buildCashGroup();buildReGroup();buildInvGroup();buildEduGroup();renderPcsCompare();renderCharts();const dp=document.getElementById('dashPrivToggleWrap');if(dp){const has=window._cf&&window._cf.hasPrivSchoolData&&window._cf.hasPrivSchoolData();dp.style.display=has?'':'none';const db=document.getElementById('dashBtnPriv');if(db){db.classList.toggle('active',showPrivate);db.textContent=showPrivate?'🎒 Private School: ON':'🚫 Private School: OFF';}}}
 
 function gotoTownCompare(){
   if(typeof sideNavHousing==='function')sideNavHousing('result');
@@ -2532,8 +2533,7 @@ function buildCashGroup(){
   html+='<button id="btnWith" class="toggle-btn active" onclick="toggleWife(true)">WITH Spouse Income</button>';
   html+='<button id="btnNo" class="toggle-btn" onclick="toggleWife(false)">WITHOUT Spouse Income</button>';
   if(c.hasPrivSchoolData&&c.hasPrivSchoolData()){
-    html+=`<button id="btnPrivOn"  class="view-btn ${showPrivate?'active':''}" onclick="togglePrivate(true)">🎒 Private School ON</button>`;
-    html+=`<button id="btnPrivOff" class="view-btn ${!showPrivate?'active':''}" onclick="togglePrivate(false)">🚫 Private School OFF</button>`;
+    html+=`<button id="btnPriv" class="view-btn ${showPrivate?'active':''}" onclick="togglePrivate(!showPrivate)">🎒 Private School: ${showPrivate?'ON':'OFF'}</button>`;
   }
   html+='<span style="margin-left:auto;display:flex;gap:6px;"><button class="view-btn active" onclick="showCashView(\'table\')">📋 Table</button><button class="view-btn" onclick="showCashView(\'chart\')">📊 Chart</button></span>';
   html+='</div>';
