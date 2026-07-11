@@ -2440,11 +2440,11 @@ function runModel(){
   window._ctx={v,curYear,myAge,wAge,jbSell,proj,actual,actPct,capPaid,projWd,locked,projRet,useActuals,hasActual,retireYr,accCashFlow};
 
   (function(){
-    const cd={years:[],tsp:[],rothMe:[],rothWife:[],tax:[],sav:[],crypto:[],gold:[],netWorth:[],liquid:[],retire:[],annualSurplus:[]};
+    const cd={years:[],tsp:[],rothMe:[],rothWife:[],tax:[],sav:[],crypto:[],gold:[],netWorth:[],liquid:[],retire:[],homeEq:[],annualSurplus:[]};
     for(let y=Y0;y<=YEND;y++){
       const p=proj[y];if(!p)continue;
       cd.years.push(y);cd.tsp.push(p.Tsp||0);cd.rothMe.push(p.RothMe||0);cd.rothWife.push(p.RothWife||0);cd.tax.push(p.Tax||0);cd.sav.push(p.Sav||0);cd.crypto.push(p.Crypto||0);cd.gold.push(p.Gold||0);
-      const n=nw(y,showPrivateDash);cd.netWorth.push(n.netWithMort);cd.liquid.push(n.liquid);cd.retire.push(n.retire);
+      const n=nw(y,showPrivateDash);cd.netWorth.push(n.netWithMort);cd.liquid.push(n.liquid);cd.retire.push(n.retire);cd.homeEq.push(n.netWithMort-n.liquid-n.retire);
     }
     for(let y=Y0+1;y<=YEND;y++){
       const ip=incomeParts(y);
@@ -2818,8 +2818,8 @@ function buildInvGroup(){
       const t=chartTheme();
       new Chart(canvas,{type:'bar',data:{labels:chartYears,datasets:[
         {label:'Cumulative Contributions',data:chartContrib,backgroundColor:'rgba(74,114,168,0.6)',borderColor:'#4a72a8',borderWidth:1,borderRadius:3,order:2},
-        {label:'Projected Balance',data:chartBal,type:'line',borderColor:'#7b5ea7',backgroundColor:'rgba(123,94,167,0.08)',fill:true,tension:0.3,pointRadius:3,pointHitRadius:20,pointHoverRadius:6,borderWidth:2.5,order:1}
-      ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{color:t.legend,usePointStyle:true,pointStyle:'circle',padding:12,boxWidth:8,boxHeight:8}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)}}},scales:{x:{ticks:{maxRotation:45,color:t.tick},grid:{color:t.grid}},y:{ticks:{callback:val=>'$'+(val>=1e6?(val/1e6).toFixed(1)+'M':val>=1e3?(val/1e3).toFixed(0)+'K':val),color:t.tick},grid:{color:t.grid}}}}});
+        {label:'Projected Balance',data:chartBal,type:'line',borderColor:'#7b5ea7',backgroundColor:'rgba(123,94,167,0.08)',fill:true,tension:0.3,pointRadius:0,pointHitRadius:20,pointHoverRadius:6,borderWidth:2.5,order:1}
+      ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{color:t.legend,usePointStyle:true,pointStyle:'circle',padding:12,boxWidth:8,boxHeight:8}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)}}},scales:{x:{ticks:{maxRotation:45,color:t.tick},grid:{color:t.grid}},y:{ticks:{callback:val=>'$'+(val>=1e6?(val/1e6).toFixed(1)+'M':val>=1e3?(val/1e3).toFixed(0)+'K':val),color:t.tick},grid:{color:t.grid}}}},plugins:[buildYearPlugin(chartYears)]});
     },0);
     return h;
   }
@@ -2868,6 +2868,60 @@ function buildInvGroup(){
    ======================================================= */
 function renderCharts(){if(typeof Chart==='undefined')return;renderInvChart();renderCashChart();renderNWChart();}
 function _destroyChart(id){if(typeof Chart==='undefined')return;const c=document.getElementById(id);if(!c)return;const ex=Chart.getChart(c);if(ex)ex.destroy();}
+
+/* Shared Chart.js plugin: milestone markers + current-year divider for any year-based chart.
+   Pass the chart's own labels array (years) so indices line up. */
+function buildYearPlugin(yearsArr){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  const gv=id=>{const e=document.getElementById(id);return e?parseInt(e.value)||0:0;};
+  const c=window._cf||{};
+  const milestones=[
+    {y:c.retireYr,label:'Retirement'},
+    {y:gv('tspWdYear'),label:'TSP W/D'},
+    {y:gv('ssMeYear'),label:'SS Start'},
+    {y:c.gsIncomeStart,label:'GS Start'},
+    {y:c.gsIncomeEnd,label:'GS End'}
+  ].filter(m=>m.y>0&&yearsArr.includes(m.y));
+  const curYr=parseInt((document.getElementById('currentYear')||{}).value)||0;
+  return {
+    id:'yearAnnotations',
+    beforeDatasetsDraw(chart){
+      const {ctx,chartArea,scales}=chart;if(!chartArea)return;
+      const idx=yearsArr.indexOf(curYr);
+      if(idx>0){
+        const x=scales.x.getPixelForValue(idx);
+        ctx.save();
+        ctx.fillStyle=dark?'rgba(255,255,255,0.045)':'rgba(0,0,0,0.035)';
+        ctx.fillRect(chartArea.left,chartArea.top,x-chartArea.left,chartArea.bottom-chartArea.top);
+        ctx.restore();
+      }
+    },
+    afterDatasetsDraw(chart){
+      const {ctx,chartArea,scales}=chart;if(!chartArea)return;
+      ctx.save();
+      ctx.font='600 10px system-ui,sans-serif';
+      ctx.textAlign='center';
+      milestones.forEach((m,i)=>{
+        const idx=yearsArr.indexOf(m.y);if(idx<0)return;
+        const x=scales.x.getPixelForValue(idx);
+        ctx.strokeStyle=dark?'rgba(255,255,255,0.35)':'rgba(0,0,0,0.3)';
+        ctx.setLineDash([4,4]);ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(x,chartArea.top+14);ctx.lineTo(x,chartArea.bottom);ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle=dark?'rgba(255,255,255,0.75)':'#555';
+        ctx.fillText(m.label,x,chartArea.top+(i%2?24:8));
+      });
+      const idx=yearsArr.indexOf(curYr);
+      if(idx>0){
+        const x=scales.x.getPixelForValue(idx);
+        ctx.strokeStyle=dark?'rgba(255,255,255,0.5)':'rgba(0,0,0,0.4)';
+        ctx.lineWidth=1.5;
+        ctx.beginPath();ctx.moveTo(x,chartArea.top);ctx.lineTo(x,chartArea.bottom);ctx.stroke();
+      }
+      ctx.restore();
+    }
+  };
+}
 
 function renderDebtChart(){
   if(typeof Chart==='undefined')return;
@@ -2927,7 +2981,7 @@ function renderInvChart(){
     {label:'Savings',data:cd.sav,backgroundColor:'#17a2b8',stack:'s'},
     {label:'Crypto',data:cd.crypto,backgroundColor:'#e67e22',stack:'s'},
     {label:'Gold',data:cd.gold,backgroundColor:'#d4a843',stack:'s'}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:t.legend,usePointStyle:true,pointStyle:'circle',padding:12,boxWidth:8,boxHeight:8}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),footer:items=>'Total: '+fmt(items.reduce((s,i)=>s+i.raw,0))}}},scales:{x:{stacked:true,ticks:{maxRotation:45,color:t.tick},grid:{color:t.grid}},y:{stacked:true,ticks:{callback:v=>'$'+(v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v),color:t.tick},grid:{color:t.grid}}}}});
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{color:t.legend,usePointStyle:true,pointStyle:'circle',padding:12,boxWidth:8,boxHeight:8}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),footer:items=>'Total: '+fmt(items.reduce((s,i)=>s+i.raw,0))}}},scales:{x:{stacked:true,ticks:{maxRotation:45,color:t.tick},grid:{color:t.grid}},y:{stacked:true,ticks:{callback:v=>'$'+(v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v),color:t.tick},grid:{color:t.grid}}}},plugins:[buildYearPlugin(cd.years)]});
   renderInvAccountLegend();
 }
 function renderInvAccountLegend(){
@@ -2966,7 +3020,7 @@ function renderCashChart(){
   const labels=cd.annualSurplus.map(d=>d.y);
   const data=cd.annualSurplus.map(d=>d.v);
   const colors=data.map(v=>v>=0?'rgba(45,158,84,0.75)':'rgba(192,57,43,0.75)');
-  new Chart(canvas,{type:'bar',data:{labels,datasets:[{label:'Annual Surplus',data,backgroundColor:colors,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>(ctx.raw>=0?'Surplus: ':'Deficit: ')+fmt(Math.abs(ctx.raw))}}},scales:{x:{ticks:{maxRotation:45,color:t.tick},grid:{color:t.grid}},y:{ticks:{callback:v=>'$'+(v>=1e3?(v/1e3).toFixed(0)+'K':v>=0?v.toFixed(0):'('+Math.abs(v/1e3).toFixed(0)+'K)'),color:t.tick},grid:{color:t.grid}}}}});
+  new Chart(canvas,{type:'bar',data:{labels,datasets:[{label:'Annual Surplus',data,backgroundColor:colors,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>(ctx.raw>=0?'Surplus: ':'Deficit: ')+fmt(Math.abs(ctx.raw))}}},scales:{x:{ticks:{maxRotation:45,color:t.tick},grid:{color:t.grid}},y:{ticks:{callback:v=>'$'+(v>=1e3?(v/1e3).toFixed(0)+'K':v>=0?v.toFixed(0):'('+Math.abs(v/1e3).toFixed(0)+'K)'),color:t.tick},grid:{color:t.grid}}}},plugins:[buildYearPlugin(labels)]});
 }
 function renderNWChart(){
   if(typeof Chart==='undefined')return;
@@ -2974,11 +3028,25 @@ function renderNWChart(){
   _destroyChart('chart-nw');
   const cd=window._chartData;if(!cd)return;
   const t=chartTheme();
-  new Chart(canvas,{type:'line',data:{labels:cd.years,datasets:[
-    {label:'Total Net Worth',data:cd.netWorth,borderColor:'#4a72a8',backgroundColor:'rgba(74,114,168,0.1)',fill:true,tension:0.3,pointRadius:3,pointHitRadius:20,pointHoverRadius:6},
-    {label:'Liquid Cash',data:cd.liquid,borderColor:'#2d9e54',backgroundColor:'transparent',tension:0.3,pointRadius:3,pointHitRadius:20,pointHoverRadius:6,borderDash:[4,4]},
-    {label:'Retirement Accts',data:cd.retire,borderColor:'#d4a843',backgroundColor:'transparent',tension:0.3,pointRadius:3,pointHitRadius:20,pointHoverRadius:6}
-  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{color:t.legend,usePointStyle:true,pointStyle:'circle',padding:14,boxWidth:8,boxHeight:8}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+(v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v),color:t.tick},grid:{color:t.grid}},x:{ticks:{color:t.tick},grid:{color:t.grid}}}}});
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  const hasHome=cd.homeEq.some(x=>Math.abs(x)>1);
+  const datasets=[
+    {label:'Liquid Cash',data:cd.liquid,borderColor:'#2d9e54',backgroundColor:dark?'rgba(45,158,84,0.35)':'rgba(45,158,84,0.45)',fill:true,stack:'nw',tension:0.3,borderWidth:2,pointRadius:0,pointHitRadius:20,pointHoverRadius:5},
+    {label:'Retirement Accts',data:cd.retire,borderColor:'#d4a843',backgroundColor:dark?'rgba(212,168,67,0.35)':'rgba(212,168,67,0.45)',fill:true,stack:'nw',tension:0.3,borderWidth:2,pointRadius:0,pointHitRadius:20,pointHoverRadius:5}
+  ];
+  if(hasHome)datasets.push({label:'Home Equity',data:cd.homeEq,borderColor:'#4a72a8',backgroundColor:dark?'rgba(74,114,168,0.35)':'rgba(74,114,168,0.45)',fill:true,stack:'nw',tension:0.3,borderWidth:2,pointRadius:0,pointHitRadius:20,pointHoverRadius:5});
+  const nwPlugin=buildYearPlugin(cd.years);
+  new Chart(canvas,{type:'line',data:{labels:cd.years,datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{color:t.legend,usePointStyle:true,pointStyle:'circle',padding:14,boxWidth:8,boxHeight:8}},tooltip:{callbacks:{
+    label:c2=>c2.dataset.label+': '+fmt(c2.raw),
+    footer:items=>{
+      if(!items.length)return '';
+      const i=items[0].dataIndex;
+      const lines=['Total Net Worth: '+fmt(cd.netWorth[i])];
+      const s=cd.annualSurplus.find(d=>d.y===cd.years[i]);
+      if(s)lines.push((s.v>=0?'Year Surplus: ':'Year Deficit: ')+fmt(Math.abs(s.v)));
+      return lines;
+    }
+  }}},scales:{y:{stacked:true,ticks:{callback:v=>'$'+(v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v),color:t.tick},grid:{color:t.grid}},x:{stacked:true,ticks:{color:t.tick},grid:{color:t.grid}}}},plugins:[nwPlugin]});
   renderAccountLegend();
 }
 function renderAccountLegend(){
