@@ -313,8 +313,8 @@ button.danger:hover { background: #922b21; color: #fff; }
   border: 1.5px solid var(--border-md);
 }
 .toggle-btn.active {
-  background: var(--tog-on-bg); color: var(--tog-on-t);
-  border-color: var(--tog-on-bg);
+  background: var(--blue); color: #fff;
+  border-color: var(--blue);
 }
 .tab-btn:hover:not(.active) { background: var(--blue); color: #fff; box-shadow: var(--sh-sm); }
 .nav-btn:hover:not(.active) { background: var(--blue); color: #fff; box-shadow: var(--sh-sm); }
@@ -778,7 +778,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
     </div>
     <div class="grid4">
       <div style="display:flex;flex-direction:column;gap:16px;">
-      <details class="schoolblock inline-summary" open id="det_main_people" style="border-left:4px solid var(--blue);">
+      <details class="schoolblock inline-summary" id="det_main_people" style="border-left:4px solid var(--blue);">
         <summary><h3>👥 People &amp; Timeline</h3></summary>
         <label>Your Current Age</label><input type="number" id="age" value="45">
         <label>Spouse's Current Age</label><input type="number" id="wifeAge" value="36">
@@ -790,7 +790,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       </details>
       </div>
       <div style="display:flex;flex-direction:column;gap:16px;">
-      <details class="schoolblock inline-summary" open id="det_main_income" style="border-left:4px solid var(--green);">
+      <details class="schoolblock inline-summary" id="det_main_income" style="border-left:4px solid var(--green);">
         <summary><h3>💰 Income &amp; Pay</h3></summary>
         <label>Service Component</label>
         <select id="svcComp" onchange="toggleSvcCompFields();runModel();autoSave();">
@@ -819,14 +819,14 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Promo #2 End Year</label><input type="number" id="promo2End" value="">
         </details>
       </details>
-      <details class="schoolblock inline-summary" open id="det_main_spouse" style="border-left:4px solid var(--purple);">
+      <details class="schoolblock inline-summary" id="det_main_spouse" style="border-left:4px solid var(--purple);">
         <summary><h3>👥 Spouse Income</h3></summary>
         <label>Spouse Net Monthly Income (After Tax)</label><input type="number" id="wifeManual" value="">
         <label>Spouse Income START Year</label><input type="number" id="wifeStartYear" value="">
         <label>Spouse Income END Year</label><input type="number" id="wifeEndYear" value="">
       </details>
       </div>
-      <details class="schoolblock inline-summary" open id="det_main_mil" style="border-left:4px solid var(--red);">
+      <details class="schoolblock inline-summary" id="det_main_mil" style="border-left:4px solid var(--red);">
         <summary><h3>🪖 Military Retirement</h3></summary>
         <label>Retirement System</label>
         <select id="retSystem">
@@ -857,7 +857,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <option value="no">No</option>
         </select>
       </details>
-      <details class="schoolblock inline-summary" open id="det_main_post" style="border-left:4px solid #b87333;">
+      <details class="schoolblock inline-summary" id="det_main_post" style="border-left:4px solid #b87333;">
         <summary><h3>🏛️ GS / Federal Civilian Job</h3></summary>
         <label>GS Annual Salary (Gross)</label><input type="number" id="gsGross" value="">
         <label>Federal Tax % on GS Income</label><input type="number" id="gsFedTax" value="22" step="0.5">
@@ -868,7 +868,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
     </div>
 
     <div class="grid4" style="margin-top:14px;">
-      <details class="schoolblock inline-summary" open id="det_main_exp1" style="border-left:4px solid var(--purple);">
+      <details class="schoolblock inline-summary" id="det_main_exp1" style="border-left:4px solid var(--purple);">
         <summary><h3>Monthly Expenses</h3></summary>
         <label>Bills Total /mo</label><input type="number" id="exp1Bills" value="">
         <label>Discretionary Total /mo</label><input type="number" id="exp1Disc" value="">
@@ -888,7 +888,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Expected Inflation to Expenses % #2</label><input type="number" id="exp2Inflation" value="2.5" step="0.1">
         </details>
       </details>
-      <details class="schoolblock inline-summary" open id="det_main_health" style="border-left:4px solid var(--gold);">
+      <details class="schoolblock inline-summary" id="det_main_health" style="border-left:4px solid var(--gold);">
         <summary><h3>🏥 Healthcare</h3></summary>
         <details id="det_health_tricare" style="margin-top:8px;border:1px dashed var(--border);border-radius:6px;padding:6px 10px;">
           <summary style="cursor:pointer;font-weight:600;font-size:12px;">🎖️ Tricare</summary>
@@ -930,7 +930,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           </details>
         </details>
       </details>
-      <details class="schoolblock inline-summary" open id="det_main_lifeins" style="border-left:4px solid var(--gold);">
+      <details class="schoolblock inline-summary" id="det_main_lifeins" style="border-left:4px solid var(--gold);">
         <summary><h3>🛡️ Life Insurance</h3></summary>
         <div style="font-size:10px;color:var(--text-3);margin-bottom:6px;">VGLI / Term / Whole — treated as a monthly healthcare-adjacent expense. Leave Start Year blank to skip. Only VGLI grows with inflation each year (age-band cost creep); Term and Whole stay level.</div>
         <label>Policy Type</label>
@@ -950,7 +950,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Premium #2 END Year</label><input type="number" id="lifeInsEnd2" value="">
         </details>
       </details>
-      <details class="schoolblock inline-summary" open id="det_main_ss" style="border-left:4px solid var(--purple);">
+      <details class="schoolblock inline-summary" id="det_main_ss" style="border-left:4px solid var(--purple);">
         <summary><h3>🏛️ Social Security <span style="font-size:11px;color:var(--text-2);font-weight:normal;">(Retire Income)</span></h3></summary>
         <label>YOUR SS Monthly Benefit</label><input type="number" id="ssMe" value="">
         <label>YOUR SS Start Year</label><input type="number" id="ssMeYear" value="">
@@ -968,7 +968,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
     </div>
     <div style="margin-bottom:14px;font-style:italic;color:var(--text-2);font-size:13px;">Use these sections to manage each location's housing, utility, and BAH inputs.</div>
 
-    <details class="schoolblock inline-summary" open id="det_pcs1">
+    <details class="schoolblock inline-summary" id="det_pcs1">
       <summary><h3>🏠 PCS #1</h3></summary>
       <div class="grid3">
         <div>
@@ -1029,7 +1029,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       </div>
     </details>
 
-    <details class="schoolblock inline-summary" open id="det_pcs2">
+    <details class="schoolblock inline-summary" id="det_pcs2">
       <summary><h3>🏠 PCS #2</h3></summary>
       <div class="grid3">
         <div>
@@ -1090,7 +1090,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       </div>
     </details>
 
-    <details class="schoolblock inline-summary" open id="det_ret_home">
+    <details class="schoolblock inline-summary" id="det_ret_home">
       <summary><h3>🏡 Retirement Home</h3></summary>
       <div class="grid3" style="grid-template-columns:1fr 1fr;">
         <div>
@@ -1178,7 +1178,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <button onclick="toggleAllDetails('pane2',false)">▲ Collapse All</button>
     </div>
     <div class="grid4">
-      <details class="schoolblock inline-summary" open id="det_inv_retcon" style="border-left:4px solid var(--blue);">
+      <details class="schoolblock inline-summary" id="det_inv_retcon" style="border-left:4px solid var(--blue);">
           <summary><h3>📥 Retirement Contributions<br><a href="https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-401k-and-profit-sharing-plan-contribution-limits" target="_blank" style="font-size:10px;color:var(--blue);font-weight:400;">IRS Contribution Limits</a></h3></summary>
           <label>TSP Monthly (Active)</label><input type="number" id="tspContribAD" value="">
           <label>TSP STOP Year</label><input type="number" id="tspStopYear" value="2033">
@@ -1189,7 +1189,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>SPOUSE Roth IRA Monthly</label><input type="number" id="rothWife" value="">
           <label>SPOUSE Roth STOP Year</label><input type="number" id="rothWifeStop" value="2048">
         </details>
-        <details class="schoolblock inline-summary" open id="det_inv_tsp" style="border-left:4px solid var(--purple);">
+        <details class="schoolblock inline-summary" id="det_inv_tsp" style="border-left:4px solid var(--purple);">
           <summary><h3>💵 TSP &amp; Roth Projections</h3></summary>
           <label>Current TSP Balance (Roth/Traditional/401K)</label><input type="number" id="tspBal" value="" readonly data-locked-tip="Add balances under Probate Log Section" style="background:var(--surface-2);cursor:not-allowed;">
           <label>TSP Avg Annual Return %</label><input type="number" id="tspRet" value="7.5" step="0.1">
@@ -1199,13 +1199,13 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>SPOUSE Current Roth Balance</label><input type="number" id="rothBalWife" value="" readonly data-locked-tip="Add balances under Probate Log Section" style="background:var(--surface-2);cursor:not-allowed;">
           <label>Roth Avg Annual Return %</label><input type="number" id="rothRet" value="7.5" step="0.1">
         </details>
-        <details class="schoolblock inline-summary" open id="det_inv_gs" style="border-left:4px solid var(--green);">
+        <details class="schoolblock inline-summary" id="det_inv_gs" style="border-left:4px solid var(--green);">
           <summary><h3>🏛️ GS Job TSP</h3></summary>
           <label>GS Monthly TSP Contribution</label><input type="number" id="gsTsp" value="">
           <label>GS TSP Start Year</label><input type="number" id="gsTspStart" value="2034">
           <label>GS TSP End Year</label><input type="number" id="gsTspEnd" value="2040">
         </details>
-        <details class="schoolblock inline-summary" open id="det_inv_wd" style="border-left:4px solid var(--red);">
+        <details class="schoolblock inline-summary" id="det_inv_wd" style="border-left:4px solid var(--red);">
           <summary><h3>📤 Retirement Withdrawals</h3></summary>
           <div style="font-size:11px;color:var(--text-3);margin-bottom:6px;padding:6px 8px;background:var(--surface-2);border-left:3px solid var(--blue);border-radius:4px;">
             📌 <b>RMDs auto-enforced:</b> At age 73+, the IRS requires minimum TSP/Traditional withdrawals. If your entered monthly amount is below the RMD, it's automatically increased using the IRS Uniform Lifetime Table. Roth IRAs are exempt (no RMDs).
@@ -1222,7 +1222,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
       <div style="grid-column:1/-1;background:var(--note-bg);border-left:4px solid var(--blue);padding:10px 14px;margin:6px 0 8px;border-radius:4px;font-size:12px;line-height:1.5;">
         💡 <b>Tip:</b> To enter or update your account balances (Savings, Taxable, TSP, Roth, Crypto, Gold), use the <a href="javascript:void(0)" onclick="sideNav('input','P')" style="color:var(--blue);font-weight:600;text-decoration:underline;">📒 Probate Log</a>. Balances below with a gray background are locked and auto-populated from that tab.
       </div>
-      <details class="schoolblock inline-summary" open id="det_in_tax" style="border-left:4px solid var(--green);">
+      <details class="schoolblock inline-summary" id="det_in_tax" style="border-left:4px solid var(--green);">
           <summary><h3>📈 Taxable Stock</h3></summary>
           <label>Current Amount Invested</label><input type="number" id="taxBal" value="" readonly data-locked-tip="Add balances under Probate Log Section" style="background:var(--surface-2);cursor:not-allowed;">
           <label>Monthly Contribution</label><input type="number" id="taxMonthly" value="">
@@ -1234,7 +1234,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Withdrawal START Year</label><input type="number" id="taxWdYear" value="2045">
           <label>Capital Gains Tax % (Taxable)</label><input type="number" id="taxCapGains" value="15" step="0.5">
         </details>
-        <details class="schoolblock inline-summary" open id="det_inv_sav" style="border-left:4px solid var(--gold);">
+        <details class="schoolblock inline-summary" id="det_inv_sav" style="border-left:4px solid var(--gold);">
           <summary><h3>💰 Savings / Cash</h3></summary>
           <label>Current Savings Balance</label><input type="number" id="savBal" value="" readonly data-locked-tip="Add balances under Probate Log Section" style="background:var(--surface-2);cursor:not-allowed;">
           <label>Monthly Savings Contribution</label><input type="number" id="savMonthly" value="">
@@ -1250,7 +1250,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Start Year</label><input type="number" id="savWdYear2" value="">
           <label>End Year</label><input type="number" id="savWdEnd2" value="">
         </details>
-      <details class="schoolblock inline-summary" open id="det_in_cryp" style="border-left:4px solid var(--purple);">
+      <details class="schoolblock inline-summary" id="det_in_cryp" style="border-left:4px solid var(--purple);">
           <summary><h3><span style="color:var(--gold);">₿</span> Crypto</h3></summary>
           <label>Current Crypto Balance</label><input type="number" id="cryptoBal" value="" readonly data-locked-tip="Add balances under Probate Log Section" style="background:var(--surface-2);cursor:not-allowed;">
           <label>Monthly Contribution</label><input type="number" id="cryptoMonthly" value="">
@@ -1262,7 +1262,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Withdrawal START Year</label><input type="number" id="cryptoWdYear" value="">
           <label>Capital Gains Tax % (Crypto)</label><input type="number" id="cryptoCapGains" value="15" step="0.5">
         </details>
-        <details class="schoolblock inline-summary" open id="det_in_gold" style="border-left:4px solid #b87333;">
+        <details class="schoolblock inline-summary" id="det_in_gold" style="border-left:4px solid #b87333;">
           <summary><h3>🪙 Gold / Silver</h3></summary>
           <label>Current Asset Value</label><input type="number" id="goldBal" value="" readonly data-locked-tip="Add balances under Probate Log Section" style="background:var(--surface-2);cursor:not-allowed;">
           <label>Monthly Contribution</label><input type="number" id="goldMonthly" value="">
@@ -1290,7 +1290,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
     </div>
     <div class="grid3">
       <!-- CHILD 1 -->
-      <details class="schoolblock inline-summary" open id="det_c1" style="border-left:4px solid var(--blue);">
+      <details class="schoolblock inline-summary" id="det_c1" style="border-left:4px solid var(--blue);">
         <summary><h3>Child 1</h3></summary>
         <div style="display:flex;gap:4px;margin-bottom:6px;"><button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="event.stopPropagation();document.querySelectorAll('#det_c1 details').forEach(d=>d.open=true)">▼ Expand</button><button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="event.stopPropagation();document.querySelectorAll('#det_c1 details').forEach(d=>d.open=false)">▲ Collapse</button></div>
         <details style="background:var(--surface-3);padding:8px;border-radius:6px;margin-bottom:8px;margin-top:8px;">
@@ -1329,7 +1329,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         </details>
       </details>
       <!-- CHILD 2 -->
-      <details class="schoolblock inline-summary" open id="det_c2" style="border-left:4px solid var(--green);">
+      <details class="schoolblock inline-summary" id="det_c2" style="border-left:4px solid var(--green);">
         <summary><h3>Child 2</h3></summary>
         <div style="display:flex;gap:4px;margin-bottom:6px;"><button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="event.stopPropagation();document.querySelectorAll('#det_c2 details').forEach(d=>d.open=true)">▼ Expand</button><button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="event.stopPropagation();document.querySelectorAll('#det_c2 details').forEach(d=>d.open=false)">▲ Collapse</button></div>
         <details style="background:var(--surface-3);padding:8px;border-radius:6px;margin-bottom:8px;margin-top:8px;">
@@ -1368,7 +1368,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         </details>
       </details>
       <!-- CHILD 3 -->
-      <details class="schoolblock inline-summary" open id="det_c3" style="border-left:4px solid var(--purple);">
+      <details class="schoolblock inline-summary" id="det_c3" style="border-left:4px solid var(--purple);">
         <summary><h3>Child 3</h3></summary>
         <div style="display:flex;gap:4px;margin-bottom:6px;"><button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="event.stopPropagation();document.querySelectorAll('#det_c3 details').forEach(d=>d.open=true)">▼ Expand</button><button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="event.stopPropagation();document.querySelectorAll('#det_c3 details').forEach(d=>d.open=false)">▲ Collapse</button></div>
         <details style="background:var(--surface-3);padding:8px;border-radius:6px;margin-bottom:8px;margin-top:8px;">
@@ -1442,7 +1442,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
     </details>
 
     <!-- BANK ACCOUNTS -->
-    <details class="schoolblock inline-summary" open id="det_pb_bank" style="border-left:4px solid var(--blue);">
+    <details class="schoolblock inline-summary" id="det_pb_bank" style="border-left:4px solid var(--blue);">
       <summary><h3>🏦 Bank Accounts <span id="pb_bank_total" style="font-weight:normal;font-size:13px;color:var(--text-2);margin-left:8px;">Total: $0</span></h3></summary>
       <div style="overflow-x:auto;">
         <table style="width:100%;border-collapse:collapse;font-size:12px;" id="pb_bank_table">
@@ -1463,7 +1463,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
     </details>
 
     <!-- PERSONAL INVESTMENTS -->
-    <details class="schoolblock inline-summary" open id="det_pb_inv" style="border-left:4px solid var(--green);margin-top:12px;">
+    <details class="schoolblock inline-summary" id="det_pb_inv" style="border-left:4px solid var(--green);margin-top:12px;">
       <summary><h3>📈 Personal Investments <span id="pb_inv_total" style="font-weight:normal;font-size:13px;color:var(--text-2);margin-left:8px;">Total: $0</span></h3></summary>
       <div style="overflow-x:auto;">
         <table style="width:100%;border-collapse:collapse;font-size:12px;" id="pb_inv_table">
@@ -1484,7 +1484,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
     </details>
 
     <!-- PENSION PLANS -->
-    <details class="schoolblock inline-summary" open id="det_pb_pension" style="border-left:4px solid var(--purple);margin-top:12px;">
+    <details class="schoolblock inline-summary" id="det_pb_pension" style="border-left:4px solid var(--purple);margin-top:12px;">
       <summary><h3>🏛️ Pension Plans <span id="pb_pension_total" style="font-weight:normal;font-size:13px;color:var(--text-2);margin-left:8px;">Total: $0</span></h3></summary>
       <div style="overflow-x:auto;">
         <table style="width:100%;border-collapse:collapse;font-size:12px;" id="pb_pension_table">
@@ -1528,7 +1528,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="document.querySelectorAll('#det_cc1,#det_cc2,#det_cc3').forEach(d=>d.open=false)">▲ Collapse</button>
       </div>
       <div class="grid3">
-        <details class="schoolblock inline-summary" open id="det_cc1" style="border-left:4px solid var(--blue);">
+        <details class="schoolblock inline-summary" id="det_cc1" style="border-left:4px solid var(--blue);">
           <summary><h3>💳 Credit Card #1</h3></summary>
           <label>Name / Brand</label><input type="text" id="cc1Name" value="Visa">
           <label>Balance</label><input type="number" id="cc1Bal" value="">
@@ -1538,7 +1538,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Start Year</label><input type="number" id="cc1Start" value="2027">
           <label>End Year</label><input type="number" id="cc1End" value="2030">
         </details>
-        <details class="schoolblock inline-summary" open id="det_cc2" style="border-left:4px solid var(--purple);">
+        <details class="schoolblock inline-summary" id="det_cc2" style="border-left:4px solid var(--purple);">
           <summary><h3>💳 Credit Card #2</h3></summary>
           <label>Name / Brand</label><input type="text" id="cc2Name" value="Amex">
           <label>Balance</label><input type="number" id="cc2Bal" value="">
@@ -1548,7 +1548,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Start Year</label><input type="number" id="cc2Start" value="2027">
           <label>End Year</label><input type="number" id="cc2End" value="2030">
         </details>
-        <details class="schoolblock inline-summary" open id="det_cc3" style="border-left:4px solid var(--green);">
+        <details class="schoolblock inline-summary" id="det_cc3" style="border-left:4px solid var(--green);">
           <summary><h3>💳 Credit Card #3</h3></summary>
           <label>Name / Brand</label><input type="text" id="cc3Name" value="">
           <label>Balance</label><input type="number" id="cc3Bal" value="">
@@ -1565,7 +1565,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
         <button style="font-size:10px;padding:2px 6px;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--surface-2);color:var(--text-2);" onclick="document.querySelectorAll('#det_car1,#det_car2,#det_loan1').forEach(d=>d.open=false)">▲ Collapse</button>
       </div>
       <div class="grid3">
-        <details class="schoolblock inline-summary" open id="det_car1" style="border-left:4px solid var(--gold);">
+        <details class="schoolblock inline-summary" id="det_car1" style="border-left:4px solid var(--gold);">
           <summary><h3>🚗 Car Loan #1</h3></summary>
           <label>Name / Vehicle</label><input type="text" id="car1Name" value="Vehicle 1">
           <label>Balance</label><input type="number" id="car1Bal" value="">
@@ -1575,7 +1575,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Start Year</label><input type="number" id="car1Start" value="2027">
           <label>End Year</label><input type="number" id="car1End" value="2032">
         </details>
-        <details class="schoolblock inline-summary" open id="det_car2" style="border-left:4px solid var(--red);">
+        <details class="schoolblock inline-summary" id="det_car2" style="border-left:4px solid var(--red);">
           <summary><h3>🚗 Car Loan #2</h3></summary>
           <label>Name / Vehicle</label><input type="text" id="car2Name" value="">
           <label>Balance</label><input type="number" id="car2Bal" value="">
@@ -1585,7 +1585,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           <label>Start Year</label><input type="number" id="car2Start" value="2027">
           <label>End Year</label><input type="number" id="car2End" value="2032">
         </details>
-        <details class="schoolblock inline-summary" open id="det_loan1" style="border-left:4px solid #b87333;">
+        <details class="schoolblock inline-summary" id="det_loan1" style="border-left:4px solid #b87333;">
           <summary><h3>📋 General Loan</h3></summary>
           <label>Name</label><input type="text" id="loanName" value="">
           <label>Balance</label><input type="number" id="loanBal" value="">
@@ -2047,7 +2047,7 @@ function autoLoad(){
     if(data.__actuals)Object.keys(data.__actuals).forEach(k=>{const el=document.getElementById(k);if(el)el.value=data.__actuals[k];});
     if(data.__probate)loadProbateData(data.__probate);
     if(data.__townSel){const tr=document.getElementById('townSel'+data.__townSel);if(tr)tr.checked=true;}
-    if(data.__details){window._detailStates=data.__details;Object.keys(data.__details).forEach(k=>{if(k==='det_actuals')return;const el=document.getElementById(k);if(el)el.open=data.__details[k];});}
+    if(data.__details){window._detailStates=data.__details;if(data.__details.det_actuals!==undefined){const el=document.getElementById('det_actuals');if(el)el.open=data.__details.det_actuals;}}
     return true;
   }catch(e){return false;}
 }
@@ -3335,7 +3335,7 @@ function sideNav(type,id){
   }
 }
 
-function toggleAllDetails(paneId,open){document.querySelectorAll('#'+paneId+' details').forEach(d=>{d.open=open;});}
+function toggleAllDetails(paneId,open){const pane=document.getElementById(paneId);if(!pane)return;pane.querySelectorAll('details.inline-summary').forEach(d=>{d.open=open;});pane.querySelectorAll('details:not(.inline-summary)').forEach(d=>{d.open=false;});}
 function toggleCoreInputs(){const body=document.getElementById('det_core_body'),btn=document.getElementById('btnHideInputs');if(!body||!btn)return;const hidden=body.style.display==='none';body.style.display=hidden?'':'none';btn.textContent=hidden?'👁️ Hide Inputs':'👁️ Show Inputs';}
 try{localStorage.removeItem('frp_hideInputs');}catch(e){}
 
