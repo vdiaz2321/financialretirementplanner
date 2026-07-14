@@ -3253,8 +3253,6 @@ function sideNavHousing(from){
     document.getElementById('sl-re')?.classList.add('active');
   }else{
     sideNav('result','re');
-    if(typeof showTab==='function')showTab('H');
-    document.getElementById('sl-H')?.classList.add('active');
   }
 }
 
@@ -3265,8 +3263,6 @@ function sideNavMainData(from){
     document.getElementById('sl-cash')?.classList.add('active');
   }else{
     sideNav('result','cash');
-    if(typeof showTab==='function')showTab(1);
-    document.getElementById('sl-1')?.classList.add('active');
   }
 }
 
@@ -3277,8 +3273,6 @@ function sideNavInvestments(from){
     document.getElementById('sl-inv')?.classList.add('active');
   }else{
     sideNav('result','inv');
-    if(typeof showTab==='function')showTab(2);
-    document.getElementById('sl-2')?.classList.add('active');
   }
 }
 
@@ -3289,8 +3283,6 @@ function sideNavEducation(from){
     document.getElementById('sl-edu')?.classList.add('active');
   }else{
     sideNav('result','edu');
-    if(typeof showTab==='function')showTab(3);
-    document.getElementById('sl-3')?.classList.add('active');
   }
 }
 
@@ -3302,8 +3294,6 @@ function sideNavDebt(from){
     const d=document.getElementById('det_debtpayoff');if(d)d.open=true;
   }else{
     sideNav('result','cash');
-    if(typeof showTab==='function')showTab(5);
-    document.getElementById('sl-5')?.classList.add('active');
     const d=document.getElementById('det_debtpayoff');
     if(d){d.open=true;setTimeout(()=>{const bar=document.querySelector('.stickybar');const off=bar?bar.offsetHeight+10:60;window.scrollTo({top:d.getBoundingClientRect().top+window.scrollY-off,behavior:'smooth'});},60);}
   }
