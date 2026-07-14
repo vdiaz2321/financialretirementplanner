@@ -70,8 +70,70 @@ Everything lives in one `<script>` block at the bottom of `index.html`. The app 
 
 The Retirement System selector (`retSystem`: `high3`/`brs`/`redux`) drives a live auto-calculator: if `yos` (years of service), `yosMonths`, and `high3Pay` (average monthly base pay) are filled in, `runModel()` overwrites `retGross` (Retirement GROSS Annual) using `high3Pay × 12 × multiplier × (yos + yosMonths/12)`, where multiplier is 2.5% for High-3 and 2.0% for BRS/REDUX — matching the official DFAS High-3 calculator's fractional-year-of-service formula. If `yos`/`high3Pay` are left blank, `retGross` is left untouched, preserving manual entries from before this calculator existed.
 
+### Details open/close behavior
+
+- All Core Input `<details>` elements **do NOT have the `open` attribute** in HTML — they load collapsed by default on every page load, regardless of last saved state.
+- `autoLoad()` intentionally skips restoring `__details` state (except for `det_actuals`) so sections always start collapsed.
+- `toggleAllDetails(paneId, open)` only targets `details.inline-summary` (the top-level section cards). Nested sub-toggles (`det_income_promos`, `det_mil_other`, `det_health_tricare/med/dental` and their `*2` rate-change variants, `det_main_exp2`, `det_lifeins_rate2`) are always forced closed by Expand/Collapse All and only open when the user clicks them directly.
+
+### Toggle button colors
+
+- `.toggle-btn.active` (WITH/WITHOUT Spouse buttons in Cash Flow and elsewhere) uses `background: var(--blue); color: #fff` to match `.view-btn.active`. All active toggle buttons throughout the app are now consistently blue.
+
+### Charts (Results sections)
+
+All time-series charts use a shared `buildYearPlugin(yearsArr)` helper that draws:
+- A shaded region for years before the current year
+- A solid vertical line at the current year
+- Dashed milestone lines (Retirement, TSP W/D, SS Start, GS Start/End)
+
+Charts enhanced: Net Worth (stacked area: Liquid / Retirement Accts / Home Equity), Investments composition (stacked bar), Annual Surplus bar, and per-asset detail charts (Taxable, Crypto, Gold). Points are hidden (`pointRadius:0`) except on hover.
+
+### Sidebar layout
+
+Left sidebar Core Inputs order: Main Data → Housing & Real Estate → Probate Log → Investments/Savings → Education → Debt. Probate Log sits above Investments/Savings because balances flow from Probate Log into the locked Investments/Savings fields.
+
+Investments/Savings sidebar links are labeled "Investments/Savings" (not just "Investments") in both Core Inputs and Results sections.
+
+### Locked Investments/Savings balance fields
+
+The 7 balance fields (`tspBal`, `rothBalMe`, `rothBalWife`, `taxBal`, `savBal`, `cryptoBal`, `goldBal`) in `pane2` are `readonly` with `data-locked-tip="Add balances under Probate Log Section"` and `background: var(--surface-2)`. A custom JS tooltip (`initSbTooltip` IIFE, reusing `#sb-tooltip`) shows on hover/focus — no native `title` attribute (that caused a duplicate tooltip bug).
+
+`syncProbateBalances()` sets these fields from Probate Log totals and also reapplies the `data-locked-tip` attribute and gray background.
+
+### Probate Log banner
+
+The "📒 How the Probate Log works" `<details>` at the top of `paneP` is default-closed. It contains three color-coded cards (blue=Bank→Savings/Cash, green=Personal Investments→Taxable/Crypto/Gold/Savings, purple=Pension Plans→TSP & Roth) explaining which Probate Log sections flow into which Investments tab fields.
+
+### Main Data grid structure (pane1)
+
+Two `<div class="grid4">` rows:
+
+**Row 1:**
+- Col 1: `det_main_people` — People & Timeline (ages, retirement month/year, projection start/end year)
+- Col 2 (flex column): `det_main_income` (Income & Pay, with nested `det_income_promos` for promotions) + `det_main_spouse` (Spouse Income) stacked
+- Col 3: `det_main_mil` (Military Retirement, with nested `det_mil_other` for VA Disability & Other Net Monthly)
+- Col 4: `det_main_post` (GS / Federal Civilian Job)
+
+**Row 2:**
+- Col 1: `det_main_exp1` (Monthly Expenses, with nested `det_main_exp2` Rate Change)
+- Col 2: `det_main_health` (Healthcare — three nested sub-toggles: `det_health_tricare`, `det_health_med`, `det_health_dental`, each with their own `*2` Rate Change nested inside)
+- Col 3: `det_main_lifeins` (Life Insurance, with nested `det_lifeins_rate2` Rate Change)
+- Col 4: `det_main_ss` (Social Security — Retire Income)
+
 ## Cross-session continuity
 
 The user works across two machines (PC and MacBook) — both have this repo cloned from GitHub. Sync is handled entirely via git: `git pull` before starting work, `git push` when done. No Google Drive sync needed.
 
 Cross-session context (what was done, what's next) is captured in `CLAUDE.md` (this file) and the Claude Code memory files at `~/.claude/projects/<encoded-path>/memory/project_context.md`. Check those at the start of a new session rather than re-deriving from code.
+
+## Recent changes (as of 2026-07-14, commit 8c8cc59)
+
+- All input sections now load collapsed by default (removed `open` from all `<details class="schoolblock inline-summary">` in HTML; `autoLoad()` no longer restores details state)
+- Expand/Collapse All buttons skip nested sub-toggles
+- Active toggle buttons (WITH/WITHOUT Spouse, etc.) now blue to match view buttons
+- Charts enhanced with stacked areas, milestone markers, current-year divider, decluttered points (shared `buildYearPlugin()`)
+- Probate Log banner redesigned as color-coded cards, default-closed
+- Investments/Savings balance fields locked (readonly + tooltip)
+- Main Data grid restructured: Spouse Income under Income & Pay column, Healthcare split into 3 independent sub-toggles (Tricare/Medical/Dental) each with nested Rate Change
+- Sidebar: Probate Log link moved above Investments/Savings; links renamed to "Investments/Savings"
