@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Financial and retirement planner for military and civilian families — model pensions, TSP, real estate, education, and year-by-year cash flow.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%22  %22>📊</text></svg>">
 <title>Financial and Retirement Planner</title>
 <style>
 /* Self-hosted Inter (variable, latin subset) — no third-party font requests */
@@ -969,15 +969,15 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
     <div style="margin-bottom:14px;font-style:italic;color:var(--text-2);font-size:13px;">Use these sections to manage each location's housing, utility, and BAH inputs.</div>
 
     <details class="schoolblock inline-summary" id="det_pcs1">
-      <summary><h3>🏠 PCS #1</h3></summary>
+      <summary><h3>🏠 Home #1</h3></summary>
       <div class="grid3">
         <div>
-          <b style="color:var(--text);">PCS #1 Housing</b>
+          <b style="color:var(--text);">Home #1</b>
           <label>Housing Type <span style="font-size:10px;color:var(--text-3);">(controls costs &amp; BAH)</span></label>
           <select id="jbHousingType" onchange="applyHousingVisibility();runModel();autoSave();">
             <option value="purchase">🏠 Purchase Home (mortgage)</option>
             <option value="rental">🏢 Rental (monthly rent)</option>
-            <option value="onbase">🪖 On-Base Housing (no BAH)</option>
+            <option value="onbase">🪖 On-Base Housing (no Utilities/BAH)</option>
           </select>
           <div id="jbRentBlock">
             <label>Monthly Rent</label><input type="number" id="jbRent" value="">
@@ -1002,7 +1002,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           </div>
         </div>
         <div style="border-left:3px solid var(--blue);padding-left:12px;">
-          <b style="color:var(--text);">⚡ PCS #1 Utilities &amp; Upkeep</b>
+          <b style="color:var(--text);">⚡ Home #1 Utilities &amp; Upkeep</b>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
             <div><label>START Year</label><input type="number" id="util1Start" value=""></div>
             <div><label>END Year</label><input type="number" id="util1End" value=""></div>
@@ -1017,7 +1017,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           </div>
         </div>
         <div style="border-left:3px solid var(--green);padding-left:12px;">
-          <b style="color:var(--text);">🪖 PCS #1 (BAH)</b>
+          <b style="color:var(--text);">🪖 Home #1 (BAH)</b>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
             <div><label>BAH #1 Start Year</label><input type="number" id="bah1Start" value=""></div>
             <div><label>BAH #1 End Year</label><input type="number" id="bah1End" value=""></div>
@@ -1030,15 +1030,15 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
     </details>
 
     <details class="schoolblock inline-summary" id="det_pcs2">
-      <summary><h3>🏠 PCS #2</h3></summary>
+      <summary><h3>🏠 Home #2</h3></summary>
       <div class="grid3">
         <div>
-          <b style="color:var(--text);">PCS #2 Housing</b>
+          <b style="color:var(--text);">Home #2</b>
           <label>Housing Type <span style="font-size:10px;color:var(--text-3);">(controls costs &amp; BAH)</span></label>
           <select id="pcs2HousingType" onchange="applyHousingVisibility();runModel();autoSave();">
             <option value="purchase">🏠 Purchase Home (mortgage)</option>
             <option value="rental">🏢 Rental (monthly rent)</option>
-            <option value="onbase">🪖 On-Base Housing (no BAH)</option>
+            <option value="onbase">🪖 On-Base Housing (no Utilities/BAH)</option>
           </select>
           <div id="pcs2RentBlock">
             <label>Monthly Rent</label><input type="number" id="pcs2Rent" value="">
@@ -1063,7 +1063,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           </div>
         </div>
         <div style="border-left:3px solid var(--blue);padding-left:12px;">
-          <b style="color:var(--text);">⚡ PCS #2 Utilities &amp; Upkeep</b>
+          <b style="color:var(--text);">⚡ Home #2 Utilities &amp; Upkeep</b>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
             <div><label>START Year</label><input type="number" id="util3Start" value=""></div>
             <div><label>END Year</label><input type="number" id="util3End" value=""></div>
@@ -1078,7 +1078,7 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
           </div>
         </div>
         <div style="border-left:3px solid var(--green);padding-left:12px;">
-          <b style="color:var(--text);">🪖 PCS #2 (BAH)</b>
+          <b style="color:var(--text);">🪖 Home #2 (BAH)</b>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px;">
             <div><label>BAH #2 Start Year</label><input type="number" id="bah2Start" value=""></div>
             <div><label>BAH #2 End Year</label><input type="number" id="bah2End" value=""></div>
@@ -1099,8 +1099,8 @@ details.schoolblock:not([open]) { padding-bottom: 6px; }
             <div><label>Purchase Year</label><input type="number" id="wakeBuyYear" value="2034"></div>
             <div><label>Purchase Month (1-12)</label><input type="number" id="wakeBuyMonth" value="1"></div>
             <div><label>Retirement Loan Rate %</label><input type="number" id="townRate" value="6.0" step="0.01"></div>
-            <div><label>PCS #1 Equity Rollover (Down Pmt)</label><input type="number" id="equity2033" value=""></div>
-            <div><label>PCS #2 Equity Rollover (Down Pmt)</label><input type="number" id="pcs2EquityRoll" value=""></div>
+            <div><label>Home #1 Equity Rollover (Down Pmt)</label><input type="number" id="equity2033" value=""></div>
+            <div><label>Home #2 Equity Rollover (Down Pmt)</label><input type="number" id="pcs2EquityRoll" value=""></div>
           </div>
         </div>
         <div style="border-left:3px solid var(--blue);padding-left:12px;">
@@ -2584,8 +2584,8 @@ function renderPcsCompare(){
     rentMo:v('pcs2Rent'),utilMo:util2Active?utilSum('util3'):0,bahMo:bah2Active?v('bah2'):0};
 
   let html=`<details id="det_pcs_compare" ${getOpen('det_pcs_compare')}><summary><h2>📊 Buy vs Rent Comparison</h2></summary>`;
-  const t1=tableFor('PCS #1',pcs1,'jb'),t2=tableFor('PCS #2',pcs2,'pcs2');
-  if(!t1&&!t2)html+='<p style="text-align:center;padding:16px;color:var(--text-3);"><em>Enter PCS #1 or #2 housing details (purchase year+sell year, or rent start+end) to see comparison.</em></p>';
+  const t1=tableFor('Home #1',pcs1,'jb'),t2=tableFor('Home #2',pcs2,'pcs2');
+  if(!t1&&!t2)html+='<p style="text-align:center;padding:16px;color:var(--text-3);"><em>Enter Home #1 or #2 housing details (purchase year+sell year, or rent start+end) to see comparison.</em></p>';
   else html+=t1+t2;
 
   html+=`<div style="margin:16px 8px 6px;font-size:12.5px;color:var(--text);line-height:1.6;">
@@ -2605,7 +2605,7 @@ function renderPcsCompare(){
         <li><b>Total Out-of-Pocket</b> — <code>Down + Total Housing + Total Utils − Total BAH</code>. Actual cash that leaves your bank between Start/End dates.</li>
         <li><b>End Equity</b> — home value at 3% annual appreciation, minus remaining mortgage balance, minus 6% selling costs. Rent = $0 (no asset built).</li>
         <li><b>Net Cost</b> — <code>Total Out-of-Pocket − End Equity</code>. A negative number means you came out ahead (equity gained > cash spent). Lowest wins.</li>
-        <li><b>Activate</b> — click <b>Use this</b> to make that scenario your active choice for the PCS (updates the Housing Type dropdown so Section 2 Cash Flow uses those numbers). If your utility Start/End years are blank, they auto-fill to match the Start/End dates so Utils/mo populates.</li>
+        <li><b>Activate</b> — click <b>Use this</b> to make that scenario your active choice for that home (updates the Housing Type dropdown so Section 2 Cash Flow uses those numbers). If your utility Start/End years are blank, they auto-fill to match the Start/End dates so Utils/mo populates.</li>
       </ul>
     </div>
     <div style="margin-top:10px;"><b>Leftover / "why doesn't it match my rent?"</b> — If your BAH is <i>bigger</i> than rent, most of your rent is "invisible" because BAH pays for it. Net /mo only shows what's <i>left over</i> after BAH. Look at the <b>Total Housing</b> and <b>Total BAH</b> columns to see the gross numbers side-by-side.</div>
@@ -2652,8 +2652,8 @@ function buildCashGroup(){
   const pcs2Cost=v('pcs2Cost'),pcs2Down=pcs2Cost*v('pcs2DownPct')/100,pcs2VaFee=(pcs2Cost-pcs2Down)*v('pcs2VaFee')/100,pcs2Loan=(pcs2Cost-pcs2Down)+pcs2VaFee,pcs2PI=pmt(v('pcs2Rate'),v('pcs2Term')*12,pcs2Loan);
   const townLoan=Math.max(0,v('town'+c.selTownNum+'Price')-c.totalDown),townPI=c.townPI;
   let housingRows='';
-  if(jbBuy>0)housingRows+=`<tr><td>PCS #1 Mortgage</td><td>${fmt(jbLoan)}</td><td>${fmt(jbPI)}</td><td>${v('rate')}%</td><td>${jbBuy}–${jbSell>0?jbSell:'—'}</td><td>Mortgage</td></tr>`;
-  if(pcs2Buy>0)housingRows+=`<tr><td>PCS #2 Mortgage</td><td>${fmt(pcs2Loan)}</td><td>${fmt(pcs2PI)}</td><td>${v('pcs2Rate')}%</td><td>${pcs2Buy}–${pcs2Sell>0?pcs2Sell:'—'}</td><td>Mortgage</td></tr>`;
+  if(jbBuy>0)housingRows+=`<tr><td>Home #1 Mortgage</td><td>${fmt(jbLoan)}</td><td>${fmt(jbPI)}</td><td>${v('rate')}%</td><td>${jbBuy}–${jbSell>0?jbSell:'—'}</td><td>Mortgage</td></tr>`;
+  if(pcs2Buy>0)housingRows+=`<tr><td>Home #2 Mortgage</td><td>${fmt(pcs2Loan)}</td><td>${fmt(pcs2PI)}</td><td>${v('pcs2Rate')}%</td><td>${pcs2Buy}–${pcs2Sell>0?pcs2Sell:'—'}</td><td>Mortgage</td></tr>`;
   if(townLoan>0)housingRows+=`<tr><td>Retirement Home Mortgage</td><td>${fmt(townLoan)}</td><td>${fmt(townPI)}</td><td>${c.townRate}%</td><td>${wakeBuy}+</td><td>Mortgage</td></tr>`;
   if(housingRows)html+='<tr style="background:var(--surface-3)"><td colspan="6" style="color:var(--text-2);font-weight:700;">— Housing (auto-pulled) —</td></tr>'+housingRows;
   if(!consumerRows&&!housingRows)html+='<tr><td colspan="6" style="color:var(--text-3);font-style:italic;padding:12px 8px;">No debts entered — add balances in the Debt tab to see payoff details.</td></tr>';
@@ -2715,7 +2715,7 @@ function renderCashFlow(){
   const {incomeParts,expensesMonthly,investMonthly,homeForYear,utilForYear,bahForYear,debtPaymentMonthly,healthcareMonthly,lifeInsMonthly,privSchMonthly,hasPrivSchoolData,myAge,wAge,locked}=c;
   const hasPriv=hasPrivSchoolData&&hasPrivSchoolData();
   const townName=(document.getElementById('town'+c.selTownNum+'Name')||{}).value||('Town '+c.selTownNum);
-  let h=`<p style="font-size:12px;color:var(--text-2);padding:8px 8px 0;"><em>Home auto-switches: PCS#1 (${c.jbBuy>0?c.jbBuy:'—'}) → ${townName} (${c.wakeBuy}+). ${showWife?'<b>WITH spouse income.</b>':'<b>WITHOUT spouse income.</b>'}</em></p>`;
+  let h=`<p style="font-size:12px;color:var(--text-2);padding:8px 8px 0;"><em>Home auto-switches: Home #1 (${c.jbBuy>0?c.jbBuy:'—'}) → ${townName} (${c.wakeBuy}+). ${showWife?'<b>WITH spouse income.</b>':'<b>WITHOUT spouse income.</b>'}</em></p>`;
   h+=`<table><tr><th class="stk-1">Year</th><th class="stk-2">Age</th><th class="stk-3">Sp Age</th><th>My Net/mo</th><th>Spouse/mo</th><th>Combined/mo</th><th>Surplus/mo</th><th>Surplus/yr</th><th>Proj NW</th><th>Home/mo</th><th>Utils/mo</th><th>BAH/mo</th><th>Debt/mo</th><th>Exp/mo</th><th>Invest/mo</th><th>Health/mo</th><th>Life Ins/mo</th>${hasPriv?'<th>PrivSch/mo</th>':''}<th>SBP/mo</th><th style="text-align:left">Status</th></tr>`;
   let total=0;
   for(let y=Y0+1;y<=YEND;y++){
